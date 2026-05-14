@@ -1,0 +1,28 @@
+---
+description: TypeScript Type Safety Rules for pure Vue project
+globs: ["**/*.ts", "**/*.vue"]
+alwaysApply: true
+---
+
+# TypeScript Rules
+
+## Type Safety (MANDATORY)
+
+- **NEVER use `any` type** - Use generics, `unknown`, or precise types.
+- **Use `as unknown as TargetType`** for type assertions, NEVER `as any`.
+- **Add explanatory comments** explaining WHY when using type assertions.
+- **Use inline type imports** - E.g., `import { ref, type Ref } from 'vue'`.
+
+## Examples
+
+```typescript
+// ❌ FORBIDDEN
+function process(data: any) { }
+const el = document.querySelector('.target') as any;
+import type { Ref } from 'vue'; // separate line
+
+// ✅ REQUIRED
+function process<T extends { value: unknown }>(data: T) { }
+const el = document.querySelector('.target') as unknown as HTMLElement;
+import { ref, type Ref } from 'vue'; // inline type
+```

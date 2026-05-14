@@ -1,0 +1,66 @@
+---
+description: Vue 3 coding standards and conventions for this pure Vue project
+globs: ["**/*.vue"]
+---
+
+# Vue 3 Coding Rules
+
+## Explicit Imports vs Auto-Imports (MANDATORY)
+
+In pure Vue 3 SPA projects using Vite, components and APIs are not auto-imported by default (unlike Nuxt). You **MUST** explicitly import all necessary Vue Composition APIs and external components:
+
+```vue
+<script setup lang="ts">
+// ✅ REQUIRED: Explicitly import APIs and Types
+import { ref, computed, onMounted, type Ref } from 'vue';
+import WelcomeItem from '@/components/WelcomeItem.vue';
+
+const count: Ref<number> = ref(0);
+const doubleCount = computed(() => count.value * 2);
+</script>
+
+<template>
+  <div class="my_view_view">
+    <WelcomeItem>
+      <template #heading>Welcome</template>
+      Content goes here
+    </WelcomeItem>
+  </div>
+</template>
+```
+
+## Dynamic Components
+
+When using `<component :is="...">`, pass the imported component reference directly:
+
+```vue
+<script setup lang="ts">
+import { shallowRef, type Component } from 'vue';
+import ComponentA from '@/components/ComponentA.vue';
+import ComponentB from '@/components/ComponentB.vue';
+
+const currentView = shallowRef<Component>(ComponentA);
+</script>
+
+<template>
+  <component :is="currentView" />
+</template>
+```
+
+## Generic Props and Emits Declarations
+
+Always leverage pure TypeScript generic syntax for defining component interfaces:
+
+```vue
+<script setup lang="ts">
+// ✅ REQUIRED: Type-based declarations
+const props = defineProps<{
+  title: string;
+  isActive?: boolean;
+}>();
+
+const emit = defineEmits<{
+  update: [id: number];
+}>();
+</script>
+```

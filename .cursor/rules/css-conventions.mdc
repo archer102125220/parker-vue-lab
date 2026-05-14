@@ -1,0 +1,65 @@
+---
+description: CSS/SCSS coding standards for this pure Vue project
+globs: ["**/*.scss", "**/*.css", "**/*.vue"]
+---
+
+# CSS/SCSS Coding Rules
+
+## Property Order (MANDATORY)
+1. Positioning (`position`, `top`, `z-index`)
+2. Display & Box Model (`display`, `flex`, `width`, `margin`, `padding`, `border`)
+3. Typography (`font`, `color`, `text-align`)
+4. Visual (`background`, `box-shadow`, `opacity`)
+5. Animation (`transition`, `animation`)
+6. Misc (`cursor`, `content`)
+
+## Modified BEM Naming (MANDATORY)
+- Block: `block_name` (multi-word uses `_`)
+- Element: `block-element` (connected with `-`)
+- Sub-Element: `block-element-sub` (continue with `-`)
+- State: `[css-is-active='true']` (HTML attributes)
+- Color/Size variants: `[css-color='red']`, `[css-size='small']` (HTML attributes)
+
+## Forbidden Practices
+- ❌ **NEVER use `__` (double underscore)**
+- ❌ **NEVER use `--` (double hyphen)** - use HTML attributes instead
+- ❌ **NEVER use multiple classNames on a single element**
+
+### HTML Attribute Usage:
+**When to use**:
+1. States: `[css-is-active='true']`, `[css-is-disabled='true']`
+2. Color variants: `[css-color='red']`, `[css-color='blue']`
+3. Size variants: `[css-size='small']`, `[css-size='large']`
+
+**When to use separate classes**:
+When class name has clear semantic meaning:
+```scss
+.alert {
+  &-success { }  // Semantic
+  &-error { }    // Semantic
+}
+```
+
+## Root Element Naming
+- Views/Pages: `.view_name_view` or `.page_name_page`
+- Components: `.component_name`
+
+## CSS Variables
+- ✅ Use `_`: `--color_primary`, `--font_size_base`
+- ❌ NOT `-`: `--color-primary`
+
+## HTML State Attributes
+- ✅ Use `css-` prefix: `css-is-active`, `css-is-dragging`
+- ❌ NOT: `is-active`, `isActive`
+
+## Inline Styles
+- ✅ ALLOWED: CSS variable passing `:style="{ '--editor_height': \`${height}px\` }"`
+- ✅ ALLOWED: Third-party library requirements
+- ❌ PROHIBITED: Static values
+- ❌ PROHIBITED: Repeated patterns (extract as classes/shared styles)
+
+## Key Rules
+1. Each element uses ONLY ONE className.
+2. Each element MUST have a UNIQUE className - Critical for quick DOM debugging in DevTools and specific rule scoping.
+3. All elements MUST be nested under Block root class.
+4. Do NOT share CSS class names between pages/views.

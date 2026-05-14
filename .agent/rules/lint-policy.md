@@ -1,0 +1,23 @@
+# Lint Disable Comments & Error Suppression Policy (CRITICAL)
+
+### Lint Disable Comments
+- **NEVER** add `eslint-disable`, `@ts-ignore`, `@ts-expect-error`, or similar comments without **explicit user instruction**.
+- When encountering lint warnings/errors:
+  1. Report the warning to the user.
+  2. Wait for user's explicit instruction to add a disable comment.
+  3. Only then add the disable comment with proper justification.
+- This applies to ALL lint suppression mechanisms.
+
+### ⚠️ Error/Warning Suppression Policy
+Any code that **suppresses, hides, or bypasses errors/warnings** instead of fixing the root cause requires:
+1. **Explicit approval** from the human developer before implementation.
+2. **Clear explanation** of WHY this approach is needed.
+3. **Documentation** of the trade-offs.
+
+Examples that require approval:
+- `eslint-disable` / `@ts-ignore` / `@ts-expect-error`
+- Empty `catch` blocks that swallow errors
+- `as any` type assertions
+- Console warnings suppression
+
+**Preferred approach**: Always fix the root cause first. Only use suppression as a last resort with explicit approval.
