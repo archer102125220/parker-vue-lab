@@ -17,8 +17,6 @@ export async function importDocx() {
     import('@univerjs/uniscript'),
     import('@univerjs/preset-docs-advanced'),
     import('@univerjs/preset-docs-advanced/locales/zh-TW'),
-    import('@univerjs/preset-docs-collaboration'),
-    import('@univerjs/preset-docs-collaboration/locales/zh-TW'),
 
     import('@univerjs/watermark/facade'),
 
@@ -28,8 +26,6 @@ export async function importDocx() {
     import('@univerjs/docs-quick-insert-ui/lib/index.css'),
     import('@univerjs/preset-docs-thread-comment/lib/index.css'),
     import('@univerjs/preset-docs-advanced/lib/index.css'),
-    import('@univerjs/preset-docs-collaboration/lib/index.css')
-
   ]);
 }
 
@@ -50,8 +46,6 @@ export async function createDocxsInstance(container: HTMLElement): Promise<unive
     { UniverUniscriptPlugin: _UniverUniscriptPlugin },
     { UniverDocsAdvancedPreset },
     { default: UniverPresetDocsAdvancedZhTW },
-    { UniverDocsCollaborationPreset },
-    { default: UniverPresetDocsCollaborationZhTW }
   ] = await importDocx();
 
   const univerInstance = createUniver({
@@ -64,14 +58,12 @@ export async function createDocxsInstance(container: HTMLElement): Promise<unive
         UniverDocsQuickInsertUIZhTW,
         UniverPresetDocsThreadCommentZhTW,
         UniverPresetDocsAdvancedZhTW,
-        UniverPresetDocsCollaborationZhTW
       ),
     },
     presets: [
       UniverDocsCorePreset({ container }),
       UniverDocsHyperLinkPreset(),
       UniverDocsThreadCommentPreset(),
-      UniverDocsCollaborationPreset(),
       UniverDocsDrawingPreset(),
       UniverDocsAdvancedPreset({ license: "fake.txt", useWorker: true }),
     ],

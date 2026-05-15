@@ -1623,7 +1623,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@univerjs-pro/collaboration-client@npm:0.22.1":
+"@univerjs-pro/collaboration-client@npm:0.22.1, @univerjs-pro/collaboration-client@npm:^0.22.1":
   version: 0.22.1
   resolution: "@univerjs-pro/collaboration-client@npm:0.22.1"
   dependencies:
@@ -4713,6 +4713,7 @@ __metadata:
     "@types/node": "npm:^24.12.2"
     "@types/react": "npm:^19"
     "@types/react-dom": "npm:^19"
+    "@univerjs-pro/collaboration-client": "npm:^0.22.1"
     "@univerjs/docs-quick-insert-ui": "npm:^0.22.1"
     "@univerjs/preset-docs-advanced": "npm:^0.22.1"
     "@univerjs/preset-docs-core": "npm:^0.22.1"

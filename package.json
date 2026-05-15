@@ -12,6 +12,7 @@
     "type-check": "vue-tsc --build"
   },
   "dependencies": {
+    "@univerjs-pro/collaboration-client": "^0.22.1",
     "@univerjs/docs-quick-insert-ui": "^0.22.1",
     "@univerjs/preset-docs-advanced": "^0.22.1",
     "@univerjs/preset-docs-core": "^0.22.1",
