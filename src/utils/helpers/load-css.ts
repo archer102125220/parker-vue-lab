@@ -1,6 +1,6 @@
 export function loadCSS(id: string, href: string): Promise<void> {
     if (typeof document === 'undefined') {
-    throw new Error('document is not defined');
+    return Promise.resolve();
   }
 
   if (document.getElementById(id) !== null) {
