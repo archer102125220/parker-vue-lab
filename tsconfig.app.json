@@ -6,6 +6,10 @@
     // Extra safety for array and object lookups, but may have false positives.
     "noUncheckedIndexedAccess": true,
 
+    // Required for Univer's DI system which uses @Inject parameter decorators
+    // from @wendellhu/redi (re-exported via @univerjs/core).
+    "experimentalDecorators": true,
+
     // Path mapping for cleaner imports.
     "paths": {
       "@/*": ["./*"],
