@@ -33,6 +33,8 @@ export async function importSheet() {
     import("@univerjs/preset-sheets-advanced"),
     import("@univerjs/preset-sheets-advanced/locales/zh-TW"),
 
+    import('@src/utils/third-party/univer/plugin/csv-import'),
+
     import("@univerjs/sheets-crosshair-highlight/facade"),
     import("@univerjs/sheets-zen-editor/facade"),
 
@@ -85,6 +87,7 @@ export async function createSheetInstance(container: HTMLElement): Promise<unive
     { default: UniverSheetsZenEditorZhTW },
     { UniverSheetsAdvancedPreset },
     { default: UniverPresetSheetsAdvancedZhTW },
+    { ImportCSVButtonPlugin }
   ] = await importSheet();
 
   const univerInstance = createUniver({
@@ -120,17 +123,18 @@ export async function createSheetInstance(container: HTMLElement): Promise<unive
       UniverSheetsTablePreset(),
       UniverSheetsAdvancedPreset({ license: "fake.txt", useWorker: true }),
     ],
-    // plugins: [
-    //   // [_UniverWatermarkPlugin, {
-    //   //   textWatermarkSettings: {
-    //   //     content: '測試浮水印',
-    //   //     fontSize: 20,
-    //   //   },
-    //   // }],
-    //   // _UniverSheetsCrosshairHighlightPlugin,
-    //   // _UniverSheetsZenEditorPlugin,
-    //   // _UniverUniscriptPlugin,
-    // ],
+    plugins: [
+      ImportCSVButtonPlugin,
+      // [_UniverWatermarkPlugin, {
+      //   textWatermarkSettings: {
+      //     content: '測試浮水印',
+      //     fontSize: 20,
+      //   },
+      // }],
+      // _UniverSheetsCrosshairHighlightPlugin,
+      // _UniverSheetsZenEditorPlugin,
+      // _UniverUniscriptPlugin,
+    ],
   });
 
   return univerInstance;

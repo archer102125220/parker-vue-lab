@@ -4,6 +4,7 @@ import type {
   ISetWorksheetRowCountMutationParams,
 } from '@univerjs/preset-sheets-core'
 import type { ICommand, IMutationInfo, Workbook } from '@univerjs/presets'
+import { Observable } from 'rxjs'
 import { FolderIcon } from '@univerjs/icons'
 import {
   ComponentManager,
@@ -153,8 +154,19 @@ export class ImportCSVButtonPlugin extends Plugin {
       tooltip: 'Import CSV',
       icon: 'FolderIcon', // icon name
       type: MenuItemType.BUTTON,
+      hidden$: new Observable<boolean>((subscriber) => {
+        const univerInstanceService = this._injector.get(IUniverInstanceService)
+        const subscription = univerInstanceService.focused$.subscribe((unitId) => {
+          if (!unitId) {
+            subscriber.next(true)
+            return
+          }
+          const unit = univerInstanceService.getUnit(unitId)
+          subscriber.next(unit?.type !== UniverInstanceType.UNIVER_SHEET)
+        })
+        return () => subscription.unsubscribe()
+      }),
     })
-
     this.menuManagerService.mergeMenu({
       [RibbonStartGroup.OTHERS]: {
         [buttonId]: {
@@ -167,3 +179,5 @@ export class ImportCSVButtonPlugin extends Plugin {
     this.commandService.registerCommand(command)
   }
 }
+
+export default ImportCSVButtonPlugin;

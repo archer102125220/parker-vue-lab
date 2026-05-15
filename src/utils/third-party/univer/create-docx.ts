@@ -42,7 +42,7 @@ export async function createDocxsInstance(container: HTMLElement): Promise<unive
     { default: UniverPresetDocsHyperLinkZhTW },
     { UniverDocsDrawingPreset },
     { default: UniverPresetDocsDrawingZhTW },
-    { UniverDocsQuickInsertUIPlugin: _UniverDocsQuickInsertUIPlugin },
+    { UniverDocsQuickInsertUIPlugin },
     { default: UniverDocsQuickInsertUIZhTW },
     { UniverDocsThreadCommentPreset },
     { default: UniverPresetDocsThreadCommentZhTW },
@@ -75,16 +75,16 @@ export async function createDocxsInstance(container: HTMLElement): Promise<unive
       UniverDocsDrawingPreset(),
       UniverDocsAdvancedPreset({ license: "fake.txt", useWorker: true }),
     ],
-    // plugins: [
-    //   // [_UniverWatermarkPlugin, {
-    //   //   textWatermarkSettings: {
-    //   //     content: '測試浮水印',
-    //   //     fontSize: 20,
-    //   //   },
-    //   // }],
-    //   // __UniverUniscriptPlugin,
-    //   // _UniverDocsQuickInsertUIPlugin,
-    // ],
+    plugins: [
+      // [_UniverWatermarkPlugin, {
+      //   textWatermarkSettings: {
+      //     content: '測試浮水印',
+      //     fontSize: 20,
+      //   },
+      // }],
+      // __UniverUniscriptPlugin,
+      UniverDocsQuickInsertUIPlugin,
+    ],
   });
 
   return univerInstance;
