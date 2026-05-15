@@ -1,14 +1,34 @@
+interface Point {
+  clientX: number;
+  clientY: number;
+}
+
+interface ClassifySwipeDirectionOptions {
+  minSwipeDistance?: number;
+  angleThreshold?: number;
+}
+
+interface ClassifySwipeDirectionResult {
+  isValidSwipe: boolean;
+  isHorizontal: boolean;
+  isVertical: boolean;
+  originalAngleDeg: number;
+  angleDeg: number;
+  angleRad: number;
+  distance: number;
+}
+
 /**
  * 判斷觸摸手勢是垂直還是水平。
  *
- * @param {Object} startPoint - 滑動開始時的座標點，包含 clientX 和 clientY。
- * @param {Object} endPoint - 滑動結束時的座標點，包含 clientX 和 clientY。
- * @param {Object} [options] - 可選的配置選項。
+ * @param {Point} startPoint - 滑動開始時的座標點，包含 clientX 和 clientY。
+ * @param {Point} endPoint - 滑動結束時的座標點，包含 clientX 和 clientY。
+ * @param {ClassifySwipeDirectionOptions} [options] - 可選的配置選項。
  * @param {number} [options.minSwipeDistance=30] - 判斷為有效滑動所需的最小距離（像素）。
  * @param {number} [options.angleThreshold=45] - 判斷為垂直或水平滑動的最大角度偏差（度）。
  * 例如，如果設置為 45，則角度在 0 +/- 45 度（即 -45 到 45 度）之間被視為水平，
  * 角度在 90 +/- 45 度（即 45 到 135 度）之間被視為垂直。
- * @returns {Object} - 包含以下屬性的物件：
+ * @returns {ClassifySwipeDirectionResult} - 包含以下屬性的物件：
  * - isHorizontal: 是否水平滑動
  * - isVertical: 是否垂直滑動
  * - originalAngleDeg: 原始角度（度）
@@ -16,7 +36,11 @@
  * - angleRad: 弧度
  * - distance: 滑動距離
  */
-export function classifySwipeDirection(startPoint, endPoint, options = {}) {
+export function classifySwipeDirection(
+  startPoint: Point,
+  endPoint: Point,
+  options: ClassifySwipeDirectionOptions = {}
+): ClassifySwipeDirectionResult {
   const defaultOptions = {
     minSwipeDistance: 30, // 最小滑動距離
     angleThreshold: 45    // 角度閾值，用於判斷是否接近水平或垂直 (0-90度)

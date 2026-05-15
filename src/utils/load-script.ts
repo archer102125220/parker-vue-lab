@@ -1,4 +1,12 @@
-export function loadScript(id, src) {
+export function loadScript(id: string, src: string): Promise<void> {
+  if (typeof document === 'undefined') {
+    throw new Error('document is not defined');
+  }
+
+  if (document.getElementById(id) !== null) {
+    return Promise.resolve();
+  }
+
   return new Promise((resolve, reject) => {
     const script = document.createElement('script');
     script.id = id;
@@ -9,4 +17,5 @@ export function loadScript(id, src) {
     document.head.appendChild(script);
   });
 }
+
 export default loadScript;
