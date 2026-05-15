@@ -1,7 +1,12 @@
-<script setup>
-const props = defineProps({
-  loading: { type: Boolean, default: false }
-});
+<script setup lang="ts">
+const props = withDefaults(
+  defineProps<{
+    loading?: boolean;
+  }>(),
+  {
+    loading: false
+  }
+);
 </script>
 
 <template>
@@ -16,17 +21,21 @@ const props = defineProps({
   0% {
     opacity: 0;
   }
+
   100% {
     opacity: 1;
   }
 }
+
 @keyframes skeleton_after_animation {
   0% {
     transform: scale(4) translate(-100%, -100%);
   }
+
   50% {
     transform: scale(4) translate(0, 0);
   }
+
   100% {
     transform: scale(4) translate(100%, 100%);
   }
@@ -63,12 +72,10 @@ const props = defineProps({
       border-radius: 100%;
 
       // Visual
-      background: repeating-linear-gradient(
-        126deg,
-        #ededed 30%,
-        #dcdcdc 50%,
-        #ededed 70%
-      );
+      background: repeating-linear-gradient(126deg,
+          #ededed 30%,
+          #dcdcdc 50%,
+          #ededed 70%);
 
       // Misc
       content: '';

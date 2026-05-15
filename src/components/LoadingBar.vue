@@ -1,35 +1,41 @@
-<template>
-  <!-- <v-progress-linear
-    v-if="loading"
-    :height="height"
-    indeterminate
-    color="primary"
-    class="loading_bar"
-    :style="`--loading_width:${width};--loading_position:${position}`"
-  /> -->
-  <div v-if="loading" class="loading_bar" :style="cssVariable" />
-</template>
-<script setup>
-const props = defineProps({
-  loading: { type: Boolean, default: false },
-  position: { type: String, default: 'absolute' },
-  color: { type: String, default: 'var(--primary)' },
-  top: { type: [String, Number], default: '0' },
-  bottom: { type: [String, Number], default: null },
-  left: { type: [String, Number], default: '0' },
-  right: { type: [String, Number], default: null },
-  zIndex: { type: [String, Number], default: '10' },
-  height: { type: [String, Number], default: '6' },
-  width: { type: [String, Number], default: '100%' }
-});
+<script setup lang="ts">
+import { computed } from 'vue';
+
+const props = withDefaults(
+  defineProps<{
+    loading?: boolean;
+    position?: string;
+    color?: string;
+    top?: string | number | null;
+    bottom?: string | number | null;
+    left?: string | number | null;
+    right?: string | number | null;
+    zIndex?: string | number;
+    height?: string | number;
+    width?: string | number;
+  }>(),
+  {
+    loading: false,
+    position: 'absolute',
+    color: 'var(--primary)',
+    top: '0',
+    bottom: null,
+    left: '0',
+    right: null,
+    zIndex: '10',
+    height: '6',
+    width: '100%'
+  }
+);
+
 const cssVariable = computed(() => {
-  const newCssVariable = {
+  const newCssVariable: Record<string, string | number> = {
     '--loading_position': props.position,
     '--loading_color': props.color
   };
 
   let height = '6px';
-  if (typeof props.height === 'number' || /^\d+$/.test(props.height)) {
+  if (typeof props.height === 'number' || (typeof props.height === 'string' && /^\d+$/.test(props.height))) {
     height = `${props.height}px`;
   } else if (typeof props.height === 'string') {
     height = props.height;
@@ -37,15 +43,15 @@ const cssVariable = computed(() => {
   newCssVariable['--loading_height'] = height;
 
   let width = '100%';
-  if (typeof props.width === 'number' || /^\d+$/.test(props.width)) {
+  if (typeof props.width === 'number' || (typeof props.width === 'string' && /^\d+$/.test(props.width))) {
     width = `${props.width}px`;
   } else if (typeof props.width === 'string') {
     width = props.width;
   }
   newCssVariable['--loading_width'] = width;
 
-  let top = null;
-  if (typeof props.top === 'number' || /^\d+$/.test(props.top)) {
+  let top: string | null = null;
+  if (typeof props.top === 'number' || (typeof props.top === 'string' && /^\d+$/.test(props.top))) {
     top = `${props.top}px`;
   } else if (typeof props.top === 'string') {
     top = props.top;
@@ -54,16 +60,18 @@ const cssVariable = computed(() => {
     newCssVariable['--loading_top'] = top;
   }
 
-  let bottom = null;
-  if (typeof props.bottom === 'number' || /^\d+$/.test(props.bottom)) {
+  let bottom: string | null = null;
+  if (typeof props.bottom === 'number' || (typeof props.bottom === 'string' && /^\d+$/.test(props.bottom))) {
     bottom = `${props.bottom}px`;
   } else if (typeof props.bottom === 'string') {
     bottom = props.bottom;
   }
-  newCssVariable['--loading_bottom'] = bottom;
+  if (bottom !== null) {
+    newCssVariable['--loading_bottom'] = bottom;
+  }
 
-  let left = null;
-  if (typeof props.left === 'number' || /^\d+$/.test(props.left)) {
+  let left: string | null = null;
+  if (typeof props.left === 'number' || (typeof props.left === 'string' && /^\d+$/.test(props.left))) {
     left = `${props.left}px`;
   } else if (typeof props.left === 'string') {
     left = props.left;
@@ -72,15 +80,17 @@ const cssVariable = computed(() => {
     newCssVariable['--loading_left'] = left;
   }
 
-  let right = null;
-  if (typeof props.right === 'number' || /^\d+$/.test(props.right)) {
+  let right: string | null = null;
+  if (typeof props.right === 'number' || (typeof props.right === 'string' && /^\d+$/.test(props.right))) {
     right = `${props.right}px`;
   } else if (typeof props.right === 'string') {
     right = props.right;
   }
-  newCssVariable['--loading_right'] = right;
+  if (right !== null) {
+    newCssVariable['--loading_right'] = right;
+  }
 
-  let zIndex = 10;
+  let zIndex: string | number = 10;
   if (
     typeof props.zIndex === 'number' ||
     (typeof props.zIndex === 'string' && /^\d+$/.test(props.zIndex))
@@ -92,6 +102,10 @@ const cssVariable = computed(() => {
   return newCssVariable;
 });
 </script>
+
+<template>
+  <div v-if="loading" class="loading_bar" :style="cssVariable" />
+</template>
 
 <style lang="scss" scoped>
 .loading_bar {
@@ -132,10 +146,12 @@ const cssVariable = computed(() => {
     content: '';
   }
 }
+
 @keyframes progressAnimationStrike {
   from {
     transform: translateX(-150%);
   }
+
   to {
     transform: translateX(250%);
   }
