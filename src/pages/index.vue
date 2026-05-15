@@ -9,7 +9,7 @@
   </div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 .index_page {
   padding: 2rem;
 }
