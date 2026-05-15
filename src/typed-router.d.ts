@@ -37,6 +37,13 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    '/sheet-editor/': RouteRecordInfo<
+      '/sheet-editor/',
+      '/sheet-editor',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
   }
 
   /**
@@ -59,6 +66,12 @@ declare module 'vue-router/auto-routes' {
     'src/pages/docxs-editor/index.vue': {
       routes:
         | '/docxs-editor/'
+      views:
+        | never
+    }
+    'src/pages/sheet-editor/index.vue': {
+      routes:
+        | '/sheet-editor/'
       views:
         | never
     }

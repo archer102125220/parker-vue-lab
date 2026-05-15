@@ -29,11 +29,13 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./",\
         "packageDependencies": [\
           ["@tsconfig/node24", "npm:24.0.4"],\
+          ["@types/lodash", "npm:4.17.24"],\
           ["@types/node", "npm:24.12.4"],\
           ["@vitejs/plugin-vue", "virtual:dd6dd53617723d6211cb70a96e2ea90c8fc54c96c13ad475d168d7d12c0de2b90a5b6afb3c2a86f93fe12acd449691970fec452f2b5f5cd377956753f13d15a7#npm:6.0.6"],\
           ["@vue/compiler-sfc", "npm:3.5.34"],\
           ["@vue/tsconfig", "virtual:dd6dd53617723d6211cb70a96e2ea90c8fc54c96c13ad475d168d7d12c0de2b90a5b6afb3c2a86f93fe12acd449691970fec452f2b5f5cd377956753f13d15a7#npm:0.9.1"],\
           ["flag-icons", "npm:7.5.0"],\
+          ["lodash", "npm:4.18.1"],\
           ["npm-run-all2", "npm:8.0.4"],\
           ["parker-vue-lab", "workspace:."],\
           ["sass", "npm:1.99.0"],\
@@ -1019,6 +1021,15 @@ const RAW_RUNTIME_STATE =
         "packageDependencies": [\
           ["@tybys/wasm-util", "npm:0.10.2"],\
           ["tslib", "npm:2.8.1"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["@types/lodash", [\
+      ["npm:4.17.24", {\
+        "packageLocation": "../../../.yarn/berry/cache/@types-lodash-npm-4.17.24-4a04035060-10c0.zip/node_modules/@types/lodash/",\
+        "packageDependencies": [\
+          ["@types/lodash", "npm:4.17.24"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -2052,6 +2063,15 @@ const RAW_RUNTIME_STATE =
         "linkType": "HARD"\
       }]\
     ]],\
+    ["lodash", [\
+      ["npm:4.18.1", {\
+        "packageLocation": "../../../.yarn/berry/cache/lodash-npm-4.18.1-a64c3070ac-10c0.zip/node_modules/lodash/",\
+        "packageDependencies": [\
+          ["lodash", "npm:4.18.1"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
     ["lru-cache", [\
       ["npm:5.1.1", {\
         "packageLocation": "../../../.yarn/berry/cache/lru-cache-npm-5.1.1-f475882a51-10c0.zip/node_modules/lru-cache/",\
@@ -2260,11 +2280,13 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./",\
         "packageDependencies": [\
           ["@tsconfig/node24", "npm:24.0.4"],\
+          ["@types/lodash", "npm:4.17.24"],\
           ["@types/node", "npm:24.12.4"],\
           ["@vitejs/plugin-vue", "virtual:dd6dd53617723d6211cb70a96e2ea90c8fc54c96c13ad475d168d7d12c0de2b90a5b6afb3c2a86f93fe12acd449691970fec452f2b5f5cd377956753f13d15a7#npm:6.0.6"],\
           ["@vue/compiler-sfc", "npm:3.5.34"],\
           ["@vue/tsconfig", "virtual:dd6dd53617723d6211cb70a96e2ea90c8fc54c96c13ad475d168d7d12c0de2b90a5b6afb3c2a86f93fe12acd449691970fec452f2b5f5cd377956753f13d15a7#npm:0.9.1"],\
           ["flag-icons", "npm:7.5.0"],\
+          ["lodash", "npm:4.18.1"],\
           ["npm-run-all2", "npm:8.0.4"],\
           ["parker-vue-lab", "workspace:."],\
           ["sass", "npm:1.99.0"],\

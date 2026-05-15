@@ -766,6 +766,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/lodash@npm:^4":
+  version: 4.17.24
+  resolution: "@types/lodash@npm:4.17.24"
+  checksum: 10c0/b72f60d4daacdad1fa643edb3faba204c02a01eb1ac00a83ff73496a6d236fc55e459c06106e8ced42277dba932d087d8fc090f8de4ef590d3f91e6d6f7ce85a
+  languageName: node
+  linkType: hard
+
 "@types/node@npm:^24.12.2":
   version: 24.12.4
   resolution: "@types/node@npm:24.12.4"
@@ -1613,6 +1620,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lodash@npm:^4.18.1":
+  version: 4.18.1
+  resolution: "lodash@npm:4.18.1"
+  checksum: 10c0/757228fc68805c59789e82185135cf85f05d0b2d3d54631d680ca79ec21944ec8314d4533639a14b8bcfbd97a517e78960933041a5af17ecb693ec6eecb99a27
+  languageName: node
+  linkType: hard
+
 "lru-cache@npm:^5.1.1":
   version: 5.1.1
   resolution: "lru-cache@npm:5.1.1"
@@ -1804,11 +1818,13 @@ __metadata:
   resolution: "parker-vue-lab@workspace:."
   dependencies:
     "@tsconfig/node24": "npm:^24.0.4"
+    "@types/lodash": "npm:^4"
     "@types/node": "npm:^24.12.2"
     "@vitejs/plugin-vue": "npm:^6.0.6"
     "@vue/compiler-sfc": "npm:^3.5.34"
     "@vue/tsconfig": "npm:^0.9.1"
     flag-icons: "npm:^7.5.0"
+    lodash: "npm:^4.18.1"
     npm-run-all2: "npm:^8.0.4"
     sass: "npm:^1.99.0"
     typescript: "npm:~6.0.0"
