@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 import { routes } from 'vue-router/auto-routes'
-import i18n, { defaultLang } from '../i18n'
+import i18n, { defaultLang } from '@src/i18n'
 
 // 動態在所有的頂層路由前加上 optional 的 locale 參數
 function addLocalePrefix(routes: readonly RouteRecordRaw[]) {

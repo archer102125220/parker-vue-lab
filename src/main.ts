@@ -1,9 +1,9 @@
-import './assets/styles/global.scss'
+import '@src/assets/styles/global.scss'
 
 import { createApp } from 'vue'
-import App from './App.vue'
-import router from './router'
-import i18n from './i18n'
+import App from '@src/App.vue'
+import router from '@src/router'
+import i18n from '@src/i18n'
 
 const app = createApp(App)
 
