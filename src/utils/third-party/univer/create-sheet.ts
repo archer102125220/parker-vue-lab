@@ -1,3 +1,5 @@
+import type { univerInstance } from '@src/utils/third-party/univer/index';
+
 export async function importSheet() {
   return await Promise.all([
     import("@univerjs/presets"),

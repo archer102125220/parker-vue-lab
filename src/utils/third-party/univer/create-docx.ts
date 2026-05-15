@@ -1,3 +1,5 @@
+import type { univerInstance } from '@src/utils/third-party/univer/index';
+
 export async function importDocx() {
   return await Promise.all([
     import('@univerjs/presets'),
@@ -41,10 +43,11 @@ export async function createDocxsInstance(container: HTMLElement): Promise<unive
     { UniverDocsDrawingPreset },
     { default: UniverPresetDocsDrawingZhTW },
     { UniverDocsQuickInsertUIPlugin: _UniverDocsQuickInsertUIPlugin },
+    { default: UniverDocsQuickInsertUIZhTW },
     { UniverDocsThreadCommentPreset },
     { default: UniverPresetDocsThreadCommentZhTW },
-    { UniverUniscriptPlugin: _UniverUniscriptPlugin },
     { UniverWatermarkPlugin: _UniverWatermarkPlugin },
+    { UniverUniscriptPlugin: _UniverUniscriptPlugin },
     { UniverDocsAdvancedPreset },
     { default: UniverPresetDocsAdvancedZhTW },
     { UniverDocsCollaborationPreset },
@@ -58,6 +61,7 @@ export async function createDocxsInstance(container: HTMLElement): Promise<unive
         UniverPresetDocsCoreZhTW,
         UniverPresetDocsHyperLinkZhTW,
         UniverPresetDocsDrawingZhTW,
+        UniverDocsQuickInsertUIZhTW,
         UniverPresetDocsThreadCommentZhTW,
         UniverPresetDocsAdvancedZhTW,
         UniverPresetDocsCollaborationZhTW
