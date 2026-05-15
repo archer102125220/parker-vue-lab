@@ -1,7 +1,14 @@
-export async function importUniver() {
-  return await Promise.all([
-    import('@univerjs/presets'),
-  ]);
+import type { FUniver, Univer } from '@univerjs/presets'
+
+export type univerInstance = {
+    univer: Univer;
+    univerAPI: FUniver;
+
+}
+export type univerInstanceRef = {
+    univer: Univer | null;
+    univerAPI: FUniver | null;
 }
 
-export default importUniver;
+export * from './create-sheet';
+export * from './create-docx';

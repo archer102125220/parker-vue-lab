@@ -9,7 +9,7 @@ import { RouterLink } from 'vue-router';
     <p>This is an auto-generated route matching Nuxt's pages/ structure.</p>
     <div class="index_page-nav">
       <RouterLink to="/sheet-editor">sheet-editor</RouterLink>
-      <RouterLink to="/docs-editor">docs-editor</RouterLink>
+      <RouterLink to="/docxs-editor">docxs-editor</RouterLink>
     </div>
   </div>
 </template>

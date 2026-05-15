@@ -23,7 +23,7 @@ async function handleUniverSheet() {
 
     const { univer, univerAPI } = await createSheetInstance(container.value);
 
-    univerAPI.createWorkbook({});
+    univerAPI.createUniverDoc({});
 
     univerInstance.univer = univer;
     univerInstance.univerAPI = univerAPI;

@@ -1,18 +1,3 @@
-import type { FUniver, Univer } from '@univerjs/presets'
-
-// import { importUniver } from '@src/utils/third-party/univer';
-
-export type univerInstance = {
-    univer: Univer;
-    univerAPI: FUniver;
-
-}
-export type univerInstanceRef = {
-    univer: Univer | null;
-    univerAPI: FUniver | null;
-
-}
-
 export async function importSheet() {
   return await Promise.all([
     import("@univerjs/presets"),
@@ -30,6 +15,7 @@ export async function importSheet() {
     import("@univerjs/preset-sheets-hyper-link/locales/zh-TW"),
     import("@univerjs/preset-sheets-find-replace"),
     import("@univerjs/preset-sheets-find-replace/locales/zh-TW"),
+    import('@univerjs/uniscript'),
     import("@univerjs/preset-sheets-drawing"),
     import("@univerjs/preset-sheets-drawing/locales/zh-TW"),
     import("@univerjs/preset-sheets-thread-comment"),
@@ -82,6 +68,7 @@ export async function createSheetInstance(container: HTMLElement): Promise<unive
     { default: UniverPresetSheetsHyperLinkZhTW },
     { UniverSheetsFindReplacePreset },
     { default: UniverPresetSheetsFindReplaceZhTW },
+    { UniverUniscriptPlugin:_UniverUniscriptPlugin },
     { UniverSheetsDrawingPreset },
     { default: UniverPresetSheetsDrawingZhTW },
     { UniverSheetsThreadCommentPreset },
@@ -132,14 +119,15 @@ export async function createSheetInstance(container: HTMLElement): Promise<unive
       UniverSheetsAdvancedPreset({ license: "fake.txt", useWorker: true }),
     ],
     // plugins: [
-    //   // [UniverWatermarkPlugin, {
+    //   // [_UniverWatermarkPlugin, {
     //   //   textWatermarkSettings: {
     //   //     content: '測試浮水印',
     //   //     fontSize: 20,
     //   //   },
     //   // }],
-    //   // UniverSheetsCrosshairHighlightPlugin,
-    //   // UniverSheetsZenEditorPlugin,
+    //   // _UniverSheetsCrosshairHighlightPlugin,
+    //   // _UniverSheetsZenEditorPlugin,
+    //   // _UniverUniscriptPlugin,
     // ],
   });
 
