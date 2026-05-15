@@ -17,7 +17,7 @@ const univerInstance = shallowReactive<univerInstanceRef>({
   univerAPI: null
 });
 
-async function handleUniverSheet() {
+async function handleUniverDocxs() {
   try {
     if (container.value instanceof HTMLElement === false) return;
 
@@ -35,7 +35,7 @@ async function handleUniverSheet() {
 }
 
 onMounted(() => {
-  handleUniverSheet();
+  handleUniverDocxs();
 });
 
 onBeforeUnmount(() => {
@@ -51,14 +51,14 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="univer_sheet">
-    <SkeletonLoader v-if="loading" :loading="true" class="univer_sheet-skeleton" />
-    <div ref="container" class="univer_sheet-editor" />
+  <div class="univer_docxs">
+    <SkeletonLoader v-if="loading" :loading="true" class="univer_docxs-skeleton" />
+    <div ref="container" class="univer_docxs-editor" />
   </div>
 </template>
 
 <style lang="scss" scoped>
-.univer_sheet {
+.univer_docxs {
   position: relative;
   height: 100%;
 
