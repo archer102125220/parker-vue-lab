@@ -1,0 +1,165 @@
+@use "flag-icons/css/flag-icons.min.css";
+@import url("https://fonts.googleapis.com/earlyaccess/notosanstc.css");
+
+@font-face {
+  font-family: TaipeiSansTCBeta-Bold;
+  src: url("/font/TaipeiSansTCBeta-Bold.ttf");
+}
+@font-face {
+  font-family: TaipeiSansTCBeta-Light;
+  src: url("/font/TaipeiSansTCBeta-Light.ttf");
+}
+@font-face {
+  font-family: TaipeiSansTCBeta-Regular;
+  src: url("/font/TaipeiSansTCBeta-Regular.ttf");
+}
+
+html {
+  // Typography
+  font-family: "Noto Sans TC", sans-serif;
+  font-size: 16px;
+  line-height: 1.15;
+
+  // Misc
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+
+  *:not(
+    .wang_editor_view,
+    .wang_editor_view *,
+    .wang_editor,
+    .wang_editor *,
+    .v-icon--size-x-large,
+    .v-icon--size-x-large *,
+    .v-icon--size-large,
+    .v-icon--size-large *,
+    .v-icon--size-small,
+    .v-icon--size-small *,
+    .v-icon--size-x-small,
+    .v-icon--size-x-small *
+  ) {
+    font-size: inherit;
+    font-family: inherit;
+    font-weight: inherit;
+  }
+}
+
+a {
+  &[target="_blank"]:not([css-not-link-icon="true"])::after {
+    // Display & Box Model
+    display: inline-block;
+    width: var(--link_blank_width, 16px);
+    height: var(--link_blank_height, 16px);
+
+    // Visual
+    background-image: url("/img/icon/external-link/outbound-link-icon.webp");
+    background-size: 100%;
+
+    // Misc
+    content: "";
+  }
+}
+
+* {
+  transition: all 0.2s ease-in-out;
+}
+
+button[disabled] {
+  pointer-events: unset;
+  cursor: not-allowed;
+}
+
+body {
+  // Display & Box Model
+  margin: 0;
+
+  // Typography
+  font-weight: 400;
+  line-height: 1.5;
+  color: #212529;
+  text-align: left;
+}
+
+label {
+  margin: 0;
+}
+
+*,
+:after,
+:before {
+  box-sizing: border-box;
+}
+
+button {
+  border-style: solid;
+  cursor: pointer;
+}
+
+a {
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: none;
+  }
+}
+
+*::-webkit-scrollbar {
+  width: 10px;
+
+  @include mobile {
+    height: 5px;
+  }
+}
+
+*::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background-color: $secondary;
+  border: 1px solid $secondary;
+}
+
+// *::-webkit-scrollbar-button {
+//   background   : transparent;
+//   border-radius: 4px;
+// }
+
+*::-webkit-scrollbar-track-piece {
+  background-color: #ffffff00;
+}
+
+*::-webkit-scrollbar-track {
+  box-shadow: transparent;
+}
+
+img[src="img/expand.svg"] {
+  min-width: 52px;
+  min-height: 52px;
+}
+
+// element-ui
+.el-tabs__content {
+  width: 100%;
+  // height: 100%;
+  height: 90%;
+
+  @include mobile {
+    height: 70%;
+  }
+}
+
+.el-tabs--border-card > .el-tabs__header {
+  background-color: #f2e7fe;
+}
+
+.el-picker-panel.el-date-range-picker.el-popper.has-time {
+  @include mobile {
+    max-width: 100vw;
+    overflow-x: auto;
+  }
+
+  .el-picker-panel__footer {
+    @include mobile {
+      border-top: 0px;
+    }
+  }
+}

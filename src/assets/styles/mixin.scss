@@ -1,0 +1,277 @@
+@mixin mobile {
+  @media (max-width: 707px) {
+    @content;
+  }
+}
+
+@mixin tabletOnly {
+  @media (min-width: 708px) and (max-width: 1140px) {
+    @content;
+  }
+}
+
+@mixin tablet {
+  @media (max-width: 1140px) {
+    @content;
+  }
+}
+
+@mixin CN-Regular-14 {
+  color: #1d2129;
+  font-family: 'Noto Sans';
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 22px; /* 157.143% */
+}
+
+@mixin CN-Medium-14 {
+  color: #1d2129;
+  font-family: 'Noto Sans';
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 22px; /* 157.143% */
+}
+
+@mixin CN-Medium-16 {
+  color: #1d2129;
+  font-family: 'Noto Sans';
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 24px; /* 150% */
+}
+
+@mixin CN-Medium-20 {
+  color: #1d2129;
+  font-family: 'Noto Sans';
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 28px; /* 140% */
+}
+
+@mixin button {
+  // Display & Box Model
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.25rem;
+
+  // Typography
+  font-family: inherit;
+  font-weight: 400;
+  line-height: 1.5;
+  text-transform: none;
+
+  // Misc
+  cursor: pointer;
+  -webkit-appearance: button;
+}
+
+@mixin textBox {
+  // Display & Box Model
+  // display: block;
+  // width: 100%;
+  // height: calc(1.5em + 0.75rem + 2px);
+  // padding: 0.375rem 0.75rem;
+  // margin         : 0.375rem 0.75rem;
+  border: 1px solid #ced4da;
+  border-radius: 10px;
+
+  // Typography
+  font-weight: 400;
+  line-height: 1.5;
+  color: #495057;
+
+  // Visual
+  background-color: #fff;
+  background-clip: padding-box;
+
+  // Animation
+  transition:
+    border-color 0.15s ease-in-out,
+    box-shadow 0.15s ease-in-out;
+}
+
+@mixin button-style-dark_hover {
+  // Typography
+  color: #fff;
+
+  // Visual
+  background-color: $primary;
+  border-color: $primary;
+
+  // Misc
+  cursor: pointer;
+
+  &:disabled {
+    // Typography
+    color: #00000080;
+
+    // Visual
+    background-color: #aeaeae;
+    border-color: #aeaeae;
+
+    // Misc
+    cursor: not-allowed;
+  }
+
+  &:hover:not(:disabled) {
+    // Typography
+    color: #fff;
+
+    // Visual
+    background-color: #6b498e;
+    border-color: #1937bb;
+    // sass.hk/skill/sass25.html
+    // background-color: mix(#7e56a7, #58446a);
+    // border-color: mix(#7e56a7, #58446a);
+  }
+
+  &:not(:disabled):active {
+    // Typography
+    color: #fff;
+
+    // Visual
+    background-color: #1937bb;
+    border-color: #142ea1;
+  }
+}
+
+@mixin button-style-light_hover {
+  // Display & Box Model
+  display: inline-block;
+  margin: 0;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.25rem;
+
+  // Typography
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  text-transform: none;
+  color: #fff;
+
+  // Visual
+  background-color: $primary;
+  border-color: $primary;
+
+  // Misc
+  cursor: pointer;
+  -webkit-appearance: button;
+
+  &:disabled {
+    // Typography
+    color: #00000080;
+
+    // Visual
+    background-color: #aeaeae;
+    border-color: #aeaeae;
+
+    // Misc
+    cursor: not-allowed;
+  }
+
+  &:hover:not(:disabled) {
+    // Typography
+    color: #fff;
+
+    // Visual
+    background-color: #6493fb;
+    border-color: #6493fb;
+    // background-color: mix(#7e56a7, #fff, 75%);
+    // border-color: mix(#7e56a7, #fff, 75%);
+  }
+
+  &:not(:disabled):active {
+    // Typography
+    color: #fff;
+
+    // Visual
+    background-color: #1937bb;
+    border-color: #142ea1;
+  }
+}
+
+@mixin button-outline-style {
+  // Display & Box Model
+  border-radius: 0.35rem;
+
+  // Typography
+  color: $text-secondary;
+
+  // Visual
+  background-color: $secondary;
+  border-color: $primary;
+
+  &:disabled {
+    // Typography
+    color: #00000080;
+
+    // Visual
+    background-color: #aeaeae;
+    border-color: #aeaeae;
+
+    // Misc
+    cursor: not-allowed;
+  }
+
+  &:hover:not(:disabled) {
+    // Visual
+    background-color: #cec5d8;
+  }
+
+  &:not(:disabled):active {
+    // Typography
+    color: #fff;
+
+    // Visual
+    background-color: #1937bb;
+    border-color: #142ea1;
+  }
+}
+
+@mixin customize-btn-close {
+  // Typography
+  color: #fff;
+
+  // Visual
+  background-color: #858796;
+  border-color: #858796;
+
+  &:hover {
+    // Typography
+    color: #fff;
+
+    // Visual
+    background-color: #717384;
+    border-color: #6b6d7d;
+  }
+}
+
+@mixin link-style {
+  // Typography
+  color: #e7614c;
+  text-decoration: none;
+
+  // Visual
+  background-color: transparent;
+
+  // Misc
+  cursor: pointer;
+
+  &:-webkit-any-link {
+    // Typography
+    color: -webkit-link;
+
+    // Misc
+    cursor: pointer;
+  }
+
+  &:hover {
+    // Typography
+    color: #224abe;
+    text-decoration: underline;
+  }
+}

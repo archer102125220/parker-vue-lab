@@ -17,7 +17,20 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
+      '@': fileURLToPath(new URL('./', import.meta.url)),
+      '~': fileURLToPath(new URL('./', import.meta.url)),
+      '@src': fileURLToPath(new URL('./src', import.meta.url)),
+      '~src': fileURLToPath(new URL('./src', import.meta.url)),
+      '@public': fileURLToPath(new URL('./public', import.meta.url)),
+      '~public': fileURLToPath(new URL('./public', import.meta.url)),
     },
   },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        api: 'modern-compiler',
+        additionalData: '@use "@/src/assets/styles/variable.scss" as *; @use "@/src/assets/styles/mixin.scss" as *;'
+      }
+    }
+  }
 })
