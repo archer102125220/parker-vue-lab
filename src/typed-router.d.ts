@@ -44,6 +44,13 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    '/sheet-editor/univer': RouteRecordInfo<
+      '/sheet-editor/univer',
+      '/sheet-editor/univer',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
   }
 
   /**
@@ -72,6 +79,12 @@ declare module 'vue-router/auto-routes' {
     'src/pages/sheet-editor/index.vue': {
       routes:
         | '/sheet-editor/'
+      views:
+        | never
+    }
+    'src/pages/sheet-editor/univer.vue': {
+      routes:
+        | '/sheet-editor/univer'
       views:
         | never
     }
