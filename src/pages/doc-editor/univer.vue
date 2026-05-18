@@ -1,10 +1,10 @@
 <script lang="ts" setup>
-import UniverDocxs from '@src/components/Univer/Docxs.vue';
+import UniverDoc from '@src/components/Univer/Doc.vue';
 </script>
 
 <template>
   <div class="univer_page">
-    <UniverDocxs />
+    <UniverDoc />
   </div>
 </template>
 

@@ -30,16 +30,16 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
-    '/docxs-editor/': RouteRecordInfo<
-      '/docxs-editor/',
-      '/docxs-editor',
+    '/doc-editor/': RouteRecordInfo<
+      '/doc-editor/',
+      '/doc-editor',
       Record<never, never>,
       Record<never, never>,
       | never
     >,
-    '/docxs-editor/univer': RouteRecordInfo<
-      '/docxs-editor/univer',
-      '/docxs-editor/univer',
+    '/doc-editor/univer': RouteRecordInfo<
+      '/doc-editor/univer',
+      '/doc-editor/univer',
       Record<never, never>,
       Record<never, never>,
       | never
@@ -77,15 +77,15 @@ declare module 'vue-router/auto-routes' {
       views:
         | never
     }
-    'src/pages/docxs-editor/index.vue': {
+    'src/pages/doc-editor/index.vue': {
       routes:
-        | '/docxs-editor/'
+        | '/doc-editor/'
       views:
         | never
     }
-    'src/pages/docxs-editor/univer.vue': {
+    'src/pages/doc-editor/univer.vue': {
       routes:
-        | '/docxs-editor/univer'
+        | '/doc-editor/univer'
       views:
         | never
     }
