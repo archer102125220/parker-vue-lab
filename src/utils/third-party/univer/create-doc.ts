@@ -29,7 +29,7 @@ export async function importDocx() {
   ]);
 }
 
-export async function createDocxsInstance(container: HTMLElement): Promise<univerInstance> {
+export async function createDocInstance(container: HTMLElement): Promise<univerInstance> {
   const [
     { createUniver, LocaleType, mergeLocales },
     { UniverDocsCorePreset },
@@ -82,4 +82,4 @@ export async function createDocxsInstance(container: HTMLElement): Promise<unive
   return univerInstance;
 }
 
-export default createDocxsInstance;
+export default createDocInstance;

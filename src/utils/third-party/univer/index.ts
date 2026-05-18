@@ -11,4 +11,4 @@ export type univerInstanceRef = {
 }
 
 export * from './create-sheet';
-export * from './create-docx';
+export * from './create-doc';

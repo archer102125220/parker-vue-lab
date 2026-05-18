@@ -3,7 +3,7 @@ import { ref, shallowReactive, onMounted, onBeforeUnmount } from 'vue';
 
 import SkeletonLoader from '@src/components/SkeletonLoader.vue';
 
-import { createDocxsInstance, type univerInstanceRef } from '@src/utils/third-party/univer';
+import { createDocInstance, type univerInstanceRef } from '@src/utils/third-party/univer';
 
 defineOptions({
   inheritAttrs: false,
@@ -17,11 +17,11 @@ const univerInstance = shallowReactive<univerInstanceRef>({
   univerAPI: null
 });
 
-async function handleUniverDocxs() {
+async function handleUniverDoc() {
   try {
     if (container.value instanceof HTMLElement === false) return;
 
-    const { univer, univerAPI } = await createDocxsInstance(container.value);
+    const { univer, univerAPI } = await createDocInstance(container.value);
 
     univerAPI.createUniverDoc({});
 
@@ -35,7 +35,7 @@ async function handleUniverDocxs() {
 }
 
 onMounted(() => {
-  handleUniverDocxs();
+  handleUniverDoc();
 });
 
 onBeforeUnmount(() => {
