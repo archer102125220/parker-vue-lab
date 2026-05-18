@@ -1571,6 +1571,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/postcss-pxtorem@npm:^6.1.0":
+  version: 6.1.0
+  resolution: "@types/postcss-pxtorem@npm:6.1.0"
+  dependencies:
+    postcss: "npm:^8.2.6"
+  checksum: 10c0/2d13ef265e95ccecf48c590f22e443ba929f58ce1cd9bd5bfe355c325eade819d12ca006f0de34a8e3ae39e4441d78574f5b00c9662ed1e6601c8a924e80573a
+  languageName: node
+  linkType: hard
+
 "@types/react-dom@npm:^19":
   version: 19.2.3
   resolution: "@types/react-dom@npm:19.2.3"
@@ -3712,6 +3721,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"autoprefixer@npm:^10.5.0":
+  version: 10.5.0
+  resolution: "autoprefixer@npm:10.5.0"
+  dependencies:
+    browserslist: "npm:^4.28.2"
+    caniuse-lite: "npm:^1.0.30001787"
+    fraction.js: "npm:^5.3.4"
+    picocolors: "npm:^1.1.1"
+    postcss-value-parser: "npm:^4.2.0"
+  peerDependencies:
+    postcss: ^8.1.0
+  bin:
+    autoprefixer: bin/autoprefixer
+  checksum: 10c0/3e1a7bb65ef3a44925d19fd18cbb96a9a73ef1a8bfaa134bc131743787a8983045d6e756cff0204d37c34a52cfc86d79182f444c221b631401f79d7873ae97a8
+  languageName: node
+  linkType: hard
+
 "baseline-browser-mapping@npm:^2.10.12":
   version: 2.10.29
   resolution: "baseline-browser-mapping@npm:2.10.29"
@@ -3728,7 +3754,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"browserslist@npm:^4.24.0":
+"browserslist@npm:^4.24.0, browserslist@npm:^4.28.2":
   version: 4.28.2
   resolution: "browserslist@npm:4.28.2"
   dependencies:
@@ -3756,6 +3782,13 @@ __metadata:
   version: 1.0.30001792
   resolution: "caniuse-lite@npm:1.0.30001792"
   checksum: 10c0/03bab64b123453e18e7c6747c32bb820be6d82ac78536c5c3704988aaeec411715a2045069fb569f872d73acf1ea64bf83508c9fdfa87b6d012236cde738e1be
+  languageName: node
+  linkType: hard
+
+"caniuse-lite@npm:^1.0.30001787":
+  version: 1.0.30001793
+  resolution: "caniuse-lite@npm:1.0.30001793"
+  checksum: 10c0/bee8f8b55d1ccdb2076b7355c06fd01916952eadd76b828e4d5fb9ac62d17ec7db0e2b7c326b923478b93526ad1ff74f189cf40c06de0e4a5edbc677009b97fe
   languageName: node
   linkType: hard
 
@@ -3883,7 +3916,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"debug@npm:^4.1.0, debug@npm:^4.3.1, debug@npm:^4.4.1":
+"debug@npm:^4.1.0, debug@npm:^4.3.1, debug@npm:^4.4.1, debug@npm:^4.4.3":
   version: 4.4.3
   resolution: "debug@npm:4.4.3"
   dependencies:
@@ -4055,6 +4088,13 @@ __metadata:
   version: 7.5.0
   resolution: "flag-icons@npm:7.5.0"
   checksum: 10c0/c81e20c1751833882c95633349ba7e76e74d7d86c317e4ac2bac86589325430a3181913453fa3824edabaa1a84469f7ae4fd50c388027079048a5c3be438874a
+  languageName: node
+  linkType: hard
+
+"fraction.js@npm:^5.3.4":
+  version: 5.3.4
+  resolution: "fraction.js@npm:5.3.4"
+  checksum: 10c0/f90079fe9bfc665e0a07079938e8ff71115bce9462f17b32fc283f163b0540ec34dc33df8ed41bb56f028316b04361b9a9995b9ee9258617f8338e0b05c5f95a
   languageName: node
   linkType: hard
 
@@ -4711,6 +4751,7 @@ __metadata:
     "@tsconfig/node24": "npm:^24.0.4"
     "@types/lodash": "npm:^4"
     "@types/node": "npm:^24.12.2"
+    "@types/postcss-pxtorem": "npm:^6.1.0"
     "@types/react": "npm:^19"
     "@types/react-dom": "npm:^19"
     "@univerjs-pro/collaboration-client": "npm:^0.22.1"
@@ -4740,9 +4781,11 @@ __metadata:
     "@vitejs/plugin-vue": "npm:^6.0.6"
     "@vue/compiler-sfc": "npm:^3.5.34"
     "@vue/tsconfig": "npm:^0.9.1"
+    autoprefixer: "npm:^10.5.0"
     flag-icons: "npm:^7.5.0"
     lodash: "npm:^4.18.1"
     npm-run-all2: "npm:^8.0.4"
+    postcss-pxtorem: "npm:^6.1.0"
     react: "npm:^19.2.6"
     react-dom: "npm:^19.2.6"
     rxjs: "npm:^7.8.2"
@@ -4750,6 +4793,8 @@ __metadata:
     typescript: "npm:~6.0.0"
     unplugin-vue-router: "npm:^0.19.2"
     vite: "npm:^8.0.8"
+    vite-plugin-glsl: "npm:^1.6.0"
+    vite-plugin-mkcert: "npm:^2.0.0"
     vite-plugin-vue-devtools: "npm:^8.1.1"
     vue: "npm:^3.5.32"
     vue-i18n: "npm:^11.4.2"
@@ -4831,7 +4876,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss@npm:^8.5.14":
+"postcss-pxtorem@npm:^6.1.0":
+  version: 6.1.0
+  resolution: "postcss-pxtorem@npm:6.1.0"
+  peerDependencies:
+    postcss: ^8.0.0
+  checksum: 10c0/dbf72b4683962ccff49033a25ad0c2e514f7a4a3a203d648314246d6a81b793912b3e00ff70f54da22774d032f4c4c109d6ffbb1f13c834c6cf483a5226bd5db
+  languageName: node
+  linkType: hard
+
+"postcss-value-parser@npm:^4.2.0":
+  version: 4.2.0
+  resolution: "postcss-value-parser@npm:4.2.0"
+  checksum: 10c0/f4142a4f56565f77c1831168e04e3effd9ffcc5aebaf0f538eee4b2d465adfd4b85a44257bb48418202a63806a7da7fe9f56c330aebb3cac898e46b4cbf49161
+  languageName: node
+  linkType: hard
+
+"postcss@npm:^8.2.6, postcss@npm:^8.5.14":
   version: 8.5.14
   resolution: "postcss@npm:8.5.14"
   dependencies:
@@ -5226,6 +5287,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"supports-color@npm:^10.2.2":
+  version: 10.2.2
+  resolution: "supports-color@npm:10.2.2"
+  checksum: 10c0/fb28dd7e0cdf80afb3f2a41df5e068d60c8b4f97f7140de2eaed5b42e075d82a0e980b20a2c0efd2b6d73cfacb55555285d8cc719fa0472220715aefeaa1da7c
+  languageName: node
+  linkType: hard
+
 "tailwind-merge@npm:2.6.0":
   version: 2.6.0
   resolution: "tailwind-merge@npm:2.6.0"
@@ -5325,6 +5393,13 @@ __metadata:
   version: 6.25.0
   resolution: "undici@npm:6.25.0"
   checksum: 10c0/2597cc6689bdb02c210c557b1f85febbfda65becae6e6fc1061508e2f33734d25207f81cd8af56ada9956329eb3a7bd7431e87dcfeceba20ee87059b57dcf985
+  languageName: node
+  linkType: hard
+
+"undici@npm:^8.0.2":
+  version: 8.3.0
+  resolution: "undici@npm:8.3.0"
+  checksum: 10c0/6a67e46aefc7b882702e76878c4d317040f1ae04aefbab3a3639bcb07b255a050eaf3202ea56b80c42ba5c7140d990cf0096412ca50d6c825a2e1c57c59d1e28
   languageName: node
   linkType: hard
 
@@ -5472,6 +5547,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"vite-plugin-glsl@npm:^1.6.0":
+  version: 1.6.0
+  resolution: "vite-plugin-glsl@npm:1.6.0"
+  peerDependencies:
+    "@rollup/pluginutils": ^5.x
+    esbuild: ">= 0.25"
+    vite: ">= 3.x"
+  peerDependenciesMeta:
+    "@rollup/pluginutils":
+      optional: true
+    esbuild:
+      optional: true
+  checksum: 10c0/0349b90c8b7f7f429ff84e97059c240c562a95bd4cc9a55ba60f2e6b18df13ad6ef1f2470be0ea67ed12ea8674d61369502f6ddc07f2557b60b75f05381ee7e1
+  languageName: node
+  linkType: hard
+
 "vite-plugin-inspect@npm:^11.3.3":
   version: 11.3.3
   resolution: "vite-plugin-inspect@npm:11.3.3"
@@ -5491,6 +5582,19 @@ __metadata:
     "@nuxt/kit":
       optional: true
   checksum: 10c0/eb79da1fa050806f971cf851fda47c5dae46c6002a1d3e47529cc910cbf15a718639413504c326a9ede845ae640f00a373e8029e04f131f8342aec62230d7cc2
+  languageName: node
+  linkType: hard
+
+"vite-plugin-mkcert@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "vite-plugin-mkcert@npm:2.0.0"
+  dependencies:
+    debug: "npm:^4.4.3"
+    supports-color: "npm:^10.2.2"
+    undici: "npm:^8.0.2"
+  peerDependencies:
+    vite: ">=3"
+  checksum: 10c0/1b2aa8ece2661dd6b80246dd8c11efa3534ceb63adde36823994d154dd15eb897debd71d2b460290c68953180f74f5ad1e1a3bb7b9e8570e10be47aec0c1996a
   languageName: node
   linkType: hard
 
