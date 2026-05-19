@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { useSwitchLocalePath } from 'vue-i18n-routing';
@@ -13,6 +13,12 @@ const switchLocalePath = useSwitchLocalePath();
 const isOpen = ref(false);
 const buttonRef = ref<HTMLElement | null>(null);
 const menuRef = ref<HTMLElement | null>(null);
+
+watch(
+  () => locale.value,
+  (newLocale) => console.log({ newLocale }),
+  { immediate: true }
+)
 
 const localeList = computed(() => [
   { code: 'en', label: 'en' },
@@ -32,6 +38,7 @@ function handleLanguageSwitch(newLang: unknown) {
   }
   const path = switchLocalePath(newLangCode);
   router.replace(path);
+  locale.value = newLangCode
   closeMenu();
 }
 
