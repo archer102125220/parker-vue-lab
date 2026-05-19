@@ -1,17 +1,19 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router';
-// 首頁
+import HomeLayout from '@src/layouts/home.vue';
 </script>
 
 <template>
-  <div class="index_page">
-    <h1>Welcome to Parker Vue Lab</h1>
-    <p>This is an auto-generated route matching Nuxt's pages/ structure.</p>
-    <div class="index_page-nav">
-      <RouterLink to="/sheet-editor">sheet-editor</RouterLink>
-      <RouterLink to="/docxs-editor">docxs-editor</RouterLink>
+  <HomeLayout>
+    <div class="index_page">
+      <h1>Welcome to Parker Vue Lab</h1>
+      <p>This is an auto-generated route matching Nuxt's pages/ structure.</p>
+      <div class="index_page-nav">
+        <RouterLink to="/sheet-editor">sheet-editor</RouterLink>
+        <RouterLink to="/doc-editor">docxs-editor</RouterLink>
+      </div>
     </div>
-  </div>
+  </HomeLayout>
 </template>
 
 <style lang="scss" scoped>

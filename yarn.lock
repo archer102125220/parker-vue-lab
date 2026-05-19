@@ -487,6 +487,54 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@intlify/shared@npm:^9.4.1":
+  version: 9.14.5
+  resolution: "@intlify/shared@npm:9.14.5"
+  checksum: 10c0/a5078ff52e4e01582c10f46f09e8bfac297b341184dbd988b514f2f83a3da73172146657913342b5d0476fc64aeaff8d08d3e75b33f349e42a07b8cdd871974e
+  languageName: node
+  linkType: hard
+
+"@intlify/vue-i18n-bridge@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "@intlify/vue-i18n-bridge@npm:1.1.0"
+  peerDependencies:
+    "@vue/composition-api": ^1.0.0-rc.1
+    vue-i18n: ^8.26.1 || >=9.2.0
+    vue-i18n-bridge: ">=9.2.0"
+  peerDependenciesMeta:
+    "@vue/composition-api":
+      optional: true
+    vue-i18n:
+      optional: true
+    vue-i18n-bridge:
+      optional: true
+  bin:
+    vue-i18n-fix: bin/fix.js
+    vue-i18n-switch: bin/switch.js
+  checksum: 10c0/953c7a7534a86b617f9ff12c175a85be131ba41c61ee2bd2bebb96cfd6707b9f515d147a3dc119d17d179a437d2802ce5029e97bb5786dd0855de7e1a2c6816b
+  languageName: node
+  linkType: hard
+
+"@intlify/vue-router-bridge@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "@intlify/vue-router-bridge@npm:1.1.0"
+  dependencies:
+    vue-demi: "npm:>=0.13.5 < 1.0.0"
+  peerDependencies:
+    "@vue/composition-api": ^1.0.0-rc.1
+    vue-router: ^4.0.0-0 || ^3.0.0
+  peerDependenciesMeta:
+    "@vue/composition-api":
+      optional: true
+    vue-router:
+      optional: true
+  bin:
+    vue-router-fix: bin/fix.js
+    vue-router-switch: bin/switch.js
+  checksum: 10c0/855c09d5ea6341fefbf44c4ace077a1dab81f6bb5f189bd7310cec7d92bf0e3877f754bfe4344e69b2701c833e2a9a66dfdb32ea4c5155f21f6cee9d00abd0b7
+  languageName: node
+  linkType: hard
+
 "@isaacs/fs-minipass@npm:^4.0.0":
   version: 4.0.1
   resolution: "@isaacs/fs-minipass@npm:4.0.1"
@@ -544,6 +592,13 @@ __metadata:
   version: 4.4.2
   resolution: "@js-sdsl/ordered-map@npm:4.4.2"
   checksum: 10c0/cc7e15dc4acf6d9ef663757279600bab70533d847dcc1ab01332e9e680bd30b77cdf9ad885cc774276f51d98b05a013571c940e5b360985af5eb798dc1a2ee2b
+  languageName: node
+  linkType: hard
+
+"@mdi/font@npm:^7.4.47":
+  version: 7.4.47
+  resolution: "@mdi/font@npm:7.4.47"
+  checksum: 10c0/4cd44a9e9c40218f00d2500f7408f913ac276348054c9c1b0108330060fecb3cb58c8c08eda39a7535298aaf3f1d28c0c115751cfe9fc2c9cdb9d50450107db9
   languageName: node
   linkType: hard
 
@@ -3627,6 +3682,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@vuetify/loader-shared@npm:^2.1.2":
+  version: 2.1.2
+  resolution: "@vuetify/loader-shared@npm:2.1.2"
+  dependencies:
+    upath: "npm:^2.0.1"
+  peerDependencies:
+    vue: ^3.0.0
+    vuetify: ">=3"
+  checksum: 10c0/20f7ef91aecde1ea5a7e2f5417714972de9d570ff1b4aec61281cb3a5aecd65965be17018e629072aec853402bbea8a05759774cd59fd98777adf995d1dc9a63
+  languageName: node
+  linkType: hard
+
 "@wendellhu/redi@npm:1.1.1":
   version: 1.1.1
   resolution: "@wendellhu/redi@npm:1.1.1"
@@ -3936,7 +4003,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"debug@npm:^4.1.0, debug@npm:^4.3.1, debug@npm:^4.4.1, debug@npm:^4.4.3":
+"debug@npm:^4.1.0, debug@npm:^4.3.1, debug@npm:^4.3.3, debug@npm:^4.4.1, debug@npm:^4.4.3":
   version: 4.4.3
   resolution: "debug@npm:4.4.3"
   dependencies:
@@ -4768,6 +4835,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "parker-vue-lab@workspace:."
   dependencies:
+    "@mdi/font": "npm:^7.4.47"
     "@tsconfig/node24": "npm:^24.0.4"
     "@types/lodash": "npm:^4"
     "@types/node": "npm:^24.12.2"
@@ -4817,10 +4885,13 @@ __metadata:
     vite-plugin-glsl: "npm:^1.6.0"
     vite-plugin-mkcert: "npm:^2.0.0"
     vite-plugin-vue-devtools: "npm:^8.1.1"
+    vite-plugin-vuetify: "npm:^2.1.3"
     vue: "npm:^3.5.32"
     vue-i18n: "npm:^11.4.2"
+    vue-i18n-routing: "npm:^1.2.0"
     vue-router: "npm:^4.6.4"
     vue-tsc: "npm:^3.2.6"
+    vuetify: "npm:^4.0.7"
   languageName: unknown
   linkType: soft
 
@@ -5389,7 +5460,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ufo@npm:^1.6.3":
+"ufo@npm:^1.2.0, ufo@npm:^1.6.3":
   version: 1.6.4
   resolution: "ufo@npm:1.6.4"
   checksum: 10c0/3a2b29e7e3d772fbf6893d7d23bf442981457adb2fe122828abdbda89bedcb81aafd0dcc080e41b45f9a877db00cb42cbfee9639753a19d9b9bd39b5627039cf
@@ -5490,6 +5561,13 @@ __metadata:
     picomatch: "npm:^4.0.3"
     webpack-virtual-modules: "npm:^0.6.2"
   checksum: 10c0/273c1eab0eca4470c7317428689295c31dbe8ab0b306504de9f03cd20c156debb4131bef24b27ac615862958c5dd950a3951d26c0723ea774652ab3624149cff
+  languageName: node
+  linkType: hard
+
+"upath@npm:^2.0.1":
+  version: 2.0.1
+  resolution: "upath@npm:2.0.1"
+  checksum: 10c0/79e8e1296b00e24a093b077cfd7a238712d09290c850ce59a7a01458ec78c8d26dcc2ab50b1b9d6a84dabf6511fb4969afeb8a5c9a001aa7272b9cc74c34670f
   languageName: node
   linkType: hard
 
@@ -5654,6 +5732,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"vite-plugin-vuetify@npm:^2.1.3":
+  version: 2.1.3
+  resolution: "vite-plugin-vuetify@npm:2.1.3"
+  dependencies:
+    "@vuetify/loader-shared": "npm:^2.1.2"
+    debug: "npm:^4.3.3"
+    upath: "npm:^2.0.1"
+  peerDependencies:
+    vite: ">=5"
+    vue: ^3.0.0
+    vuetify: ">=3"
+  checksum: 10c0/fcb37919a1cdb553c98cf3f43c68760337ea02dca02664c04cc9db0eda8b568c3efba057bd043b8e132ecff95c914baa5bb76fe7486b4eee9772282d62499af6
+  languageName: node
+  linkType: hard
+
 "vite@npm:^8.0.8":
   version: 8.0.13
   resolution: "vite@npm:8.0.13"
@@ -5718,6 +5811,52 @@ __metadata:
   languageName: node
   linkType: hard
 
+"vue-demi@npm:>=0.13.5 < 1.0.0":
+  version: 0.14.10
+  resolution: "vue-demi@npm:0.14.10"
+  peerDependencies:
+    "@vue/composition-api": ^1.0.0-rc.1
+    vue: ^3.0.0-0 || ^2.6.0
+  peerDependenciesMeta:
+    "@vue/composition-api":
+      optional: true
+  bin:
+    vue-demi-fix: bin/vue-demi-fix.js
+    vue-demi-switch: bin/vue-demi-switch.js
+  checksum: 10c0/a9ed8712fa36d01bc13c39757f95f30cebf42d557b99e94bff86d8660c81f2911b41220f7affc023d1ffcc19e13999e4a83019991e264787cca2c616e83aea48
+  languageName: node
+  linkType: hard
+
+"vue-i18n-routing@npm:^1.2.0":
+  version: 1.2.0
+  resolution: "vue-i18n-routing@npm:1.2.0"
+  dependencies:
+    "@intlify/shared": "npm:^9.4.1"
+    "@intlify/vue-i18n-bridge": "npm:^1.1.0"
+    "@intlify/vue-router-bridge": "npm:^1.1.0"
+    ufo: "npm:^1.2.0"
+    vue-demi: "npm:>=0.13.5 < 1.0.0"
+  peerDependencies:
+    "@vue/composition-api": ^1.0.0-rc.1
+    vue: ^2.6.14 || ^2.7.0 || ^3.2.0
+    vue-i18n: ^8.26.1 || >=9.2.0
+    vue-i18n-bridge: ">=9.2.0"
+    vue-router: ^3.5.3 || ^3.6.0 || ^4.0.0
+  peerDependenciesMeta:
+    "@vue/composition-api":
+      optional: true
+    vue:
+      optional: true
+    vue-i18n:
+      optional: true
+    vue-i18n-bridge:
+      optional: true
+    vue-router:
+      optional: true
+  checksum: 10c0/ae87bb1ddae968e8b1b1b37bb1f160dcdf0b5c79e6098e0330952d73e73b65370645145926cf156d2fa9e459801a750d9b8269827647a1803b725c142b906b9e
+  languageName: node
+  linkType: hard
+
 "vue-i18n@npm:^11.4.2":
   version: 11.4.2
   resolution: "vue-i18n@npm:11.4.2"
@@ -5772,6 +5911,25 @@ __metadata:
     typescript:
       optional: true
   checksum: 10c0/f7384bff61e23405fb8d14cf766b3cd78c821f50b673a5bb1b7eb7b4e67dcab1fc90ffccaa688979f9900e1ca30de4112d3b1468f82900f076c5bd9e80bbe028
+  languageName: node
+  linkType: hard
+
+"vuetify@npm:^4.0.7":
+  version: 4.0.7
+  resolution: "vuetify@npm:4.0.7"
+  peerDependencies:
+    typescript: ">=4.7"
+    vite-plugin-vuetify: ">=2.1.0"
+    vue: ^3.5.0
+    webpack-plugin-vuetify: ">=3.1.0"
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+    vite-plugin-vuetify:
+      optional: true
+    webpack-plugin-vuetify:
+      optional: true
+  checksum: 10c0/2751a5664cb2e4372f49bda7c09a3eefe53c7d827d9e0d8edcd9bd12d54e2cbe29fadffa5ed26e7fdbc97ad81eb0c93310e4b96baa38588389b1a93d53be996f
   languageName: node
   linkType: hard
 

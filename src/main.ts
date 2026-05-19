@@ -1,13 +1,17 @@
-import '@src/assets/styles/global.scss'
+import '@src/assets/styles/global.scss';
 
-import { createApp } from 'vue'
-import App from '@src/App.vue'
-import router from '@src/router'
-import i18n from '@src/i18n'
+import { createApp } from 'vue';
 
-const app = createApp(App)
+import App from '@src/App.vue';
+import router from '@src/router';
+import i18n from '@src/i18n';
 
-app.use(router)
-app.use(i18n)
+import vuetify from '@src/plugins/vuetify';
+
+const app = createApp(App);
+
+app.use(i18n);
+app.use(router);
+app.use(vuetify);
 
 app.mount('#app')

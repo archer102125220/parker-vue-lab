@@ -1,8 +1,7 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 </script>
 
 <template>
-  <!-- This is similar to <NuxtPage /> in Nuxt -->
   <router-view />
 </template>
 
