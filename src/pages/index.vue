@@ -10,7 +10,7 @@ import HomeLayout from '@src/layouts/home.vue';
       <p>This is an auto-generated route matching Nuxt's pages/ structure.</p>
       <div class="index_page-nav">
         <RouterLink to="/sheet-editor">sheet-editor</RouterLink>
-        <RouterLink to="/doc-editor">docxs-editor</RouterLink>
+        <RouterLink to="/doc-editor">doc-editor</RouterLink>
       </div>
     </div>
   </HomeLayout>
