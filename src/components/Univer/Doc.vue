@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, reactive, onMounted, onBeforeUnmount } from 'vue';
+import { ref, reactive, onMounted, onBeforeUnmount, watch } from 'vue';
 
 import SkeletonLoader from '@src/components/SkeletonLoader.vue';
 
@@ -121,14 +121,15 @@ const loading = ref(true);
 
 const univerInstance = reactive<univerInstanceRef>({
   univer: null,
-  univerAPI: null
+  univerAPI: null,
+  LocaleType: null
 });
 
 async function handleUniverDoc() {
   try {
     if (container.value instanceof HTMLElement === false) return;
 
-    const { univer, univerAPI } = await createDocInstance(
+    const { univer, univerAPI, LocaleType } = await createDocInstance(
       container.value,
       props.locale
     );
@@ -174,6 +175,7 @@ async function handleUniverDoc() {
 
     univerInstance.univer = univer;
     univerInstance.univerAPI = univerAPI;
+    univerInstance.LocaleType = LocaleType;
   } catch (error) {
     console.error(error);
   }
@@ -194,6 +196,17 @@ function handleKeyDown() {
   emits('update:doc', saveData);
   emits('change', saveData);
 }
+
+watch(
+  () => props.locale,
+  (newLocale) => {
+    if (typeof univerInstance.univer?.setLocale === 'function') {
+      const locale = newLocale === 'zhTW' ? univerInstance.LocaleType?.ZH_TW : univerInstance.LocaleType?.EN_US;
+      if (typeof locale !== 'string') return;
+      univerInstance.univer?.setLocale(locale);
+    }
+  }
+);
 
 onMounted(() => {
   handleUniverDoc();

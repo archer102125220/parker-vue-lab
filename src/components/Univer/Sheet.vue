@@ -7,7 +7,7 @@ import {
 </script>
 
 <script lang="ts" setup>
-import { ref, shallowReactive, onMounted, onBeforeUnmount } from 'vue';
+import { ref, watch, reactive, onMounted, onBeforeUnmount } from 'vue';
 
 import SkeletonLoader from '@src/components/SkeletonLoader.vue';
 
@@ -134,16 +134,17 @@ const currentWorkbook = ref({});
 const container = ref<HTMLDivElement | null>(null);
 const loading = ref(true);
 
-const univerInstance = shallowReactive<univerInstanceRef>({
+const univerInstance = reactive<univerInstanceRef>({
   univer: null,
-  univerAPI: null
+  univerAPI: null,
+  LocaleType: null
 });
 
 async function handleUniverSheet() {
   try {
     if (container.value instanceof HTMLElement === false) return;
 
-    const { univer, univerAPI } = await createSheetInstance(container.value);
+    const { univer, univerAPI, LocaleType } = await createSheetInstance(container.value);
 
     disposableList.push(
       univerAPI.addEvent(univerAPI.Event.LifeCycleChanged, (event) => {
@@ -185,12 +186,24 @@ async function handleUniverSheet() {
 
     univerInstance.univer = univer;
     univerInstance.univerAPI = univerAPI;
+    univerInstance.LocaleType = LocaleType;
   } catch (error) {
     console.error(error);
   }
 
   loading.value = false;
 }
+
+watch(
+  () => props.locale,
+  (newLocale) => {
+    if (typeof univerInstance.univer?.setLocale === 'function') {
+      const locale = newLocale === 'zhTW' ? univerInstance.LocaleType?.ZH_TW : univerInstance.LocaleType?.EN_US;
+      if (typeof locale !== 'string') return;
+      univerInstance.univer?.setLocale(locale);
+    }
+  }
+);
 
 onMounted(() => {
   handleUniverSheet();

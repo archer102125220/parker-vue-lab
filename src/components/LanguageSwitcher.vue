@@ -36,9 +36,9 @@ function handleLanguageSwitch(newLang: unknown) {
   } else if (typeof newLang === 'string') {
     newLangCode = newLang;
   }
+  locale.value = newLangCode
   const path = switchLocalePath(newLangCode);
   router.replace(path);
-  locale.value = newLangCode
   closeMenu();
 }
 

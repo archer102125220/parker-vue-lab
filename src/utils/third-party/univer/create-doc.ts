@@ -5,18 +5,24 @@ export async function importDocx() {
     import('@univerjs/presets'),
     import('@univerjs/preset-docs-core'),
     import('@univerjs/preset-docs-core/locales/zh-TW'),
+    import('@univerjs/preset-docs-core/locales/en-US'),
     import('@univerjs/preset-docs-hyper-link'),
     import('@univerjs/preset-docs-hyper-link/locales/zh-TW'),
+    import('@univerjs/preset-docs-hyper-link/locales/en-US'),
     import('@univerjs/preset-docs-drawing'),
     import('@univerjs/preset-docs-drawing/locales/zh-TW'),
+    import('@univerjs/preset-docs-drawing/locales/en-US'),
     import('@univerjs/docs-quick-insert-ui'),
     import('@univerjs/docs-quick-insert-ui/locale/zh-TW'),
+    import('@univerjs/docs-quick-insert-ui/locale/en-US'),
     import('@univerjs/preset-docs-thread-comment'),
     import('@univerjs/preset-docs-thread-comment/locales/zh-TW'),
+    import('@univerjs/preset-docs-thread-comment/locales/en-US'),
     import('@univerjs/watermark'),
     import('@univerjs/uniscript'),
     import('@univerjs/preset-docs-advanced'),
     import('@univerjs/preset-docs-advanced/locales/zh-TW'),
+    import('@univerjs/preset-docs-advanced/locales/en-US'),
 
     import('@univerjs/watermark/facade'),
 
@@ -34,18 +40,24 @@ export async function createDocInstance(container: HTMLElement, locale: string):
     { createUniver, LocaleType, mergeLocales },
     { UniverDocsCorePreset },
     { default: UniverPresetDocsCoreZhTW },
+    { default: UniverPresetDocsCoreEnUS },
     { UniverDocsHyperLinkPreset },
     { default: UniverPresetDocsHyperLinkZhTW },
+    { default: UniverPresetDocsHyperLinkEnUS },
     { UniverDocsDrawingPreset },
     { default: UniverPresetDocsDrawingZhTW },
+    { default: UniverPresetDocsDrawingEnUS },
     { UniverDocsQuickInsertUIPlugin },
     { default: UniverDocsQuickInsertUIZhTW },
+    { default: UniverDocsQuickInsertUIEnUS },
     { UniverDocsThreadCommentPreset },
     { default: UniverPresetDocsThreadCommentZhTW },
+    { default: UniverPresetDocsThreadCommentEnUS },
     { UniverWatermarkPlugin: _UniverWatermarkPlugin },
     { UniverUniscriptPlugin: _UniverUniscriptPlugin },
     { UniverDocsAdvancedPreset },
     { default: UniverPresetDocsAdvancedZhTW },
+    { default: UniverPresetDocsAdvancedEnUS },
   ] = await importDocx();
 
   const univerInstance = createUniver({
@@ -58,6 +70,14 @@ export async function createDocInstance(container: HTMLElement, locale: string):
         UniverDocsQuickInsertUIZhTW,
         UniverPresetDocsThreadCommentZhTW,
         UniverPresetDocsAdvancedZhTW,
+      ),
+      [LocaleType.EN_US]: mergeLocales(
+        UniverPresetDocsCoreEnUS,
+        UniverPresetDocsHyperLinkEnUS,
+        UniverPresetDocsDrawingEnUS,
+        UniverDocsQuickInsertUIEnUS,
+        UniverPresetDocsThreadCommentEnUS,
+        UniverPresetDocsAdvancedEnUS,
       ),
     },
     presets: [
@@ -79,7 +99,9 @@ export async function createDocInstance(container: HTMLElement, locale: string):
     ],
   });
 
-  return univerInstance;
+  window.univerInstance = univerInstance;
+
+  return { ...univerInstance, LocaleType };
 }
 
 export default createDocInstance;
