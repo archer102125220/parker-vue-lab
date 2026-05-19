@@ -1,4 +1,5 @@
 import type { FUniver, Univer } from '@univerjs/presets'
+export type { IDisposable } from '@univerjs/core';
 
 export type univerInstance = {
     univer: Univer;

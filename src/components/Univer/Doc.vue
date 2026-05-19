@@ -3,13 +3,121 @@ import { ref, shallowReactive, onMounted, onBeforeUnmount } from 'vue';
 
 import SkeletonLoader from '@src/components/SkeletonLoader.vue';
 
-import { createDocInstance, type univerInstanceRef } from '@src/utils/third-party/univer';
+import { createDocInstance, type univerInstanceRef, type IDisposable } from '@src/utils/third-party/univer';
 
 defineOptions({
   inheritAttrs: false,
-})
+});
+
+const disposable: IDisposable[] = [];
+
+const props = defineProps({
+  locale: {
+    type: String,
+    default() {
+      return 'zhTW';
+    }
+  },
+  doc: {
+    type: Object,
+    default: () => ({
+      id: 'YBLWUR',
+      documentStyle: {
+        pageSize: {
+          width: 793.3333333333334,
+          height: 1122.6666666666667
+        },
+        documentFlavor: 1,
+        marginTop: 50,
+        marginBottom: 50,
+        marginRight: 50,
+        marginLeft: 50,
+        renderConfig: {
+          zeroWidthParagraphBreak: 0,
+          vertexAngle: 0,
+          centerAngle: 0,
+          background: {
+            rgb: '#ccc'
+          }
+        },
+        autoHyphenation: 1,
+        doNotHyphenateCaps: 0,
+        consecutiveHyphenLimit: 2,
+        defaultHeaderId: '',
+        defaultFooterId: '',
+        evenPageHeaderId: '',
+        evenPageFooterId: '',
+        firstPageHeaderId: '',
+        firstPageFooterId: '',
+        evenAndOddHeaders: 0,
+        useFirstPageHeaderFooter: 0,
+        marginHeader: 30,
+        marginFooter: 30
+      },
+      locale: 'enUS',
+      title: '',
+      tableSource: {},
+      drawings: {},
+      drawingsOrder: [],
+      headers: {},
+      footers: {},
+      body: {
+        dataStream: '測試預設內容\r\n',
+        textRuns: [],
+        customBlocks: [],
+        tables: [],
+        paragraphs: [
+          {
+            startIndex: 13,
+            paragraphStyle: {
+              spaceAbove: {
+                v: 5
+              },
+              lineSpacing: 1,
+              spaceBelow: {
+                v: 0
+              }
+            }
+          }
+        ],
+        sectionBreaks: [
+          {
+            startIndex: 14
+          }
+        ],
+        customRanges: [],
+        customDecorations: []
+      },
+      settings: {},
+      resources: [
+        {
+          name: 'SHEET_UNIVER_THREAD_COMMENT_PLUGIN',
+          data: '{}'
+        },
+        {
+          name: 'DOC_DRAWING_PLUGIN',
+          data: '{"data":{},"order":[]}'
+        },
+        {
+          name: 'DOC_HYPER_LINK_PLUGIN',
+          data: '{"links":[]}'
+        }
+      ]
+    })
+  }
+});
+const emits = defineEmits([
+  'univerStarting',
+  'univerReady',
+  'univerRendered',
+  'univerSteady',
+  'univerChangeStart',
+  'univerChange',
+  'univerChangeEnd'
+]);
 
 const container = ref<HTMLDivElement | null>(null);
+const currentDoc = ref({});
 const loading = ref(true);
 
 const univerInstance = shallowReactive<univerInstanceRef>({
@@ -21,9 +129,46 @@ async function handleUniverDoc() {
   try {
     if (container.value instanceof HTMLElement === false) return;
 
-    const { univer, univerAPI } = await createDocInstance(container.value);
+    const { univer, univerAPI } = await createDocInstance(
+      container.value,
+      props.locale
+    );
 
-    univerAPI.createUniverDoc({});
+    disposable.push(
+      univerAPI.addEvent(univerAPI.Event.LifeCycleChanged, (event) => {
+        switch (event.stage) {
+          case univerAPI.Enum.LifecycleStages.Starting:
+            emits('univerStarting', event);
+            break;
+          case univerAPI.Enum.LifecycleStages.Ready:
+            emits('univerReady', event);
+            break;
+          case univerAPI.Enum.LifecycleStages.Rendered:
+            emits('univerRendered', event);
+            break;
+          case univerAPI.Enum.LifecycleStages.Steady:
+            emits('univerSteady', event);
+            break;
+        }
+      })
+    );
+    // disposable.push(
+    //   univerAPI.addEvent(univerAPI.Event.SheetEditStarted, (event) => {
+    //     emits('univerChangeStart', event);
+    //   })
+    // );
+    // disposable.push(
+    //   univerAPI.addEvent(univerAPI.Event.SheetEditChanging, (event) => {
+    //     emits('univerChange', event);
+    //   })
+    // );
+    // disposable.push(
+    //   univerAPI.addEvent(univerAPI.Event.SheetEditEnded, (event) => {
+    //     console.log({ event });
+    //     emits('univerChangeEnd', event);
+    //   })
+    // );
+    currentDoc.value = univerAPI.createUniverDoc(props.doc);
 
     univerInstance.univer = univer;
     univerInstance.univerAPI = univerAPI;
@@ -39,6 +184,15 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
+  disposable.forEach((item) => {
+    try {
+      item.dispose?.();
+    } catch (error) {
+      if (import.meta.env.DEV) {
+        console.error(error);
+      }
+    }
+  });
   if (typeof univerInstance.univer?.dispose === 'function') {
     univerInstance.univer?.dispose();
   }

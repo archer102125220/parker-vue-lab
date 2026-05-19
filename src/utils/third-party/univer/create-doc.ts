@@ -29,7 +29,7 @@ export async function importDocx() {
   ]);
 }
 
-export async function createDocInstance(container: HTMLElement): Promise<univerInstance> {
+export async function createDocInstance(container: HTMLElement, locale: string): Promise<univerInstance> {
   const [
     { createUniver, LocaleType, mergeLocales },
     { UniverDocsCorePreset },
@@ -49,7 +49,7 @@ export async function createDocInstance(container: HTMLElement): Promise<univerI
   ] = await importDocx();
 
   const univerInstance = createUniver({
-    locale: LocaleType.ZH_TW,
+    locale: locale.includes('zh') ? LocaleType.ZH_TW : LocaleType.EN_US,
     locales: {
       [LocaleType.ZH_TW]: mergeLocales(
         UniverPresetDocsCoreZhTW,
