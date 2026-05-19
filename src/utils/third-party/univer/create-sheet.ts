@@ -178,6 +178,8 @@ export async function createSheetInstance(container: HTMLElement): Promise<unive
     ],
   });
 
+  // window.univerInstance = univerInstance;
+
   return { ...univerInstance, LocaleType };
 }
 

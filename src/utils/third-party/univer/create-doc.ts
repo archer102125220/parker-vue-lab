@@ -99,7 +99,7 @@ export async function createDocInstance(container: HTMLElement, locale: string):
     ],
   });
 
-  window.univerInstance = univerInstance;
+  // window.univerInstance = univerInstance;
 
   return { ...univerInstance, LocaleType };
 }
