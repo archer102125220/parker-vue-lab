@@ -37,6 +37,13 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    '/doc-editor/syncfusion': RouteRecordInfo<
+      '/doc-editor/syncfusion',
+      '/doc-editor/syncfusion',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
     '/doc-editor/univer': RouteRecordInfo<
       '/doc-editor/univer',
       '/doc-editor/univer',
@@ -47,6 +54,13 @@ declare module 'vue-router/auto-routes' {
     '/sheet-editor/': RouteRecordInfo<
       '/sheet-editor/',
       '/sheet-editor',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/sheet-editor/syncfusion': RouteRecordInfo<
+      '/sheet-editor/syncfusion',
+      '/sheet-editor/syncfusion',
       Record<never, never>,
       Record<never, never>,
       | never
@@ -83,6 +97,12 @@ declare module 'vue-router/auto-routes' {
       views:
         | never
     }
+    'src/pages/doc-editor/syncfusion.vue': {
+      routes:
+        | '/doc-editor/syncfusion'
+      views:
+        | never
+    }
     'src/pages/doc-editor/univer.vue': {
       routes:
         | '/doc-editor/univer'
@@ -92,6 +112,12 @@ declare module 'vue-router/auto-routes' {
     'src/pages/sheet-editor/index.vue': {
       routes:
         | '/sheet-editor/'
+      views:
+        | never
+    }
+    'src/pages/sheet-editor/syncfusion.vue': {
+      routes:
+        | '/sheet-editor/syncfusion'
       views:
         | never
     }
