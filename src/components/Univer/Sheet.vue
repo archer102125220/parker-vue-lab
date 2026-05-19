@@ -24,7 +24,7 @@ const props = defineProps({
       return 'zhTW';
     }
   },
-  workbook: {
+  value: {
     type: Object,
     default: () => ({
       id: 'dQaYwz',
@@ -107,12 +107,17 @@ const props = defineProps({
       ]
     })
   },
+  workbook: {
+    type: Object,
+    default: () => ({})
+  },
   worksheet: {
     type: Object,
     default: () => ({})
   }
 });
 const emits = defineEmits([
+  'update:value',
   'update:workbook',
   'update:worksheet',
   'univerStarting',
@@ -170,13 +175,13 @@ async function handleUniverSheet() {
     );
     disposableList.push(
       univerAPI.addEvent(univerAPI.Event.SheetEditEnded, (event) => {
-        console.log({ event });
         emits('univerChangeEnd', event);
-        emits('update:workbook', event?.workbook?.save());
+        emits('update:value', event?.workbook?.save());
+        emits('update:workbook', event?.workbook);
         emits('update:worksheet', event?.worksheet);
       })
     );
-    currentWorkbook.value = univerAPI.createWorkbook(props.workbook);
+    currentWorkbook.value = univerAPI.createWorkbook(props.value);
 
     univerInstance.univer = univer;
     univerInstance.univerAPI = univerAPI;

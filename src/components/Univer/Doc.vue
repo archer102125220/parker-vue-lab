@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, shallowReactive, onMounted, onBeforeUnmount } from 'vue';
+import { ref, reactive, onMounted, onBeforeUnmount } from 'vue';
 
 import SkeletonLoader from '@src/components/SkeletonLoader.vue';
 
@@ -107,20 +107,19 @@ const props = defineProps({
   }
 });
 const emits = defineEmits([
+  'update:doc',
+  'change',
   'univerStarting',
   'univerReady',
   'univerRendered',
-  'univerSteady',
-  'univerChangeStart',
-  'univerChange',
-  'univerChangeEnd'
+  'univerSteady'
 ]);
 
 const container = ref<HTMLDivElement | null>(null);
 const currentDoc = ref({});
 const loading = ref(true);
 
-const univerInstance = shallowReactive<univerInstanceRef>({
+const univerInstance = reactive<univerInstanceRef>({
   univer: null,
   univerAPI: null
 });
@@ -182,6 +181,20 @@ async function handleUniverDoc() {
   loading.value = false;
 }
 
+function handleKeyDown() {
+  if (univerInstance.univerAPI === null) return;
+
+  const doc = univerInstance.univerAPI.getActiveDocument();
+  if (doc === null) {
+    console.error('doc is null');
+    return;
+  }
+  const saveData = doc.getSnapshot();
+
+  emits('update:doc', saveData);
+  emits('change', saveData);
+}
+
 onMounted(() => {
   handleUniverDoc();
 });
@@ -210,7 +223,7 @@ onBeforeUnmount(() => {
 <template>
   <div class="univer_docxs">
     <SkeletonLoader v-if="loading" :loading="true" class="univer_docxs-skeleton" />
-    <div ref="container" class="univer_docxs-editor" />
+    <div ref="container" class="univer_docxs-editor" @keydown="handleKeyDown" />
   </div>
 </template>
 
