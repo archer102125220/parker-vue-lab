@@ -7,6 +7,8 @@ export { type Slice, type EditorEvents };
 </script>
 
 <script lang="ts" setup>
+// Tiptap + docx + mammoth
+
 import { computed, ref, watch } from "vue";
 import { EditorContent, useEditor } from "@tiptap/vue-3";
 import StarterKit from "@tiptap/starter-kit";
