@@ -72,32 +72,32 @@ const requirementLimits: RequirementLimit[] = [
   <DefaultLayout>
     <div class="tiptap_doc_page">
       <section class="tiptap_doc_page-limit_panel">
-        <div class="tiptap_doc_page-limit_header">
-          <h1 class="tiptap_doc_page-limit_title">
+        <div class="tiptap_doc_page-limit_panel-header">
+          <h1 class="tiptap_doc_page-limit_panel-header-title">
             Tiptap + docx + mammoth POC 限制標註
           </h1>
-          <p class="tiptap_doc_page-limit_summary">
+          <p class="tiptap_doc_page-limit_panel-header-summary">
             下列項目是「做不到」或「即使畫面做得到，也無法可靠存回
             Word」的功能。
           </p>
         </div>
 
-        <ul class="tiptap_doc_page-limit_list">
+        <ul class="tiptap_doc_page-limit_panel-list">
           <li
             v-for="requirementLimit in requirementLimits"
             :key="requirementLimit.id"
-            class="tiptap_doc_page-limit_card"
+            class="tiptap_doc_page-limit_panel-list-card"
           >
-            <strong class="tiptap_doc_page-limit_item_status">
+            <strong class="tiptap_doc_page-limit_panel-list-card-status">
               {{ requirementLimit.statusText }}
             </strong>
-            <h2 class="tiptap_doc_page-limit_item_title">
+            <h2 class="tiptap_doc_page-limit_panel-list-card-item_title">
               {{ requirementLimit.title }}
             </h2>
-            <p class="tiptap_doc_page-limit_item_reason">
+            <p class="tiptap_doc_page-limit_panel-list-card-item_reason">
               {{ requirementLimit.reason }}
             </p>
-            <p class="tiptap_doc_page-limit_item_word">
+            <p class="tiptap_doc_page-limit_panel-list-card-item_word">
               Word 存檔影響：{{ requirementLimit.wordImpact }}
             </p>
           </li>
@@ -120,6 +120,10 @@ const requirementLimits: RequirementLimit[] = [
   padding: 16px;
   //   background: #eef2f7;
 
+  @media (max-width: 760px) {
+    padding: 10px;
+  }
+
   &-limit_panel {
     display: flex;
     flex-direction: column;
@@ -128,93 +132,87 @@ const requirementLimits: RequirementLimit[] = [
     border: 1px solid #d8e0eb;
     border-radius: 8px;
     background: #ffffff;
-  }
-  &-limit_header {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-  &-limit_title {
-    margin: 0;
-    font-size: 20px;
-    line-height: 1.35;
-    color: #172033;
-  }
-  &-limit_summary {
-    margin: 0;
-    font-size: 14px;
-    line-height: 1.6;
-    color: #526072;
-  }
-  &-limit_list {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 12px;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
 
-  &-limit_card {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    min-height: 210px;
-    padding: 14px;
-    border: 1px solid #f0c7c7;
-    border-radius: 8px;
-    background: #fff7f7;
-  }
-}
+    &-header {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
 
-.tiptap_doc_page-limit_item_status {
-  display: inline-flex;
-  align-self: flex-start;
-  padding: 4px 8px;
-  border: 1px solid #f3a8a8;
-  border-radius: 999px;
-  font-size: 12px;
-  line-height: 1.2;
-  color: #9f1239;
-  background: #ffe4e6;
-}
+      &-title {
+        margin: 0;
+        font-size: 20px;
+        line-height: 1.35;
+        color: #172033;
+      }
+      &-summary {
+        margin: 0;
+        font-size: 14px;
+        line-height: 1.6;
+        color: #526072;
+      }
+    }
 
-.tiptap_doc_page-limit_item_title {
-  margin: 0;
-  font-size: 15px;
-  line-height: 1.45;
-  color: #172033;
-}
+    &-list {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
 
-.tiptap_doc_page-limit_item_reason,
-.tiptap_doc_page-limit_item_word {
-  margin: 0;
-  font-size: 13px;
-  line-height: 1.65;
-  color: #475569;
-}
+      @media (max-width: 1180px) {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
 
-.tiptap_doc_page-limit_item_word {
-  color: #7c2d12;
-}
+      @media (max-width: 760px) {
+        grid-template-columns: 1fr;
+      }
 
-.tiptap_doc_page-editor_panel {
-  min-height: 90vh;
-}
+      &-card {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        min-height: 180px;
+        padding: 8px;
+        border: 1px solid #f0c7c7;
+        border-radius: 8px;
+        background: #fff7f7;
 
-@media (max-width: 1180px) {
-  .tiptap_doc_page-limit_list {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
+        &-status {
+          display: inline-flex;
+          align-self: flex-start;
+          padding: 4px 8px;
+          border: 1px solid #f3a8a8;
+          border-radius: 999px;
+          font-size: 12px;
+          line-height: 1.2;
+          color: #9f1239;
+          background: #ffe4e6;
+        }
 
-@media (max-width: 760px) {
-  .tiptap_doc_page {
-    padding: 10px;
+        &-item_title {
+          margin: 0;
+          font-size: 15px;
+          line-height: 1.45;
+          color: #172033;
+        }
+
+        &-item_reason {
+          margin: 0;
+          font-size: 13px;
+          line-height: 1.65;
+          color: #475569;
+        }
+        &-item_word {
+          @extend .tiptap_doc_page-limit_panel-list-card-item_reason;
+          color: #7c2d12;
+        }
+      }
+    }
   }
 
-  .tiptap_doc_page-limit_list {
-    grid-template-columns: 1fr;
+  &-editor_panel {
+    min-height: 90vh;
   }
 }
 </style>
