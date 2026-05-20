@@ -6,6 +6,7 @@ import DefaultLayout from '@src/layouts/default.vue';
   <DefaultLayout>
     <div class="syncfusion_doc_page">
       <p>syncfusion doc editor</p>
+      <!-- @syncfusion/ej2-vue-documenteditor -->
     </div>
   </DefaultLayout>
 </template>

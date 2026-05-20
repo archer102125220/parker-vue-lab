@@ -6,6 +6,7 @@ import DefaultLayout from '@src/layouts/default.vue';
   <DefaultLayout>
     <div class="syncfusion_sheet_page">
       <p>syncfusion sheet editor</p>
+      <!-- @syncfusion/ej2-vue-spreadsheet -->
     </div>
   </DefaultLayout>
 </template>

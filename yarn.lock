@@ -1612,7 +1612,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@syncfusion/ej2-calendars@npm:~33.2.7":
+"@syncfusion/ej2-calendars@npm:~33.2.6, @syncfusion/ej2-calendars@npm:~33.2.7":
   version: 33.2.7
   resolution: "@syncfusion/ej2-calendars@npm:33.2.7"
   dependencies:
@@ -1622,6 +1622,21 @@ __metadata:
     "@syncfusion/ej2-lists": "npm:~33.2.3"
     "@syncfusion/ej2-popups": "npm:~33.2.7"
   checksum: 10c0/d71b5c536187f17111f25546c8ff383a0d4363507ccb85d0b871a194cca0175682f4c3b6e3080fe5e06a3511b96336b4a4cf7f023afaf965d8f4034abcb22f81
+  languageName: node
+  linkType: hard
+
+"@syncfusion/ej2-charts@npm:~33.2.3, @syncfusion/ej2-charts@npm:~33.2.6":
+  version: 33.2.6
+  resolution: "@syncfusion/ej2-charts@npm:33.2.6"
+  dependencies:
+    "@syncfusion/ej2-base": "npm:~33.2.3"
+    "@syncfusion/ej2-calendars": "npm:~33.2.6"
+    "@syncfusion/ej2-data": "npm:~33.2.5"
+    "@syncfusion/ej2-excel-export": "npm:~33.2.3"
+    "@syncfusion/ej2-navigations": "npm:~33.2.6"
+    "@syncfusion/ej2-pdf-export": "npm:~33.2.4"
+    "@syncfusion/ej2-svg-base": "npm:~33.2.3"
+  checksum: 10c0/6f8c42d95f4c52376e43d55617caa87265748c15c58191847e66b6a8fd77d4f92a91619952628b3a13ee29271e039a7557bc9887d85abacccd2c6988ddb26e2b
   languageName: node
   linkType: hard
 
@@ -1643,7 +1658,27 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@syncfusion/ej2-dropdowns@npm:~33.2.7":
+"@syncfusion/ej2-documenteditor@npm:33.2.7":
+  version: 33.2.7
+  resolution: "@syncfusion/ej2-documenteditor@npm:33.2.7"
+  dependencies:
+    "@syncfusion/ej2-base": "npm:~33.2.3"
+    "@syncfusion/ej2-buttons": "npm:~33.2.5"
+    "@syncfusion/ej2-calendars": "npm:~33.2.7"
+    "@syncfusion/ej2-compression": "npm:~33.2.3"
+    "@syncfusion/ej2-dropdowns": "npm:~33.2.7"
+    "@syncfusion/ej2-file-utils": "npm:~33.2.3"
+    "@syncfusion/ej2-inputs": "npm:~33.2.5"
+    "@syncfusion/ej2-navigations": "npm:~33.2.7"
+    "@syncfusion/ej2-office-chart": "npm:~33.2.3"
+    "@syncfusion/ej2-popups": "npm:~33.2.7"
+    "@syncfusion/ej2-ribbon": "npm:~33.2.5"
+    "@syncfusion/ej2-splitbuttons": "npm:~33.2.6"
+  checksum: 10c0/d5fbcc50e706579d9109467fd5049975717a835ac07648411103eb8a1ba0d62bdc85ce6df3d1d80db23f86d79796d446f2fc4b35568691e89b387a61bce12023
+  languageName: node
+  linkType: hard
+
+"@syncfusion/ej2-dropdowns@npm:~33.2.5, @syncfusion/ej2-dropdowns@npm:~33.2.7":
   version: 33.2.7
   resolution: "@syncfusion/ej2-dropdowns@npm:33.2.7"
   dependencies:
@@ -1675,7 +1710,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@syncfusion/ej2-grids@npm:33.2.7":
+"@syncfusion/ej2-grids@npm:~33.2.7":
   version: 33.2.7
   resolution: "@syncfusion/ej2-grids@npm:33.2.7"
   dependencies:
@@ -1729,7 +1764,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@syncfusion/ej2-navigations@npm:~33.2.7":
+"@syncfusion/ej2-navigations@npm:~33.2.4, @syncfusion/ej2-navigations@npm:~33.2.6, @syncfusion/ej2-navigations@npm:~33.2.7":
   version: 33.2.7
   resolution: "@syncfusion/ej2-navigations@npm:33.2.7"
   dependencies:
@@ -1754,6 +1789,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@syncfusion/ej2-office-chart@npm:~33.2.3":
+  version: 33.2.3
+  resolution: "@syncfusion/ej2-office-chart@npm:33.2.3"
+  dependencies:
+    "@syncfusion/ej2-charts": "npm:~33.2.3"
+  checksum: 10c0/76a667ba69a45b41c728e2a7147306827023f95c597595959626219761c15cc433e2f753eb89d999a0626170037bf778dd6f9dbfb936a2c5e19718065323d579
+  languageName: node
+  linkType: hard
+
 "@syncfusion/ej2-pdf-export@npm:~33.2.4":
   version: 33.2.4
   resolution: "@syncfusion/ej2-pdf-export@npm:33.2.4"
@@ -1773,6 +1817,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@syncfusion/ej2-ribbon@npm:~33.2.5":
+  version: 33.2.5
+  resolution: "@syncfusion/ej2-ribbon@npm:33.2.5"
+  dependencies:
+    "@syncfusion/ej2-base": "npm:~33.2.3"
+    "@syncfusion/ej2-buttons": "npm:~33.2.5"
+    "@syncfusion/ej2-dropdowns": "npm:~33.2.5"
+    "@syncfusion/ej2-lists": "npm:~33.2.3"
+    "@syncfusion/ej2-navigations": "npm:~33.2.4"
+    "@syncfusion/ej2-popups": "npm:~33.2.5"
+    "@syncfusion/ej2-splitbuttons": "npm:~33.2.3"
+  checksum: 10c0/a468aeda4feeae4eb3f28454b0b5127f9c3a9213f1764955ff9b70f3cdd8097d4997913602046ecf254cbbdbe9913e1e3882b03d9d5711198d22be5088934f32
+  languageName: node
+  linkType: hard
+
 "@syncfusion/ej2-splitbuttons@npm:~33.2.3, @syncfusion/ej2-splitbuttons@npm:~33.2.6":
   version: 33.2.6
   resolution: "@syncfusion/ej2-splitbuttons@npm:33.2.6"
@@ -1780,6 +1839,28 @@ __metadata:
     "@syncfusion/ej2-base": "npm:~33.2.3"
     "@syncfusion/ej2-popups": "npm:~33.2.5"
   checksum: 10c0/64f618870e61739a4f762c546933b79c087220093b07604defbba03fd320179d4ac4804e4c203cbd440be84f438afa0a0cec903aea628b7167d37f6a5692ef15
+  languageName: node
+  linkType: hard
+
+"@syncfusion/ej2-spreadsheet@npm:33.2.7":
+  version: 33.2.7
+  resolution: "@syncfusion/ej2-spreadsheet@npm:33.2.7"
+  dependencies:
+    "@syncfusion/ej2-base": "npm:~33.2.3"
+    "@syncfusion/ej2-charts": "npm:~33.2.6"
+    "@syncfusion/ej2-dropdowns": "npm:~33.2.7"
+    "@syncfusion/ej2-grids": "npm:~33.2.7"
+    "@syncfusion/ej2-navigations": "npm:~33.2.7"
+  checksum: 10c0/f8b91ef07f005bc3411b83f24dbf0df88ccd8e005e10d27ffae9ee71d1f0f4ee097ea67b50f4766dd5470c96b2cfdcb2a46af10345a03c19e62717d28a354eb1
+  languageName: node
+  linkType: hard
+
+"@syncfusion/ej2-svg-base@npm:~33.2.3":
+  version: 33.2.3
+  resolution: "@syncfusion/ej2-svg-base@npm:33.2.3"
+  dependencies:
+    "@syncfusion/ej2-base": "npm:~33.2.3"
+  checksum: 10c0/05e77c9f962dd86a16a1d2b2cd50505cf7d89ae810451c016db6e2fba49ebe2c2922816e495313f6cb2e77cc194421cc647bf0de732698afb1a579c6bbd4aa7a
   languageName: node
   linkType: hard
 
@@ -1792,14 +1873,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@syncfusion/ej2-vue-grids@npm:^33.2.7":
+"@syncfusion/ej2-vue-documenteditor@npm:^33.2.7":
   version: 33.2.7
-  resolution: "@syncfusion/ej2-vue-grids@npm:33.2.7"
+  resolution: "@syncfusion/ej2-vue-documenteditor@npm:33.2.7"
   dependencies:
     "@syncfusion/ej2-base": "npm:~33.2.3"
-    "@syncfusion/ej2-grids": "npm:33.2.7"
+    "@syncfusion/ej2-documenteditor": "npm:33.2.7"
     "@syncfusion/ej2-vue-base": "npm:~33.2.3"
-  checksum: 10c0/a837935f677094dbd563fc3b1c6b9d7c98981a828fa905d4842e3ef8c12ef38d40db982dae6b9888b9d044d99e4f10da8d47bd56c4d6fbad9e0cac680bc88039
+  checksum: 10c0/9b602eca208e1bd8fa105d1b5e522989075556d78a28c5aa7acc95af04528cd39dfeb180b861b03bd0cf51d5d38012dfaa1952bc2794e15063295ae9d8fe164f
+  languageName: node
+  linkType: hard
+
+"@syncfusion/ej2-vue-spreadsheet@npm:^33.2.7":
+  version: 33.2.7
+  resolution: "@syncfusion/ej2-vue-spreadsheet@npm:33.2.7"
+  dependencies:
+    "@syncfusion/ej2-base": "npm:~33.2.3"
+    "@syncfusion/ej2-spreadsheet": "npm:33.2.7"
+    "@syncfusion/ej2-vue-base": "npm:~33.2.3"
+  checksum: 10c0/ffb9397a9ad7ad373c2ad35bbd1ff9482706e587624c9475b2c13fe2b8fe5ca70d6ba88f7b3124cd00fb50aab19c097983670ba7c17d7e1d414500b7b5cfca5e
   languageName: node
   linkType: hard
 
@@ -5047,7 +5139,8 @@ __metadata:
   resolution: "parker-vue-lab@workspace:."
   dependencies:
     "@mdi/font": "npm:^7.4.47"
-    "@syncfusion/ej2-vue-grids": "npm:^33.2.7"
+    "@syncfusion/ej2-vue-documenteditor": "npm:^33.2.7"
+    "@syncfusion/ej2-vue-spreadsheet": "npm:^33.2.7"
     "@tsconfig/node24": "npm:^24.0.4"
     "@types/lodash": "npm:^4"
     "@types/node": "npm:^24.12.2"
