@@ -59,7 +59,7 @@ const requirementLimits: RequirementLimit[] = [
   {
     id: "excel_formula",
     statusText: "目前做不到",
-    title: "Excel 內嵌與公式",
+    title: "9. Excel 內嵌與公式",
     reason:
       "Word 內嵌 Excel 屬於 OLE 物件，瀏覽器端 Tiptap/docx 不適合建立或編輯這類二進位嵌入物件。公式可另接 math extension，但那是數學公式，不是 Excel 試算表公式。",
     wordImpact:
