@@ -30,42 +30,51 @@ const postcssPlugins: import("postcss").Plugin[] = [
   } as import("postcss").Plugin,
 ];
 
-// https://vite.dev/config/
-export default defineConfig({
-  plugins: [
-    isHttps ? mkcert() : undefined,
-    glsl(),
-    vue({
-      template: {
-        transformAssetUrls,
-      },
-    }),
-    vueDevTools(),
-    VueRouter({
-      routesFolder: "src/pages",
-      dts: "src/typed-router.d.ts",
-    }),
-    vuetify({ autoImport: true }),
-  ],
-  resolve: {
-    alias: {
-      "@": fileURLToPath(new URL("./", import.meta.url)),
-      "~": fileURLToPath(new URL("./", import.meta.url)),
-      "@src": fileURLToPath(new URL("./src", import.meta.url)),
-      "~src": fileURLToPath(new URL("./src", import.meta.url)),
-      "@public": fileURLToPath(new URL("./public", import.meta.url)),
-      "~public": fileURLToPath(new URL("./public", import.meta.url)),
-    },
-  },
-  css: {
-    postcss: {
-      plugins: postcssPlugins,
-    },
-    preprocessorOptions: {
-      scss: {
-        additionalData:
-          '@use "@/src/assets/styles/variable.scss" as *; @use "@/src/assets/styles/mixin.scss" as *;',
+// https://vite.dev/config
+export default defineConfig(({ command, mode }) => {
+  // command 的值會是 'serve' (開發環境) 或 'build' (生產環境打包)
+  const isDev = command === "serve";
+
+  // 或者你也可以用 mode 來判斷預設環境
+  // const isDev = mode === 'development'
+
+  return {
+    base: isDev ? "/" : "/parker-vue-lab/",
+    plugins: [
+      isHttps ? mkcert() : undefined,
+      glsl(),
+      vue({
+        template: {
+          transformAssetUrls,
+        },
+      }),
+      vueDevTools(),
+      VueRouter({
+        routesFolder: "src/pages",
+        dts: "src/typed-router.d.ts",
+      }),
+      vuetify({ autoImport: true }),
+    ],
+    resolve: {
+      alias: {
+        "@": fileURLToPath(new URL("./", import.meta.url)),
+        "~": fileURLToPath(new URL("./", import.meta.url)),
+        "@src": fileURLToPath(new URL("./src", import.meta.url)),
+        "~src": fileURLToPath(new URL("./src", import.meta.url)),
+        "@public": fileURLToPath(new URL("./public", import.meta.url)),
+        "~public": fileURLToPath(new URL("./public", import.meta.url)),
       },
     },
-  },
+    css: {
+      postcss: {
+        plugins: postcssPlugins,
+      },
+      preprocessorOptions: {
+        scss: {
+          additionalData:
+            '@use "@/src/assets/styles/variable.scss" as *; @use "@/src/assets/styles/mixin.scss" as *;',
+        },
+      },
+    },
+  };
 });
