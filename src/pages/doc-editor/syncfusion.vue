@@ -1,5 +1,6 @@
 <script lang="ts" setup>
-import DefaultLayout from '@src/layouts/default.vue';
+import DefaultLayout from "@src/layouts/default.vue";
+import SyncfusionDocEditor from "@src/components/Syncfusion/DocEditor.vue";
 </script>
 
 <template>
@@ -7,6 +8,7 @@ import DefaultLayout from '@src/layouts/default.vue';
     <div class="syncfusion_doc_page">
       <p>syncfusion doc editor</p>
       <!-- @syncfusion/ej2-vue-documenteditor -->
+      <SyncfusionDocEditor />
     </div>
   </DefaultLayout>
 </template>

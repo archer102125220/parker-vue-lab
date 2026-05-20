@@ -1,5 +1,6 @@
 <script lang="ts" setup>
-import DefaultLayout from '@src/layouts/default.vue';
+import DefaultLayout from "@src/layouts/default.vue";
+import SyncfusionSheetEditor from "@src/components/Syncfusion/SheetEditor.vue";
 </script>
 
 <template>
@@ -7,6 +8,7 @@ import DefaultLayout from '@src/layouts/default.vue';
     <div class="syncfusion_sheet_page">
       <p>syncfusion sheet editor</p>
       <!-- @syncfusion/ej2-vue-spreadsheet -->
+      <SyncfusionSheetEditor />
     </div>
   </DefaultLayout>
 </template>
