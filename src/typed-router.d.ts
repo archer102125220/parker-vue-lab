@@ -44,6 +44,13 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    '/doc-editor/tiptap': RouteRecordInfo<
+      '/doc-editor/tiptap',
+      '/doc-editor/tiptap',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
     '/doc-editor/univer': RouteRecordInfo<
       '/doc-editor/univer',
       '/doc-editor/univer',
@@ -100,6 +107,12 @@ declare module 'vue-router/auto-routes' {
     'src/pages/doc-editor/syncfusion.vue': {
       routes:
         | '/doc-editor/syncfusion'
+      views:
+        | never
+    }
+    'src/pages/doc-editor/tiptap.vue': {
+      routes:
+        | '/doc-editor/tiptap'
       views:
         | never
     }
