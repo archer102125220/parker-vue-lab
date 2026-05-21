@@ -33,22 +33,22 @@ import {
 import { handleSelectCSVFile } from '@src/utils/helpers/select-csv-file';
 
 /**
- * Import CSV Button Plugin
- * A simple Plugin example, show how to write a plugin.
+ * 匯入 CSV 按鈕外掛程式
+ * 一個簡單的外掛程式範例，展示如何撰寫外掛程式。
  */
 export class ImportCSVButtonPlugin extends Plugin {
   static override pluginName = 'import-csv-plugin';
 
   constructor(
-    _config: unknown, // Univer dynamically passes a config object as the first parameter
-    // inject injector, required
+    _config: unknown, // Univer 動態傳遞一個 config 物件作為第一個參數
+    // 注入 injector (依賴注入器)，必填
     @Inject(Injector) readonly _injector: Injector,
-    // inject menu service, to add toolbar button
+    // 注入選單服務，用於新增工具列按鈕
     @Inject(IMenuManagerService)
     private readonly menuManagerService: IMenuManagerService,
-    // inject command service, to register command handler
+    // 注入指令服務，用於註冊指令處理常式
     @Inject(ICommandService) private readonly commandService: ICommandService,
-    // inject component manager, to register icon component
+    // 注入元件管理器，用於註冊圖示元件
     @Inject(ComponentManager)
     private readonly componentManager: ComponentManager
   ) {
@@ -56,14 +56,14 @@ export class ImportCSVButtonPlugin extends Plugin {
   }
 
   /**
-   * The first lifecycle of the plugin mounted on the Univer instance,
-   * the Univer business instance has not been created at this time.
-   * The plugin should add its own module to the dependency injection system at this lifecycle.
-   * It is not recommended to initialize the internal module of the plugin outside this lifecycle.
+   * 外掛程式掛載到 Univer 實例的第一個生命週期，
+   * 此時 Univer 業務實例尚未建立。
+   * 外掛程式應在此生命週期中將其自身模組加入至依賴注入系統。
+   * 不建議在此生命週期之外初始化外掛程式的內部模組。
    */
 
   override onStarting() {
-    // register icon component
+    // 註冊圖示元件
     // this.componentManager.register('FolderIcon', FolderIcon);
 
     const buttonId = 'import-csv-button';
@@ -72,24 +72,24 @@ export class ImportCSVButtonPlugin extends Plugin {
       type: CommandType.OPERATION,
       id: buttonId,
       handler: (accessor) => {
-        // inject univer instance service
+        // 注入 Univer 實例服務
         const univerInstanceService = accessor.get(IUniverInstanceService);
         const commandService = accessor.get(ICommandService);
         const undoRedoService = accessor.get(IUndoRedoService);
 
-        // get current sheet
+        // 取得目前工作表
         const worksheet = univerInstanceService
           .getCurrentUnitOfType<Workbook>(UniverInstanceType.UNIVER_SHEET)!
           .getActiveSheet();
         const unitId = worksheet.getUnitId();
         const subUnitId = worksheet.getSheetId();
 
-        // wait user select csv file, then assemble multiple mutations operation to enable correct undo/redo
+        // 等待使用者選擇 CSV 檔案，接著組合多個變更 (mutations) 操作以啟用正確的復原/重做功能
         return handleSelectCSVFile(({ data, rowsCount, colsCount }) => {
           const redoMutations: IMutationInfo[] = [];
           const undoMutations: IMutationInfo[] = [];
 
-          // set sheet row count
+          // 設定工作表列數
           const setRowCountMutationRedoParams: ISetWorksheetRowCountMutationParams =
             {
               unitId,
@@ -110,7 +110,7 @@ export class ImportCSVButtonPlugin extends Plugin {
             params: setRowCountMutationUndoParams
           });
 
-          // set sheet column count
+          // 設定工作表欄數
           const setColumnCountMutationRedoParams: ISetWorksheetColumnCountMutationParams =
             {
               unitId,
@@ -131,15 +131,15 @@ export class ImportCSVButtonPlugin extends Plugin {
             params: setColumnCountMutationUndoParams
           });
 
-          // parse csv to univer data
+          // 將 CSV 解析為 Univer 資料
           const cellValue = covertCellValues(data, {
-            startColumn: 0, // start column index
-            startRow: 0, // start row index
-            endColumn: colsCount - 1, // end column index
-            endRow: rowsCount - 1 // end row index
+            startColumn: 0, // 起始欄索引
+            startRow: 0, // 起始列索引
+            endColumn: colsCount - 1, // 結束欄索引
+            endRow: rowsCount - 1 // 結束列索引
           });
 
-          // set sheet data
+          // 設定工作表資料
           const setRangeValuesMutationRedoParams: ISetRangeValuesMutationParams =
             {
               unitId,
@@ -181,7 +181,7 @@ export class ImportCSVButtonPlugin extends Plugin {
       id: buttonId,
       title: 'Import CSV',
       tooltip: 'Import CSV',
-      icon: 'FolderIcon', // icon name
+      icon: 'FolderIcon', // 圖示名稱
       type: MenuItemType.BUTTON,
       hidden$: new Observable<boolean>((subscriber) => {
         const univerInstanceService = this._injector.get(

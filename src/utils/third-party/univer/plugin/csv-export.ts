@@ -18,30 +18,30 @@ import {
 } from '@univerjs/presets';
 
 /**
- * Export CSV Button Plugin
- * This plugin reads data from the current Univer sheet and triggers a CSV file download.
- * It demonstrates how to add custom buttons to the ribbon, execute commands,
- * and read data directly from the Univer data model.
+ * 匯出 CSV 按鈕外掛
+ * 這個外掛會讀取目前 Univer 工作表中的資料，並觸發 CSV 檔案下載。
+ * 它展示了如何在工具列 (ribbon) 中加入自訂按鈕、執行指令，
+ * 以及如何直接從 Univer 資料模型讀取資料。
  */
 export class ExportCSVButtonPlugin extends Plugin {
   static override pluginName = 'export-csv-plugin';
 
   constructor(
-    _config: unknown, // Univer dynamically passes a config object as the first parameter
-    // Injector is the core dependency injection container in Univer.
-    // It manages the creation and lifecycle of all services and plugins.
+    _config: unknown, // Univer 會在第一個參數動態傳入 config 物件
+    // Injector 是 Univer 的核心依賴注入容器。
+    // 它管理所有服務 (services) 與外掛 (plugins) 的建立和生命週期。
     @Inject(Injector) readonly _injector: Injector,
 
-    // IMenuManagerService manages the UI menus (like right-click menus, toolbars, ribbons).
-    // We use it to add our Export CSV button to the ribbon.
+    // IMenuManagerService 管理 UI 選單（像是右鍵選單、工具列、ribbon）。
+    // 我們使用它將「匯出 CSV」按鈕加到 ribbon。
     @Inject(IMenuManagerService)
     private readonly menuManagerService: IMenuManagerService,
 
-    // ICommandService is responsible for registering and executing commands.
-    // Commands are the way to perform actions in Univer, and they can support undo/redo (if they are mutations).
+    // ICommandService 負責註冊和執行指令 (commands)。
+    // 指令是 Univer 中執行動作的方式，它們可以支援復原/重做 (如果是資料修改 (mutations) 的話)。
     @Inject(ICommandService) private readonly commandService: ICommandService,
 
-    // ComponentManager is used to register custom Vue/React components like icons so they can be referenced by string names.
+    // ComponentManager 用來註冊自訂的 Vue/React 元件（如圖示），以便透過字串名稱來參考它們。
     @Inject(ComponentManager)
     private readonly componentManager: ComponentManager
   ) {
@@ -49,54 +49,54 @@ export class ExportCSVButtonPlugin extends Plugin {
   }
 
   /**
-   * onStarting is the first lifecycle method of a Univer plugin.
-   * It's called when the plugin is mounted, before the business instances (like a Workbook) are created.
-   * This is the ideal place to register components, commands, and menu items.
+   * onStarting 是 Univer 外掛的第一個生命週期方法。
+   * 當外掛被掛載時呼叫，在業務實例（例如 Workbook）建立之前。
+   * 這裡是註冊元件、指令和選單項目的理想位置。
    */
   override onStarting() {
-    // 1. Register the icon we want to use in the menu
+    // 1. 註冊我們想在選單中使用的圖示
     // this.componentManager.register('ExportIcon', ExportIcon);
 
     const buttonId = 'export-csv-button';
 
-    // 2. Define the command that will be executed when the button is clicked
+    // 2. 定義點擊按鈕時將會執行的指令
     const command: ICommand = {
-      type: CommandType.OPERATION, // OPERATION means it's a UI/user action, not a core data mutation (MUTATION). No undo/redo needed here.
+      type: CommandType.OPERATION, // OPERATION 代表這是一個 UI/使用者操作，而非核心資料修改 (MUTATION)。這裡不需要復原/重做。
       id: buttonId,
       handler: (accessor) => {
-        // 'accessor' acts like a service locator to dynamically get required services during command execution.
+        // 'accessor' 就像是一個服務定位器，可以在指令執行期間動態取得所需的服務。
         const univerInstanceService = accessor.get(IUniverInstanceService);
 
-        // Get the current workbook (spreadsheet document) instance
+        // 取得目前活頁簿 (試算表文件) 實例
         const workbook = univerInstanceService.getCurrentUnitOfType<Workbook>(
           UniverInstanceType.UNIVER_SHEET
         );
         if (!workbook) return false;
 
-        // Get the currently active worksheet (tab) within the workbook
+        // 取得活頁簿中目前活躍的工作表 (分頁)
         const worksheet = workbook.getActiveSheet();
 
-        // Find the maximum row and column limits of the worksheet
+        // 取得工作表的最大行數和列數限制
         const rowCount = worksheet.getRowCount();
         const colCount = worksheet.getColumnCount();
 
         let csvContent = '';
 
-        // 3. Loop through all rows and columns to extract cell data
+        // 3. 遍歷所有列與欄以提取儲存格資料
         for (let r = 0; r < rowCount; r++) {
           const rowData: string[] = [];
           for (let c = 0; c < colCount; c++) {
-            // getCell returns the internal cell data object (ICellData) or undefined if the cell is completely empty
+            // getCell 回傳內部的儲存格資料物件 (ICellData)，如果儲存格完全空白則回傳 undefined
             const cell = worksheet.getCell(r, c);
 
-            // Extract the value. 'v' is the raw value.
-            // Alternatively, 'm' represents the formatted string value.
+            // 提取值。'v' 是原始值。
+            // 另外，'m' 代表格式化後的字串值。
             let val = cell?.v ?? '';
             let strVal = String(val);
 
-            // CSV escaping rules:
-            // If the value contains quotes, commas, or newlines, wrap it in double quotes
-            // and escape internal double quotes by doubling them.
+            // CSV 跳脫規則：
+            // 如果值包含引號、逗號或換行字元，將其用雙引號包裝
+            // 並將內部的雙引號加倍來跳脫。
             if (
               strVal.includes(',') ||
               strVal.includes('"') ||
@@ -106,19 +106,19 @@ export class ExportCSVButtonPlugin extends Plugin {
             }
             rowData.push(strVal);
           }
-          // Join columns with commas and rows with newlines
+          // 將每一欄用逗號連接，每一列用換行字元連接
           csvContent += rowData.join(',') + '\n';
         }
 
-        // 4. Create a Blob and trigger a file download using standard browser APIs
-        // \uFEFF is the UTF-8 Byte Order Mark (BOM) to ensure Excel opens the CSV correctly.
+        // 4. 建立一個 Blob，並使用標準的瀏覽器 API 觸發檔案下載
+        // \uFEFF 是 UTF-8 的位元組順序記號 (BOM)，確保 Excel 能正確開啟 CSV。
         const blob = new Blob(['\uFEFF' + csvContent], {
           type: 'text/csv;charset=utf-8;'
         });
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
-        link.download = `${worksheet.getName() || 'export'}.csv`; // Use sheet name as filename
+        link.download = `${worksheet.getName() || 'export'}.csv`; // 使用工作表名稱作為檔案名稱
         link.style.display = 'none';
 
         document.body.appendChild(link);
@@ -130,15 +130,15 @@ export class ExportCSVButtonPlugin extends Plugin {
       }
     };
 
-    // 3. Define the menu item configuration for the UI ribbon
+    // 3. 定義 UI ribbon 的選單項目配置
     const menuItemFactory = () => ({
       id: buttonId,
       title: 'Export CSV',
       tooltip: 'Export CSV',
-      icon: 'ExportIcon', // This must match the name we registered in componentManager
+      icon: 'ExportIcon', // 這必須和我們在 componentManager 註冊的名稱相符
       type: MenuItemType.BUTTON,
-      // hidden$ is an Observable that dynamically determines when the button should be hidden.
-      // Here, we hide the button if the currently focused document is NOT a spreadsheet (e.g. if we switch to a Doc).
+      // hidden$ 是一個 Observable，用來動態決定何時該隱藏按鈕。
+      // 這裡，如果目前聚焦的文件不是試算表 (例如我們切換到了文件 (Doc))，就會隱藏按鈕。
       hidden$: new Observable<boolean>((subscriber) => {
         const univerInstanceService = this._injector.get(
           IUniverInstanceService
@@ -157,18 +157,18 @@ export class ExportCSVButtonPlugin extends Plugin {
       })
     });
 
-    // 4. Add the menu item to the ribbon menu structure
-    // RibbonStartGroup.OTHERS is usually placed on the far right of the toolbar.
+    // 4. 將選單項目加到 ribbon 選單結構中
+    // RibbonStartGroup.OTHERS 通常位於工具列的最右側。
     this.menuManagerService.mergeMenu({
       [RibbonStartGroup.OTHERS]: {
         [buttonId]: {
-          order: 11, // Display order: placed slightly after Import CSV which uses order 10
+          order: 11, // 顯示順序：放在順序為 10 的「匯入 CSV」後面
           menuItemFactory
         }
       }
     });
 
-    // 5. Finally, register the command with the command service so it can be triggered by our button
+    // 5. 最後，向 command service 註冊指令，讓我們的按鈕可以觸發它
     this.commandService.registerCommand(command);
   }
 }
