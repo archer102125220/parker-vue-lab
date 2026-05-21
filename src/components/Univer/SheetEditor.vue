@@ -144,7 +144,9 @@ async function handleUniverSheet() {
     if (container.value instanceof HTMLElement === false) return;
 
     const { univer, univerAPI, LocaleType } = await createSheetInstance(
-      container.value
+      container.value,
+      props.locale,
+      false
     );
 
     disposableList.push(
