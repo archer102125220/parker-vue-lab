@@ -1,9 +1,4 @@
-import type {
-  ISetRangeValuesMutationParams,
-  ISetWorksheetColumnCountMutationParams,
-  ISetWorksheetRowCountMutationParams,
-} from '@univerjs/preset-sheets-core'
-import type { ICommand, IMutationInfo, Workbook } from '@univerjs/presets'
+import type { ICommand, Workbook } from '@univerjs/presets'
 import { Observable } from 'rxjs'
 import { ExportIcon } from '@univerjs/icons'
 import {
@@ -11,149 +6,128 @@ import {
   IMenuManagerService,
   MenuItemType,
   RibbonStartGroup,
-  SetRangeValuesMutation,
-  SetRangeValuesUndoMutationFactory,
-  SetWorksheetColumnCountMutation,
-  SetWorksheetColumnCountUndoMutationFactory,
-  SetWorksheetRowCountMutation,
-  SetWorksheetRowCountUndoMutationFactory,
 } from '@univerjs/preset-sheets-core'
 import {
   CommandType,
-  covertCellValues,
   ICommandService,
   Inject,
   Injector,
-  IUndoRedoService,
   IUniverInstanceService,
   Plugin,
-  sequenceExecute,
   UniverInstanceType,
 } from '@univerjs/presets'
-import { handleSelectCSVFile } from '@src/utils/helpers/select-csv-file'
 
 /**
- * Import CSV Button Plugin
- * A simple Plugin example, show how to write a plugin.
+ * Export CSV Button Plugin
+ * This plugin reads data from the current Univer sheet and triggers a CSV file download.
+ * It demonstrates how to add custom buttons to the ribbon, execute commands, 
+ * and read data directly from the Univer data model.
  */
-export class ImportCSVButtonPlugin extends Plugin {
+export class ExportCSVButtonPlugin extends Plugin {
   static override pluginName = 'export-csv-plugin'
 
   constructor(
-    // inject injector, required
+    // Injector is the core dependency injection container in Univer.
+    // It manages the creation and lifecycle of all services and plugins.
     @Inject(Injector) readonly _injector: Injector,
-    // inject menu service, to add toolbar button
+    
+    // IMenuManagerService manages the UI menus (like right-click menus, toolbars, ribbons).
+    // We use it to add our Export CSV button to the ribbon.
     @Inject(IMenuManagerService) private readonly menuManagerService: IMenuManagerService,
-    // inject command service, to register command handler
+    
+    // ICommandService is responsible for registering and executing commands.
+    // Commands are the way to perform actions in Univer, and they can support undo/redo (if they are mutations).
     @Inject(ICommandService) private readonly commandService: ICommandService,
-    // inject component manager, to register icon component
+    
+    // ComponentManager is used to register custom Vue/React components like icons so they can be referenced by string names.
     @Inject(ComponentManager) private readonly componentManager: ComponentManager,
   ) {
     super()
   }
 
   /**
-   * The first lifecycle of the plugin mounted on the Univer instance,
-   * the Univer business instance has not been created at this time.
-   * The plugin should add its own module to the dependency injection system at this lifecycle.
-   * It is not recommended to initialize the internal module of the plugin outside this lifecycle.
+   * onStarting is the first lifecycle method of a Univer plugin.
+   * It's called when the plugin is mounted, before the business instances (like a Workbook) are created.
+   * This is the ideal place to register components, commands, and menu items.
    */
-
   override onStarting() {
-    // register icon component
+    // 1. Register the icon we want to use in the menu
     this.componentManager.register('ExportIcon', ExportIcon)
 
     const buttonId = 'export-csv-button'
 
+    // 2. Define the command that will be executed when the button is clicked
     const command: ICommand = {
-      type: CommandType.OPERATION,
+      type: CommandType.OPERATION, // OPERATION means it's a UI/user action, not a core data mutation (MUTATION). No undo/redo needed here.
       id: buttonId,
       handler: (accessor) => {
-        // inject univer instance service
+        // 'accessor' acts like a service locator to dynamically get required services during command execution.
         const univerInstanceService = accessor.get(IUniverInstanceService)
-        const commandService = accessor.get(ICommandService)
-        const undoRedoService = accessor.get(IUndoRedoService)
 
-        // get current sheet
-        const worksheet = univerInstanceService.getCurrentUnitOfType<Workbook>(UniverInstanceType.UNIVER_SHEET)!.getActiveSheet()
-        const unitId = worksheet.getUnitId()
-        const subUnitId = worksheet.getSheetId()
+        // Get the current workbook (spreadsheet document) instance
+        const workbook = univerInstanceService.getCurrentUnitOfType<Workbook>(UniverInstanceType.UNIVER_SHEET)
+        if (!workbook) return false
+        
+        // Get the currently active worksheet (tab) within the workbook
+        const worksheet = workbook.getActiveSheet()
+        
+        // Find the maximum row and column limits of the worksheet
+        const rowCount = worksheet.getRowCount()
+        const colCount = worksheet.getColumnCount()
 
-        // wait user select csv file, then assemble multiple mutations operation to enable correct undo/redo
-        return handleSelectCSVFile(({ data, rowsCount, colsCount }) => {
-          const redoMutations: IMutationInfo[] = []
-          const undoMutations: IMutationInfo[] = []
+        let csvContent = ''
 
-          // set sheet row count
-          const setRowCountMutationRedoParams: ISetWorksheetRowCountMutationParams = {
-            unitId,
-            subUnitId,
-            rowCount: rowsCount,
+        // 3. Loop through all rows and columns to extract cell data
+        for (let r = 0; r < rowCount; r++) {
+          const rowData: string[] = []
+          for (let c = 0; c < colCount; c++) {
+            // getCell returns the internal cell data object (ICellData) or undefined if the cell is completely empty
+            const cell = worksheet.getCell(r, c)
+            
+            // Extract the value. 'v' is the raw value. 
+            // Alternatively, 'm' represents the formatted string value.
+            let val = cell?.v ?? ''
+            let strVal = String(val)
+            
+            // CSV escaping rules: 
+            // If the value contains quotes, commas, or newlines, wrap it in double quotes 
+            // and escape internal double quotes by doubling them.
+            if (strVal.includes(',') || strVal.includes('"') || strVal.includes('\n')) {
+              strVal = `"${strVal.replace(/"/g, '""')}"`
+            }
+            rowData.push(strVal)
           }
-          const setRowCountMutationUndoParams: ISetWorksheetRowCountMutationParams = SetWorksheetRowCountUndoMutationFactory(
-            accessor,
-            setRowCountMutationRedoParams,
-          )
-          redoMutations.push({ id: SetWorksheetRowCountMutation.id, params: setRowCountMutationRedoParams })
-          undoMutations.push({ id: SetWorksheetRowCountMutation.id, params: setRowCountMutationUndoParams })
+          // Join columns with commas and rows with newlines
+          csvContent += rowData.join(',') + '\n'
+        }
 
-          // set sheet column count
-          const setColumnCountMutationRedoParams: ISetWorksheetColumnCountMutationParams = {
-            unitId,
-            subUnitId,
-            columnCount: colsCount,
-          }
-          const setColumnCountMutationUndoParams: ISetWorksheetColumnCountMutationParams = SetWorksheetColumnCountUndoMutationFactory(
-            accessor,
-            setColumnCountMutationRedoParams,
-          )
-          redoMutations.push({ id: SetWorksheetColumnCountMutation.id, params: setColumnCountMutationRedoParams })
-          undoMutations.unshift({ id: SetWorksheetColumnCountMutation.id, params: setColumnCountMutationUndoParams })
+        // 4. Create a Blob and trigger a file download using standard browser APIs
+        // \uFEFF is the UTF-8 Byte Order Mark (BOM) to ensure Excel opens the CSV correctly.
+        const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' })
+        const url = URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+        link.download = `${worksheet.getName() || 'export'}.csv` // Use sheet name as filename
+        link.style.display = 'none'
+        
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        URL.revokeObjectURL(url)
 
-          // parse csv to univer data
-          const cellValue = covertCellValues(data, {
-            startColumn: 0, // start column index
-            startRow: 0, // start row index
-            endColumn: colsCount - 1, // end column index
-            endRow: rowsCount - 1, // end row index
-          })
-
-          // set sheet data
-          const setRangeValuesMutationRedoParams: ISetRangeValuesMutationParams = {
-            unitId,
-            subUnitId,
-            cellValue,
-          }
-          const setRangeValuesMutationUndoParams: ISetRangeValuesMutationParams = SetRangeValuesUndoMutationFactory(
-            accessor,
-            setRangeValuesMutationRedoParams,
-          )
-          redoMutations.push({ id: SetRangeValuesMutation.id, params: setRangeValuesMutationRedoParams })
-          undoMutations.unshift({ id: SetRangeValuesMutation.id, params: setRangeValuesMutationUndoParams })
-
-          const result = sequenceExecute(redoMutations, commandService)
-
-          if (result.result) {
-            undoRedoService.pushUndoRedo({
-              unitID: unitId,
-              undoMutations,
-              redoMutations,
-            })
-
-            return true
-          }
-
-          return false
-        })
+        return true
       },
     }
 
+    // 3. Define the menu item configuration for the UI ribbon
     const menuItemFactory = () => ({
       id: buttonId,
       title: 'Export CSV',
       tooltip: 'Export CSV',
-      icon: 'ExportIcon', // icon name
+      icon: 'ExportIcon', // This must match the name we registered in componentManager
       type: MenuItemType.BUTTON,
+      // hidden$ is an Observable that dynamically determines when the button should be hidden. 
+      // Here, we hide the button if the currently focused document is NOT a spreadsheet (e.g. if we switch to a Doc).
       hidden$: new Observable<boolean>((subscriber) => {
         const univerInstanceService = this._injector.get(IUniverInstanceService)
         const subscription = univerInstanceService.focused$.subscribe((unitId) => {
@@ -167,17 +141,21 @@ export class ImportCSVButtonPlugin extends Plugin {
         return () => subscription.unsubscribe()
       }),
     })
+
+    // 4. Add the menu item to the ribbon menu structure
+    // RibbonStartGroup.OTHERS is usually placed on the far right of the toolbar.
     this.menuManagerService.mergeMenu({
       [RibbonStartGroup.OTHERS]: {
         [buttonId]: {
-          order: 10,
+          order: 11, // Display order: placed slightly after Import CSV which uses order 10
           menuItemFactory,
         },
       },
     })
 
+    // 5. Finally, register the command with the command service so it can be triggered by our button
     this.commandService.registerCommand(command)
   }
 }
 
-export default ImportCSVButtonPlugin;
+export default ExportCSVButtonPlugin;

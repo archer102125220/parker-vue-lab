@@ -47,6 +47,7 @@ export async function importSheet() {
     import("@univerjs/preset-sheets-advanced/locales/en-US"),
 
     import("@src/utils/third-party/univer/plugin/csv-import"),
+    import("@src/utils/third-party/univer/plugin/csv-export"),
 
     import("@univerjs/sheets-crosshair-highlight/facade"),
     import("@univerjs/sheets-zen-editor/facade"),
@@ -119,6 +120,7 @@ export async function createSheetInstance(
     { default: UniverPresetSheetsAdvancedZhTW },
     { default: UniverPresetSheetsAdvancedEnUS },
     { ImportCSVButtonPlugin },
+    { ExportCSVButtonPlugin },
   ] = await importSheet();
 
   const univerInstance = createUniver({
@@ -174,6 +176,7 @@ export async function createSheetInstance(
     ],
     plugins: [
       ImportCSVButtonPlugin,
+      ExportCSVButtonPlugin,
       // [_UniverWatermarkPlugin, {
       //   textWatermarkSettings: {
       //     content: '測試浮水印',
