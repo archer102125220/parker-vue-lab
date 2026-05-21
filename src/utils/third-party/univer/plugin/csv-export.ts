@@ -1,6 +1,6 @@
 import type { ICommand, Workbook } from '@univerjs/presets';
 import { Observable } from 'rxjs';
-import { ExportIcon } from '@univerjs/icons';
+// import { ExportIcon } from '@univerjs/icons';
 import {
   ComponentManager,
   IMenuManagerService,
@@ -54,7 +54,7 @@ export class ExportCSVButtonPlugin extends Plugin {
    */
   override onStarting() {
     // 1. Register the icon we want to use in the menu
-    this.componentManager.register('ExportIcon', ExportIcon);
+    // this.componentManager.register('ExportIcon', ExportIcon);
 
     const buttonId = 'export-csv-button';
 

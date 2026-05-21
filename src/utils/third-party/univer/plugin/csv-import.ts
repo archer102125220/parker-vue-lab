@@ -5,7 +5,7 @@ import type {
 } from '@univerjs/preset-sheets-core';
 import type { ICommand, IMutationInfo, Workbook } from '@univerjs/presets';
 import { Observable } from 'rxjs';
-import { FolderIcon } from '@univerjs/icons';
+// import { FolderIcon } from '@univerjs/icons';
 import {
   ComponentManager,
   IMenuManagerService,
@@ -63,7 +63,7 @@ export class ImportCSVButtonPlugin extends Plugin {
 
   override onStarting() {
     // register icon component
-    this.componentManager.register('FolderIcon', FolderIcon);
+    // this.componentManager.register('FolderIcon', FolderIcon);
 
     const buttonId = 'import-csv-button';
 
