@@ -26,9 +26,12 @@ export async function importSheet() {
     UniverPresetSheetsFindReplace,
     { default: UniverPresetSheetsFindReplaceZhTW },
     { default: UniverPresetSheetsFindReplaceEnUS },
-    UniverUniscript,
-    { default: UniverUniscriptZhTW },
-    { default: UniverUniscriptEnUS },
+
+    // uniscript 好像是 experimental ，並且 CDN 需要額外想辦法處理 monaco-editor ，暫先註解掉
+    // UniverUniscript,
+    // { default: UniverUniscriptZhTW },
+    // { default: UniverUniscriptEnUS },
+
     UniverPresetSheetsDrawing,
     { default: UniverPresetSheetsDrawingZhTW },
     { default: UniverPresetSheetsDrawingEnUS },
@@ -69,9 +72,12 @@ export async function importSheet() {
     import('@univerjs/preset-sheets-find-replace'),
     import('@univerjs/preset-sheets-find-replace/locales/zh-TW'),
     import('@univerjs/preset-sheets-find-replace/locales/en-US'),
-    import('@univerjs/uniscript'),
-    import('@univerjs/uniscript/locale/zh-TW'),
-    import('@univerjs/uniscript/locale/en-US'),
+
+    // uniscript 好像是 experimental ，並且 CDN 需要額外想辦法處理 monaco-editor ，暫先註解掉
+    // import('@univerjs/uniscript'),
+    // import('@univerjs/uniscript/locale/zh-TW'),
+    // import('@univerjs/uniscript/locale/en-US'),
+
     import('@univerjs/preset-sheets-drawing'),
     import('@univerjs/preset-sheets-drawing/locales/zh-TW'),
     import('@univerjs/preset-sheets-drawing/locales/en-US'),
@@ -109,7 +115,10 @@ export async function importSheet() {
     import('@univerjs/preset-sheets-table/lib/index.css'),
     import('@univerjs/sheets-crosshair-highlight/lib/index.css'),
     import('@univerjs/sheets-zen-editor/lib/index.css'),
-    import('@univerjs/uniscript/lib/index.css'),
+
+    // uniscript 好像是 experimental ，並且 CDN 需要額外想辦法處理 monaco-editor ，暫先註解掉
+    // import('@univerjs/uniscript/lib/index.css'),
+
     import('@univerjs/preset-sheets-advanced/lib/index.css')
   ]);
 
@@ -136,9 +145,12 @@ export async function importSheet() {
     UniverPresetSheetsFindReplace,
     UniverPresetSheetsFindReplaceZhTW,
     UniverPresetSheetsFindReplaceEnUS,
-    UniverUniscript,
-    UniverUniscriptZhTW,
-    UniverUniscriptEnUS,
+
+    // uniscript 好像是 experimental ，並且 CDN 需要額外想辦法處理 monaco-editor ，暫先註解掉
+    // UniverUniscript,
+    // UniverUniscriptZhTW,
+    // UniverUniscriptEnUS,
+
     UniverPresetSheetsDrawing,
     UniverPresetSheetsDrawingZhTW,
     UniverPresetSheetsDrawingEnUS,
@@ -236,9 +248,12 @@ export async function createSheetInstance(
     UniverPresetSheetsFindReplace,
     UniverPresetSheetsFindReplaceZhTW,
     UniverPresetSheetsFindReplaceEnUS,
-    UniverUniscript,
-    UniverUniscriptZhTW,
-    UniverUniscriptEnUS,
+
+    // uniscript 好像是 experimental ，並且 CDN 需要額外想辦法處理 monaco-editor ，暫先註解掉
+    // UniverUniscript,
+    // UniverUniscriptZhTW,
+    // UniverUniscriptEnUS,
+
     UniverPresetSheetsDrawing,
     UniverPresetSheetsDrawingZhTW,
     UniverPresetSheetsDrawingEnUS,
@@ -251,7 +266,7 @@ export async function createSheetInstance(
     UniverPresetSheetsTable,
     UniverPresetSheetsTableZhTW,
     UniverPresetSheetsTableEnUS,
-    UniverWatermark,
+    // UniverWatermark,
     UniverSheetsCrosshairHighlight,
     UniverSheetsZenEditor,
     UniverSheetsZenEditorZhTW,
@@ -267,15 +282,18 @@ export async function createSheetInstance(
     UniverPresetSheetsConditionalFormatting;
   const { UniverSheetsHyperLinkPreset } = UniverPresetSheetsHyperLink;
   const { UniverSheetsFindReplacePreset } = UniverPresetSheetsFindReplace;
-  const { UniverUniscriptPlugin } = UniverUniscript;
   const { UniverSheetsDrawingPreset } = UniverPresetSheetsDrawing;
   const { UniverSheetsThreadCommentPreset } = UniverPresetSheetsThreadComment;
   const { UniverSheetsNotePreset } = UniverPresetSheetsNote;
   const { UniverSheetsTablePreset } = UniverPresetSheetsTable;
-  const { UniverWatermarkPlugin: _UniverWatermarkPlugin } = UniverWatermark;
+
+  // const { UniverWatermarkPlugin: _UniverWatermarkPlugin } = UniverWatermark;
   const { UniverSheetsCrosshairHighlightPlugin } =
     UniverSheetsCrosshairHighlight;
   const { UniverSheetsZenEditorPlugin } = UniverSheetsZenEditor;
+
+  // uniscript 好像是 experimental ，並且 CDN 需要額外想辦法處理 monaco-editor ，暫先註解掉
+  // const { UniverUniscriptPlugin } = UniverUniscript;
 
   const { ImportCSVButtonPlugin, ExportCSVButtonPlugin } =
     await importCustomPlugin();
@@ -319,8 +337,10 @@ export async function createSheetInstance(
       //   },
       // }],
       UniverSheetsCrosshairHighlightPlugin,
-      UniverSheetsZenEditorPlugin,
-      UniverUniscriptPlugin
+      UniverSheetsZenEditorPlugin
+
+      // uniscript 好像是 experimental ，並且 CDN 需要額外想辦法處理 monaco-editor ，暫先註解掉
+      // UniverUniscriptPlugin
     ]
   };
 
@@ -342,7 +362,10 @@ export async function createSheetInstance(
         UniverPresetSheetsConditionalFormattingZhTW,
         UniverPresetSheetsHyperLinkZhTW,
         UniverPresetSheetsFindReplaceZhTW,
-        UniverUniscriptZhTW,
+
+        // uniscript 好像是 experimental ，並且 CDN 需要額外想辦法處理 monaco-editor ，暫先註解掉
+        // UniverUniscriptZhTW,
+
         UniverPresetSheetsDrawingZhTW,
         UniverPresetSheetsThreadCommentZhTW,
         UniverPresetSheetsNoteZhTW,
@@ -360,12 +383,16 @@ export async function createSheetInstance(
         UniverPresetSheetsConditionalFormattingEnUS,
         UniverPresetSheetsHyperLinkEnUS,
         UniverPresetSheetsFindReplaceEnUS,
-        UniverUniscriptEnUS,
+
+        // uniscript 好像是 experimental ，並且 CDN 需要額外想辦法處理 monaco-editor ，暫先註解掉
+        // UniverUniscriptEnUS,
+
         UniverPresetSheetsDrawingEnUS,
         UniverPresetSheetsThreadCommentEnUS,
         UniverPresetSheetsNoteEnUS,
         UniverPresetSheetsTableEnUS,
         UniverSheetsZenEditorEnUS,
+
         UniverPresetSheetsAdvancedEnUS,
         UniverSheetsCollaborationPresetEnUS
       )
@@ -389,7 +416,10 @@ export async function createSheetInstance(
         UniverPresetSheetsConditionalFormattingZhTW,
         UniverPresetSheetsHyperLinkZhTW,
         UniverPresetSheetsFindReplaceZhTW,
-        UniverUniscriptZhTW,
+
+        // uniscript 好像是 experimental ，並且 CDN 需要額外想辦法處理 monaco-editor ，暫先註解掉
+        // UniverUniscriptZhTW,
+
         UniverPresetSheetsDrawingZhTW,
         UniverPresetSheetsThreadCommentZhTW,
         UniverPresetSheetsNoteZhTW,
@@ -406,7 +436,10 @@ export async function createSheetInstance(
         UniverPresetSheetsConditionalFormattingEnUS,
         UniverPresetSheetsHyperLinkEnUS,
         UniverPresetSheetsFindReplaceEnUS,
-        UniverUniscriptEnUS,
+
+        // uniscript 好像是 experimental ，並且 CDN 需要額外想辦法處理 monaco-editor ，暫先註解掉
+        // UniverUniscriptEnUS,
+
         UniverPresetSheetsDrawingEnUS,
         UniverPresetSheetsThreadCommentEnUS,
         UniverPresetSheetsNoteEnUS,
