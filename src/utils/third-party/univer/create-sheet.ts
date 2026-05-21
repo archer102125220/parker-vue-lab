@@ -172,7 +172,7 @@ export async function importCustomPlugin() {
   };
 }
 
-export async function importSheetAdvanced() {
+export async function importAdvancedSheet() {
   const [
     UniverPresetSheetsAdvanced,
     { default: UniverPresetSheetsAdvancedZhTW },
@@ -284,7 +284,7 @@ export async function createSheetInstance(
     UniverPresetSheetsAdvanced,
     UniverPresetSheetsAdvancedZhTW,
     UniverPresetSheetsAdvancedEnUS
-  } = await importSheetAdvanced();
+  } = await importAdvancedSheet();
   const { UniverSheetsAdvancedPreset } = UniverPresetSheetsAdvanced;
 
   const univerConfig = {
