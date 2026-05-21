@@ -1,9 +1,9 @@
 <script lang="ts" setup>
 import { computed, onMounted } from 'vue';
-import { useLocalePath } from 'vue-i18n-routing'
+import { useLocalePath } from 'vue-i18n-routing';
 import { useRouter } from 'vue-router';
 
-import LanguageSwitcher from '@src/components/LanguageSwitcher.vue'
+import LanguageSwitcher from '@src/components/LanguageSwitcher.vue';
 
 const router = useRouter();
 const localePath = useLocalePath();
@@ -34,13 +34,24 @@ onMounted(() => {
 
 <template>
   <header class="layout_header" :css-animation="animation">
-    <v-btn class="layout_header-back" size="x-small" color="primary" variant="outlined" icon="mdi-chevron-left"
-      :css-has-back="hasBack === true" @click="handleGoBack" />
+    <v-btn
+      class="layout_header-back"
+      size="x-small"
+      color="primary"
+      variant="outlined"
+      icon="mdi-chevron-left"
+      :css-has-back="hasBack === true"
+      @click="handleGoBack"
+    />
 
     <div class="layout_header-name">
       <RouterLink :to="localePath('/')" class="layout_header-name-link">
-        <v-img class="layout_header-name-link-logo" src="/img/favicon.ico" :alt="$t('system.systemName')"
-          :transition="imgTransition" />
+        <v-img
+          class="layout_header-name-link-logo"
+          src="/img/favicon.ico"
+          :alt="$t('system.systemName')"
+          :transition="imgTransition"
+        />
         <p class="layout_header-name-link-label">Parker Chen 的Vue實驗室</p>
       </RouterLink>
     </div>

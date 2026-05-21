@@ -1,4 +1,7 @@
-export function getScrollEndLimit(element: HTMLElement | null | undefined, vertical: boolean = true): number {
+export function getScrollEndLimit(
+  element: HTMLElement | null | undefined,
+  vertical: boolean = true
+): number {
   if (!element) return 0;
 
   const scrollEndLimit =

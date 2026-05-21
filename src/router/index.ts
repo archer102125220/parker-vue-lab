@@ -1,7 +1,7 @@
 import {
   createRouter,
   createWebHistory,
-  type RouteRecordRaw,
+  type RouteRecordRaw
 } from 'vue-router';
 
 import { routes } from 'vue-router/auto-routes';
@@ -9,7 +9,7 @@ import i18n, { createI18nRouter, defaultLang } from '@src/i18n';
 
 const router = createI18nRouter(createRouter, {
   history: createWebHistory(import.meta.env.BASE_URL),
-  routes: routes as RouteRecordRaw[],
+  routes: routes as RouteRecordRaw[]
 });
 
 router.beforeEach((to, from, next) => {

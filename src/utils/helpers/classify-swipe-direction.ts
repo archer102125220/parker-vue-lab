@@ -43,7 +43,7 @@ export function classifySwipeDirection(
 ): ClassifySwipeDirectionResult {
   const defaultOptions = {
     minSwipeDistance: 30, // 最小滑動距離
-    angleThreshold: 45    // 角度閾值，用於判斷是否接近水平或垂直 (0-90度)
+    angleThreshold: 45 // 角度閾值，用於判斷是否接近水平或垂直 (0-90度)
   };
   const config = { ...defaultOptions, ...options };
 
@@ -62,7 +62,7 @@ export function classifySwipeDirection(
   // atan2(dy, dx) 返回的角度是從正X軸到點(dx, dy)的弧度，範圍從 -PI 到 PI。
   const angleRad = Math.atan2(dy, dx);
   // 將弧度轉換為度數，並確保角度在 0 到 360 度之間方便判斷
-  const originalAngleDeg = Math.abs(angleRad * 180 / Math.PI); // 取絕對值，因為方向性由象限決定
+  const originalAngleDeg = Math.abs((angleRad * 180) / Math.PI); // 取絕對值，因為方向性由象限決定
   let angleDeg = originalAngleDeg;
 
   // 如果距離未達到最小滑動距離，則不判斷為有效滑動
@@ -81,7 +81,7 @@ export function classifySwipeDirection(
     if (angleDeg <= config.angleThreshold) {
       // 角度接近 0 度 (水平方向)
       isHorizontal = true;
-    } else if (angleDeg >= (90 - config.angleThreshold)) {
+    } else if (angleDeg >= 90 - config.angleThreshold) {
       // 角度接近 90 度 (垂直方向)
       isVertical = true;
     } else {

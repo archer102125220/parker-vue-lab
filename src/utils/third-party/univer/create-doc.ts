@@ -1,43 +1,43 @@
-import type { univerInstance } from "@src/utils/third-party/univer/index";
+import type { univerInstance } from '@src/utils/third-party/univer/index';
 
 export async function importDocx() {
   return await Promise.all([
-    import("@univerjs/presets"),
-    import("@univerjs/preset-docs-core"),
-    import("@univerjs/preset-docs-core/locales/zh-TW"),
-    import("@univerjs/preset-docs-core/locales/en-US"),
-    import("@univerjs/preset-docs-hyper-link"),
-    import("@univerjs/preset-docs-hyper-link/locales/zh-TW"),
-    import("@univerjs/preset-docs-hyper-link/locales/en-US"),
-    import("@univerjs/preset-docs-drawing"),
-    import("@univerjs/preset-docs-drawing/locales/zh-TW"),
-    import("@univerjs/preset-docs-drawing/locales/en-US"),
-    import("@univerjs/docs-quick-insert-ui"),
-    import("@univerjs/docs-quick-insert-ui/locale/zh-TW"),
-    import("@univerjs/docs-quick-insert-ui/locale/en-US"),
-    import("@univerjs/preset-docs-thread-comment"),
-    import("@univerjs/preset-docs-thread-comment/locales/zh-TW"),
-    import("@univerjs/preset-docs-thread-comment/locales/en-US"),
-    import("@univerjs/watermark"),
-    import("@univerjs/uniscript"),
-    import("@univerjs/preset-docs-advanced"),
-    import("@univerjs/preset-docs-advanced/locales/zh-TW"),
-    import("@univerjs/preset-docs-advanced/locales/en-US"),
+    import('@univerjs/presets'),
+    import('@univerjs/preset-docs-core'),
+    import('@univerjs/preset-docs-core/locales/zh-TW'),
+    import('@univerjs/preset-docs-core/locales/en-US'),
+    import('@univerjs/preset-docs-hyper-link'),
+    import('@univerjs/preset-docs-hyper-link/locales/zh-TW'),
+    import('@univerjs/preset-docs-hyper-link/locales/en-US'),
+    import('@univerjs/preset-docs-drawing'),
+    import('@univerjs/preset-docs-drawing/locales/zh-TW'),
+    import('@univerjs/preset-docs-drawing/locales/en-US'),
+    import('@univerjs/docs-quick-insert-ui'),
+    import('@univerjs/docs-quick-insert-ui/locale/zh-TW'),
+    import('@univerjs/docs-quick-insert-ui/locale/en-US'),
+    import('@univerjs/preset-docs-thread-comment'),
+    import('@univerjs/preset-docs-thread-comment/locales/zh-TW'),
+    import('@univerjs/preset-docs-thread-comment/locales/en-US'),
+    import('@univerjs/watermark'),
+    import('@univerjs/uniscript'),
+    import('@univerjs/preset-docs-advanced'),
+    import('@univerjs/preset-docs-advanced/locales/zh-TW'),
+    import('@univerjs/preset-docs-advanced/locales/en-US'),
 
-    import("@univerjs/watermark/facade"),
+    import('@univerjs/watermark/facade'),
 
-    import("@univerjs/preset-docs-core/lib/index.css"),
-    import("@univerjs/preset-docs-hyper-link/lib/index.css"),
-    import("@univerjs/preset-docs-drawing/lib/index.css"),
-    import("@univerjs/docs-quick-insert-ui/lib/index.css"),
-    import("@univerjs/preset-docs-thread-comment/lib/index.css"),
-    import("@univerjs/preset-docs-advanced/lib/index.css"),
+    import('@univerjs/preset-docs-core/lib/index.css'),
+    import('@univerjs/preset-docs-hyper-link/lib/index.css'),
+    import('@univerjs/preset-docs-drawing/lib/index.css'),
+    import('@univerjs/docs-quick-insert-ui/lib/index.css'),
+    import('@univerjs/preset-docs-thread-comment/lib/index.css'),
+    import('@univerjs/preset-docs-advanced/lib/index.css')
   ]);
 }
 
 export async function createDocInstance(
   container: HTMLElement,
-  locale: string,
+  locale: string
 ): Promise<univerInstance> {
   const [
     { createUniver, LocaleType, mergeLocales },
@@ -60,11 +60,11 @@ export async function createDocInstance(
     { UniverUniscriptPlugin: _UniverUniscriptPlugin },
     { UniverDocsAdvancedPreset },
     { default: UniverPresetDocsAdvancedZhTW },
-    { default: UniverPresetDocsAdvancedEnUS },
+    { default: UniverPresetDocsAdvancedEnUS }
   ] = await importDocx();
 
   const univerInstance = createUniver({
-    locale: locale.includes("zh") ? LocaleType.ZH_TW : LocaleType.EN_US,
+    locale: locale.includes('zh') ? LocaleType.ZH_TW : LocaleType.EN_US,
     locales: {
       [LocaleType.ZH_TW]: mergeLocales(
         UniverPresetDocsCoreZhTW,
@@ -72,7 +72,7 @@ export async function createDocInstance(
         UniverPresetDocsDrawingZhTW,
         UniverDocsQuickInsertUIZhTW,
         UniverPresetDocsThreadCommentZhTW,
-        UniverPresetDocsAdvancedZhTW,
+        UniverPresetDocsAdvancedZhTW
       ),
       [LocaleType.EN_US]: mergeLocales(
         UniverPresetDocsCoreEnUS,
@@ -80,8 +80,8 @@ export async function createDocInstance(
         UniverPresetDocsDrawingEnUS,
         UniverDocsQuickInsertUIEnUS,
         UniverPresetDocsThreadCommentEnUS,
-        UniverPresetDocsAdvancedEnUS,
-      ),
+        UniverPresetDocsAdvancedEnUS
+      )
     },
     presets: [
       UniverDocsCorePreset({ container }),
@@ -90,8 +90,8 @@ export async function createDocInstance(
       UniverDocsDrawingPreset(),
       UniverDocsAdvancedPreset({
         license: import.meta.env.VITE_UNIVER_LICENSE,
-        useWorker: true,
-      }),
+        useWorker: true
+      })
     ],
     plugins: [
       // [_UniverWatermarkPlugin, {
@@ -101,8 +101,8 @@ export async function createDocInstance(
       //   },
       // }],
       // __UniverUniscriptPlugin,
-      UniverDocsQuickInsertUIPlugin,
-    ],
+      UniverDocsQuickInsertUIPlugin
+    ]
   });
 
   // window.univerInstance = univerInstance;

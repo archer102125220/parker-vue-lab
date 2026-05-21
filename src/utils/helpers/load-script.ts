@@ -2,9 +2,9 @@ export function loadScript(
   id: string,
   src: string,
   attributes: Record<string, unknown> = {},
-  successDelay = 500,
+  successDelay = 500
 ): Promise<void> {
-  if (typeof document === "undefined") {
+  if (typeof document === 'undefined') {
     return Promise.resolve();
   }
 
@@ -13,7 +13,7 @@ export function loadScript(
   }
 
   return new Promise((resolve, reject) => {
-    const script = document.createElement("script");
+    const script = document.createElement('script');
     script.id = id;
     script.src = src;
 
@@ -25,7 +25,7 @@ export function loadScript(
     const errorEvent = attributes.error;
 
     script.onload = (...args) => {
-      if (typeof loadEvent === "function") {
+      if (typeof loadEvent === 'function') {
         loadEvent(...args);
       }
 
@@ -36,7 +36,7 @@ export function loadScript(
       }
     };
     script.onerror = (...args) => {
-      if (typeof errorEvent === "function") {
+      if (typeof errorEvent === 'function') {
         errorEvent(...args);
       }
       reject();

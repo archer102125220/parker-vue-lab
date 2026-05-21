@@ -1,7 +1,7 @@
 <script lang="ts">
-import type { JSONContent } from "@tiptap/core";
-import type { Slice } from "@tiptap/pm/model";
-import type { EditorEvents } from "@tiptap/vue-3";
+import type { JSONContent } from '@tiptap/core';
+import type { Slice } from '@tiptap/pm/model';
+import type { EditorEvents } from '@tiptap/vue-3';
 
 export { type Slice, type EditorEvents };
 </script>
@@ -9,23 +9,23 @@ export { type Slice, type EditorEvents };
 <script lang="ts" setup>
 // Tiptap + docx + mammoth
 
-import { computed, ref, watch } from "vue";
-import { EditorContent, useEditor } from "@tiptap/vue-3";
-import StarterKit from "@tiptap/starter-kit";
-import Image from "@tiptap/extension-image";
-import TextAlign from "@tiptap/extension-text-align";
-import { Table } from "@tiptap/extension-table";
-import TableRow from "@tiptap/extension-table-row";
-import TableHeader from "@tiptap/extension-table-header";
-import TableCell from "@tiptap/extension-table-cell";
-import Highlight from "@tiptap/extension-highlight";
+import { computed, ref, watch } from 'vue';
+import { EditorContent, useEditor } from '@tiptap/vue-3';
+import StarterKit from '@tiptap/starter-kit';
+import Image from '@tiptap/extension-image';
+import TextAlign from '@tiptap/extension-text-align';
+import { Table } from '@tiptap/extension-table';
+import TableRow from '@tiptap/extension-table-row';
+import TableHeader from '@tiptap/extension-table-header';
+import TableCell from '@tiptap/extension-table-cell';
+import Highlight from '@tiptap/extension-highlight';
 import {
   Color,
   FontFamily,
   FontSize,
-  TextStyle,
-} from "@tiptap/extension-text-style";
-import mammoth from "mammoth";
+  TextStyle
+} from '@tiptap/extension-text-style';
+import mammoth from 'mammoth';
 import {
   AlignmentType,
   Document,
@@ -41,11 +41,11 @@ import {
   WidthType,
   type FileChild,
   type IRunOptions,
-  type ParagraphChild,
-} from "docx";
+  type ParagraphChild
+} from 'docx';
 
 defineOptions({
-  inheritAttrs: false,
+  inheritAttrs: false
 });
 
 // 這三個 type 是 POC 自己用的資料形狀：歷程、匯入訊息、工具列按鈕。
@@ -99,65 +99,65 @@ const props = withDefaults(
       </ol>
       <p>新增章節按鈕會插入下一個章節標題與多層清單範本。</p>
     `,
-    statusPanel: false,
-  },
+    statusPanel: false
+  }
 );
 
 // 保留原本元件的事件介面，讓外層頁面之後仍可監聽 Tiptap 的生命週期與內容變更。
 const emits = defineEmits<{
-  "update:modelValue": [value: string];
+  'update:modelValue': [value: string];
   change: [
-    params: EditorEvents["update"],
-    editor: EditorEvents["update"]["editor"],
+    params: EditorEvents['update'],
+    editor: EditorEvents['update']['editor']
   ];
-  "change:html": [value: string];
-  "change:json": [value: JSONContent];
-  tiptapBeforeCreate: [params: EditorEvents["beforeCreate"]];
-  tiptapOnCreate: [params: EditorEvents["create"]];
-  tiptapOnUpdate: [params: EditorEvents["update"]];
-  tiptapOnSelectionUpdate: [params: EditorEvents["selectionUpdate"]];
-  tiptapOnTransaction: [params: EditorEvents["transaction"]];
-  tiptapOnFocus: [params: EditorEvents["focus"]];
-  tiptapOnBlur: [params: EditorEvents["blur"]];
+  'change:html': [value: string];
+  'change:json': [value: JSONContent];
+  tiptapBeforeCreate: [params: EditorEvents['beforeCreate']];
+  tiptapOnCreate: [params: EditorEvents['create']];
+  tiptapOnUpdate: [params: EditorEvents['update']];
+  tiptapOnSelectionUpdate: [params: EditorEvents['selectionUpdate']];
+  tiptapOnTransaction: [params: EditorEvents['transaction']];
+  tiptapOnFocus: [params: EditorEvents['focus']];
+  tiptapOnBlur: [params: EditorEvents['blur']];
   tiptapOnDestroy: [];
   tiptapOnPaste: [event: ClipboardEvent, slice: Slice];
   tiptapOnDrop: [event: DragEvent, slice: Slice, moved: boolean];
-  tiptapOnDelete: [params: EditorEvents["delete"]];
-  tiptapOnContentError: [params: EditorEvents["contentError"]];
+  tiptapOnDelete: [params: EditorEvents['delete']];
+  tiptapOnContentError: [params: EditorEvents['contentError']];
 }>();
 
 // 編輯器 UI 狀態。這些 ref 只影響 POC 畫面，不會直接寫進 Word 檔。
-const activeUserName = ref<string>("Parker");
-const newUserName = ref<string>("");
-const editorStatus = ref<string>("準備就緒");
+const activeUserName = ref<string>('Parker');
+const newUserName = ref<string>('');
+const editorStatus = ref<string>('準備就緒');
 const importMessages = ref<ImportMessage[]>([]);
 const revisionEntries = ref<RevisionEntry[]>([]);
 const docxInputElement = ref<HTMLInputElement | null>(null);
 const imageInputElement = ref<HTMLInputElement | null>(null);
-const selectedFontFamily = ref<string>("Arial");
-const selectedFontSize = ref<string>("16px");
-const selectedColor = ref<string>("#111827");
-const selectedHighlight = ref<string>("#fef3c7");
+const selectedFontFamily = ref<string>('Arial');
+const selectedFontSize = ref<string>('16px');
+const selectedColor = ref<string>('#111827');
+const selectedHighlight = ref<string>('#fef3c7');
 const isReadOnlyMode = ref<boolean>(false);
 const revisionSerial = ref<number>(0);
 
 // 工具列選項先用固定陣列示範；正式產品可改成後端設定或設計系統常數。
-const userNames = ref<string[]>(["Parker", "Reviewer A", "Reviewer B"]);
+const userNames = ref<string[]>(['Parker', 'Reviewer A', 'Reviewer B']);
 const fontFamilies = [
-  "Arial",
-  "Times New Roman",
-  "Noto Sans TC",
-  "Microsoft JhengHei",
-  "PMingLiU",
+  'Arial',
+  'Times New Roman',
+  'Noto Sans TC',
+  'Microsoft JhengHei',
+  'PMingLiU'
 ];
-const fontSizes = ["12px", "14px", "16px", "18px", "24px", "32px"];
-const colorOptions = ["#111827", "#1d4ed8", "#be123c", "#047857", "#7c2d12"];
+const fontSizes = ['12px', '14px', '16px', '18px', '24px', '32px'];
+const colorOptions = ['#111827', '#1d4ed8', '#be123c', '#047857', '#7c2d12'];
 const highlightOptions = [
-  "#fef3c7",
-  "#dbeafe",
-  "#dcfce7",
-  "#fee2e2",
-  "#f3e8ff",
+  '#fef3c7',
+  '#dbeafe',
+  '#dcfce7',
+  '#fee2e2',
+  '#f3e8ff'
 ];
 
 // Tiptap 的核心入口。extensions 決定編輯器支援哪些節點、mark、command 與 schema。
@@ -167,8 +167,8 @@ const editor = useEditor({
     // StarterKit 內含段落、標題、粗斜體、清單、undo/redo 等基本能力。
     StarterKit.configure({
       heading: {
-        levels: [1, 2, 3],
-      },
+        levels: [1, 2, 3]
+      }
     }),
     // TextStyle 系列讓文字能帶 inline style，例如字型、字級、字色。
     TextStyle,
@@ -177,87 +177,87 @@ const editor = useEditor({
     FontSize,
     // Highlight 需要 multicolor，工具列才能切換不同標記顏色。
     Highlight.configure({
-      multicolor: true,
+      multicolor: true
     }),
     // TextAlign 只套在 heading/paragraph，避免表格或圖片節點拿到不適合的屬性。
     TextAlign.configure({
-      types: ["heading", "paragraph"],
+      types: ['heading', 'paragraph']
     }),
     // 圖片先允許 base64，方便本機插圖與 mammoth 匯入圖片直接進編輯器。
     Image.configure({
       allowBase64: true,
-      inline: false,
+      inline: false
     }),
     // Tiptap 表格要同時註冊 Table / Row / Header / Cell 才能正常編輯。
     Table.configure({
-      resizable: true,
+      resizable: true
     }),
     TableRow,
     TableHeader,
-    TableCell,
+    TableCell
   ],
 
   // 以下事件主要是把 Tiptap 內部事件往外拋，並更新 POC 狀態與歷程。
   onBeforeCreate(params) {
-    emits("tiptapBeforeCreate", params);
+    emits('tiptapBeforeCreate', params);
   },
   onCreate(params) {
     if (props.statusPanel === true) {
-      editorStatus.value = "編輯器已建立";
+      editorStatus.value = '編輯器已建立';
     }
-    recordRevision("建立文件");
-    emits("tiptapOnCreate", params);
+    recordRevision('建立文件');
+    emits('tiptapOnCreate', params);
   },
   onUpdate(params) {
     const newHtml = params.editor.getHTML();
     const newJson = params.editor.getJSON();
 
     if (props.statusPanel === true) {
-      editorStatus.value = "內容已更新";
+      editorStatus.value = '內容已更新';
     }
-    recordRevision("編輯內容");
-    emits("tiptapOnUpdate", params);
-    emits("update:modelValue", newHtml);
-    emits("change:html", newHtml);
-    emits("change:json", newJson);
-    emits("change", params, params.editor);
+    recordRevision('編輯內容');
+    emits('tiptapOnUpdate', params);
+    emits('update:modelValue', newHtml);
+    emits('change:html', newHtml);
+    emits('change:json', newJson);
+    emits('change', params, params.editor);
   },
   onSelectionUpdate(params) {
-    emits("tiptapOnSelectionUpdate", params);
+    emits('tiptapOnSelectionUpdate', params);
   },
   onTransaction(params) {
-    emits("tiptapOnTransaction", params);
+    emits('tiptapOnTransaction', params);
   },
   onFocus(params) {
     if (props.statusPanel === true) {
-      editorStatus.value = "編輯中";
+      editorStatus.value = '編輯中';
     }
-    emits("tiptapOnFocus", params);
+    emits('tiptapOnFocus', params);
   },
   onBlur(params) {
     if (props.statusPanel === true) {
-      editorStatus.value = "已離開編輯區";
+      editorStatus.value = '已離開編輯區';
     }
-    emits("tiptapOnBlur", params);
+    emits('tiptapOnBlur', params);
   },
   onDestroy() {
-    emits("tiptapOnDestroy");
+    emits('tiptapOnDestroy');
   },
   onPaste(event: ClipboardEvent, slice: Slice) {
-    emits("tiptapOnPaste", event, slice);
+    emits('tiptapOnPaste', event, slice);
   },
   onDrop(event: DragEvent, slice: Slice, moved: boolean) {
-    emits("tiptapOnDrop", event, slice, moved);
+    emits('tiptapOnDrop', event, slice, moved);
   },
   onDelete(params) {
-    emits("tiptapOnDelete", params);
+    emits('tiptapOnDelete', params);
   },
   onContentError(params) {
     if (props.statusPanel === true) {
-      editorStatus.value = "內容格式不符合 schema";
+      editorStatus.value = '內容格式不符合 schema';
     }
-    emits("tiptapOnContentError", params);
-  },
+    emits('tiptapOnContentError', params);
+  }
 });
 
 const canUndo = computed<boolean>(() => editor.value?.can().undo() === true);
@@ -266,63 +266,63 @@ const canRedo = computed<boolean>(() => editor.value?.can().redo() === true);
 // 文字 mark 與清單按鈕用同一份設定產生，避免模板塞滿重複的 button。
 const toolbarButtons = computed<ToolbarButton[]>(() => [
   {
-    key: "bold",
-    label: "B",
-    title: "粗體",
+    key: 'bold',
+    label: 'B',
+    title: '粗體',
     action: () => editor.value?.chain().focus().toggleBold().run(),
-    isActive: () => editor.value?.isActive("bold") === true,
+    isActive: () => editor.value?.isActive('bold') === true
   },
   {
-    key: "italic",
-    label: "I",
-    title: "斜體",
+    key: 'italic',
+    label: 'I',
+    title: '斜體',
     action: () => editor.value?.chain().focus().toggleItalic().run(),
-    isActive: () => editor.value?.isActive("italic") === true,
+    isActive: () => editor.value?.isActive('italic') === true
   },
   {
-    key: "underline",
-    label: "U",
-    title: "底線",
+    key: 'underline',
+    label: 'U',
+    title: '底線',
     action: () => editor.value?.chain().focus().toggleUnderline().run(),
-    isActive: () => editor.value?.isActive("underline") === true,
+    isActive: () => editor.value?.isActive('underline') === true
   },
   {
-    key: "strike",
-    label: "S",
-    title: "刪除線",
+    key: 'strike',
+    label: 'S',
+    title: '刪除線',
     action: () => editor.value?.chain().focus().toggleStrike().run(),
-    isActive: () => editor.value?.isActive("strike") === true,
+    isActive: () => editor.value?.isActive('strike') === true
   },
   {
-    key: "h1",
-    label: "H1",
-    title: "標題一",
+    key: 'h1',
+    label: 'H1',
+    title: '標題一',
     action: () =>
       editor.value?.chain().focus().toggleHeading({ level: 1 }).run(),
-    isActive: () => editor.value?.isActive("heading", { level: 1 }) === true,
+    isActive: () => editor.value?.isActive('heading', { level: 1 }) === true
   },
   {
-    key: "h2",
-    label: "H2",
-    title: "標題二",
+    key: 'h2',
+    label: 'H2',
+    title: '標題二',
     action: () =>
       editor.value?.chain().focus().toggleHeading({ level: 2 }).run(),
-    isActive: () => editor.value?.isActive("heading", { level: 2 }) === true,
+    isActive: () => editor.value?.isActive('heading', { level: 2 }) === true
   },
   {
-    key: "ordered_list",
-    label: "OL",
-    title: "多層次編號清單",
+    key: 'ordered_list',
+    label: 'OL',
+    title: '多層次編號清單',
     action: () => editor.value?.chain().focus().toggleOrderedList().run(),
-    isActive: () => editor.value?.isActive("orderedList") === true,
+    isActive: () => editor.value?.isActive('orderedList') === true
   },
   {
-    key: "bullet_list",
-    label: "UL",
-    title: "項目符號清單",
+    key: 'bullet_list',
+    label: 'UL',
+    title: '項目符號清單',
     action: () => editor.value?.chain().focus().toggleBulletList().run(),
-    isActive: () => editor.value?.isActive("bulletList") === true,
-  },
+    isActive: () => editor.value?.isActive('bulletList') === true
+  }
 ]);
 
 watch(
@@ -335,7 +335,7 @@ watch(
     ) {
       editor.value.commands.setContent(newModelValue);
     }
-  },
+  }
 );
 
 watch(isReadOnlyMode, (newIsReadOnlyMode) => {
@@ -343,8 +343,8 @@ watch(isReadOnlyMode, (newIsReadOnlyMode) => {
   editor.value?.setEditable(newIsReadOnlyMode !== true);
   if (props.statusPanel === true) {
     editorStatus.value = newIsReadOnlyMode
-      ? "已切換為唯讀模式"
-      : "已切換為可編輯模式";
+      ? '已切換為唯讀模式'
+      : '已切換為可編輯模式';
   }
 });
 
@@ -364,17 +364,17 @@ function addUserName(): void {
   const trimmedUserName = newUserName.value.trim();
 
   if (
-    trimmedUserName !== "" &&
+    trimmedUserName !== '' &&
     userNames.value.includes(trimmedUserName) !== true
   ) {
     userNames.value = [...userNames.value, trimmedUserName];
   }
 
-  if (trimmedUserName !== "") {
+  if (trimmedUserName !== '') {
     activeUserName.value = trimmedUserName;
   }
 
-  newUserName.value = "";
+  newUserName.value = '';
 }
 
 function recordRevision(actionName: string): void {
@@ -392,10 +392,10 @@ function recordRevision(actionName: string): void {
       userName: activeUserName.value,
       actionName,
       html,
-      createdAt: new Date().toLocaleString("zh-TW"),
-      textLength: editor.value.getText().length,
+      createdAt: new Date().toLocaleString('zh-TW'),
+      textLength: editor.value.getText().length
     },
-    ...revisionEntries.value,
+    ...revisionEntries.value
   ].slice(0, 30);
 }
 
@@ -416,7 +416,7 @@ async function importDocxFile(event: Event): Promise<void> {
     return;
   }
 
-  editorStatus.value = "正在匯入 Word";
+  editorStatus.value = '正在匯入 Word';
   const arrayBuffer = await selectedFile.arrayBuffer();
   // mammoth 負責把 docx 解成 HTML；它偏重內容語意，不能保證完整保留 Word 版面。
   const result = await mammoth.convertToHtml(
@@ -427,7 +427,7 @@ async function importDocxFile(event: Event): Promise<void> {
         const base64String = await image.readAsBase64String();
 
         return {
-          src: `data:${image.contentType};base64,${base64String}`,
+          src: `data:${image.contentType};base64,${base64String}`
         };
       }),
       styleMap: [
@@ -435,18 +435,18 @@ async function importDocxFile(event: Event): Promise<void> {
         "p[style-name='Title'] => h1:fresh",
         "p[style-name='Heading 1'] => h1:fresh",
         "p[style-name='Heading 2'] => h2:fresh",
-        "p[style-name='Heading 3'] => h3:fresh",
-      ],
-    },
+        "p[style-name='Heading 3'] => h3:fresh"
+      ]
+    }
   );
 
   importMessages.value = result.messages.map((message, index) => ({
     id: `message_${Date.now()}_${index}`,
     type: message.type,
     message:
-      message.type === "error"
+      message.type === 'error'
         ? `${message.message}: ${String(message.error)}`
-        : message.message,
+        : message.message
   }));
 
   // mammoth 輸出的 HTML 直接交給 Tiptap setContent，等於完成「開啟 Word」。
@@ -454,7 +454,7 @@ async function importDocxFile(event: Event): Promise<void> {
   editorStatus.value = `已匯入 ${selectedFile.name}`;
   revisionEntries.value = [];
   recordRevision(`匯入 ${selectedFile.name}`);
-  inputElement.value = "";
+  inputElement.value = '';
 }
 
 async function insertImageFile(event: Event): Promise<void> {
@@ -474,7 +474,7 @@ async function insertImageFile(event: Event): Promise<void> {
     .run();
   editorStatus.value = `已插入圖片 ${selectedFile.name}`;
   recordRevision(`插入圖片 ${selectedFile.name}`);
-  inputElement.value = "";
+  inputElement.value = '';
 }
 
 function readFileAsDataUrl(file: File): Promise<string> {
@@ -482,17 +482,17 @@ function readFileAsDataUrl(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
 
-    reader.addEventListener("load", () => {
-      if (typeof reader.result === "string") {
+    reader.addEventListener('load', () => {
+      if (typeof reader.result === 'string') {
         resolve(reader.result);
         return;
       }
 
-      reject(new Error("圖片讀取結果不是 data URL"));
+      reject(new Error('圖片讀取結果不是 data URL'));
     });
 
-    reader.addEventListener("error", () => {
-      reject(new Error("圖片讀取失敗"));
+    reader.addEventListener('error', () => {
+      reject(new Error('圖片讀取失敗'));
     });
 
     reader.readAsDataURL(file);
@@ -521,15 +521,15 @@ function applyHighlightColor(): void {
 }
 
 function setTextAlign(
-  alignment: "left" | "center" | "right" | "justify",
+  alignment: 'left' | 'center' | 'right' | 'justify'
 ): void {
   editor.value?.chain().focus().setTextAlign(alignment).run();
 }
 
 function indentList(): void {
   // sinkListItem / liftListItem 是 ProseMirror 清單縮排；只在游標位於 listItem 時可用。
-  if (editor.value?.can().sinkListItem("listItem") === true) {
-    editor.value.chain().focus().sinkListItem("listItem").run();
+  if (editor.value?.can().sinkListItem('listItem') === true) {
+    editor.value.chain().focus().sinkListItem('listItem').run();
     return;
   }
 
@@ -537,8 +537,8 @@ function indentList(): void {
 }
 
 function outdentList(): void {
-  if (editor.value?.can().liftListItem("listItem") === true) {
-    editor.value.chain().focus().liftListItem("listItem").run();
+  if (editor.value?.can().liftListItem('listItem') === true) {
+    editor.value.chain().focus().liftListItem('listItem').run();
     return;
   }
 
@@ -552,8 +552,8 @@ function insertTable(): void {
     .focus()
     .insertTable({ rows: 3, cols: 4, withHeaderRow: true })
     .run();
-  editorStatus.value = "已插入 3x4 表格";
-  recordRevision("插入表格");
+  editorStatus.value = '已插入 3x4 表格';
+  recordRevision('插入表格');
 }
 
 function addTableColumn(): void {
@@ -597,7 +597,7 @@ function addChapterTemplate(): void {
 
 function getNextChapterNumber(): number {
   // POC 先用 HTML 文字掃描「第 N 章」。正式產品可改存章節 node attribute 更穩。
-  const html = editor.value?.getHTML() ?? "";
+  const html = editor.value?.getHTML() ?? '';
   const matches = html.match(/第\s*\d+\s*章/g);
 
   if (matches === null) {
@@ -612,152 +612,152 @@ async function exportDocxFile(): Promise<void> {
     return;
   }
 
-  editorStatus.value = "正在產生 Word";
+  editorStatus.value = '正在產生 Word';
 
   // docx 套件不能直接吃 Tiptap HTML，所以先用 DOMParser 解析，再轉成 docx nodes。
   const parser = new DOMParser();
   const parsedDocument = parser.parseFromString(
     editor.value.getHTML(),
-    "text/html",
+    'text/html'
   );
   const children = htmlNodesToDocxChildren(
     Array.from(parsedDocument.body.children),
-    0,
+    0
   );
 
   const documentFile = new Document({
-    creator: "parker-vue-lab",
-    title: "Tiptap Word POC",
-    description: "Tiptap + mammoth + docx proof of concept",
+    creator: 'parker-vue-lab',
+    title: 'Tiptap Word POC',
+    description: 'Tiptap + mammoth + docx proof of concept',
     numbering: {
       config: [
         {
-          reference: "zh-multilevel-list",
+          reference: 'zh-multilevel-list',
           // Word 多層清單設定：每一層定義格式、顯示文字與縮排。
           levels: [
             {
               level: 0,
               format: LevelFormat.CHINESE_COUNTING,
-              text: "%1、",
+              text: '%1、',
               alignment: AlignmentType.START,
-              style: { paragraph: { indent: { left: 720, hanging: 360 } } },
+              style: { paragraph: { indent: { left: 720, hanging: 360 } } }
             },
             {
               level: 1,
               format: LevelFormat.CHINESE_COUNTING,
-              text: "(%2)",
+              text: '(%2)',
               alignment: AlignmentType.START,
-              style: { paragraph: { indent: { left: 1440, hanging: 360 } } },
+              style: { paragraph: { indent: { left: 1440, hanging: 360 } } }
             },
             {
               level: 2,
               format: LevelFormat.DECIMAL,
-              text: "%3、",
+              text: '%3、',
               alignment: AlignmentType.START,
-              style: { paragraph: { indent: { left: 2160, hanging: 360 } } },
+              style: { paragraph: { indent: { left: 2160, hanging: 360 } } }
             },
             {
               level: 3,
               format: LevelFormat.DECIMAL_ENCLOSED_PARENTHESES,
-              text: "%4",
+              text: '%4',
               alignment: AlignmentType.START,
-              style: { paragraph: { indent: { left: 2880, hanging: 360 } } },
-            },
-          ],
-        },
-      ],
+              style: { paragraph: { indent: { left: 2880, hanging: 360 } } }
+            }
+          ]
+        }
+      ]
     },
     sections: [
       {
         properties: {},
-        children: children.length > 0 ? children : [new Paragraph("空白文件")],
-      },
-    ],
+        children: children.length > 0 ? children : [new Paragraph('空白文件')]
+      }
+    ]
   });
 
   // Packer.toBlob 產出瀏覽器可下載的 .docx，再用暫時 a 標籤觸發下載。
   const blob = await Packer.toBlob(documentFile);
   const url = URL.createObjectURL(blob);
-  const anchorElement = document.createElement("a");
+  const anchorElement = document.createElement('a');
 
   anchorElement.href = url;
   anchorElement.download = `tiptap-word-poc-${Date.now()}.docx`;
   anchorElement.click();
   URL.revokeObjectURL(url);
-  editorStatus.value = "Word 已另存";
-  recordRevision("另存 Word");
+  editorStatus.value = 'Word 已另存';
+  recordRevision('另存 Word');
 }
 
 // 以下是一組「HTML -> docx」轉換器。POC 只處理常見節點，複雜 Word 版面仍需擴充。
 function htmlNodesToDocxChildren(
   elements: Element[],
-  listLevel: number,
+  listLevel: number
 ): FileChild[] {
   return elements.flatMap((element) =>
-    htmlElementToDocxChildren(element, listLevel),
+    htmlElementToDocxChildren(element, listLevel)
   );
 }
 
 function htmlElementToDocxChildren(
   element: Element,
-  listLevel: number,
+  listLevel: number
 ): FileChild[] {
   const tagName = element.tagName.toLowerCase();
 
   // block-level HTML 轉成 docx 的 FileChild，例如 Paragraph 或 Table。
-  if (tagName === "h1") {
+  if (tagName === 'h1') {
     return [
       new Paragraph({
         heading: HeadingLevel.HEADING_1,
-        children: htmlInlineChildrenToRuns(element),
-      }),
+        children: htmlInlineChildrenToRuns(element)
+      })
     ];
   }
 
-  if (tagName === "h2") {
+  if (tagName === 'h2') {
     return [
       new Paragraph({
         heading: HeadingLevel.HEADING_2,
-        children: htmlInlineChildrenToRuns(element),
-      }),
+        children: htmlInlineChildrenToRuns(element)
+      })
     ];
   }
 
-  if (tagName === "h3") {
+  if (tagName === 'h3') {
     return [
       new Paragraph({
         heading: HeadingLevel.HEADING_3,
-        children: htmlInlineChildrenToRuns(element),
-      }),
+        children: htmlInlineChildrenToRuns(element)
+      })
     ];
   }
 
-  if (tagName === "p") {
+  if (tagName === 'p') {
     return [new Paragraph({ children: htmlInlineChildrenToRuns(element) })];
   }
 
-  if (tagName === "ol") {
+  if (tagName === 'ol') {
     return htmlOrderedListToDocxChildren(element, listLevel);
   }
 
-  if (tagName === "ul") {
+  if (tagName === 'ul') {
     return htmlUnorderedListToDocxChildren(element, listLevel);
   }
 
-  if (tagName === "table") {
+  if (tagName === 'table') {
     return [htmlTableToDocxTable(element)];
   }
 
-  if (tagName === "blockquote") {
+  if (tagName === 'blockquote') {
     return [
       new Paragraph({
         children: htmlInlineChildrenToRuns(element),
-        indent: { left: 720 },
-      }),
+        indent: { left: 720 }
+      })
     ];
   }
 
-  if (tagName === "img") {
+  if (tagName === 'img') {
     const imageRun = htmlImageElementToRun(element);
 
     return imageRun === null ? [] : [new Paragraph({ children: [imageRun] })];
@@ -768,11 +768,11 @@ function htmlElementToDocxChildren(
 
 function htmlOrderedListToDocxChildren(
   element: Element,
-  listLevel: number,
+  listLevel: number
 ): FileChild[] {
   // ordered list 會套用上方 Document.numbering 裡的 zh-multilevel-list 設定。
   return Array.from(element.children).flatMap((childElement) => {
-    if (childElement.tagName.toLowerCase() !== "li") {
+    if (childElement.tagName.toLowerCase() !== 'li') {
       return htmlElementToDocxChildren(childElement, listLevel);
     }
 
@@ -781,32 +781,32 @@ function htmlOrderedListToDocxChildren(
       (nestedElement) => {
         const nestedTagName = nestedElement.tagName.toLowerCase();
 
-        return nestedTagName === "ol" || nestedTagName === "ul";
-      },
+        return nestedTagName === 'ol' || nestedTagName === 'ul';
+      }
     );
 
     return [
       new Paragraph({
         children: paragraphRuns,
         numbering: {
-          reference: "zh-multilevel-list",
-          level: Math.min(listLevel, 3),
-        },
+          reference: 'zh-multilevel-list',
+          level: Math.min(listLevel, 3)
+        }
       }),
       ...nestedLists.flatMap((nestedElement) =>
-        htmlElementToDocxChildren(nestedElement, listLevel + 1),
-      ),
+        htmlElementToDocxChildren(nestedElement, listLevel + 1)
+      )
     ];
   });
 }
 
 function htmlUnorderedListToDocxChildren(
   element: Element,
-  listLevel: number,
+  listLevel: number
 ): FileChild[] {
   // bullet list 使用 docx 內建 bullet；本 POC 主要驗證中文 ordered list。
   return Array.from(element.children).flatMap((childElement) => {
-    if (childElement.tagName.toLowerCase() !== "li") {
+    if (childElement.tagName.toLowerCase() !== 'li') {
       return htmlElementToDocxChildren(childElement, listLevel);
     }
 
@@ -814,9 +814,9 @@ function htmlUnorderedListToDocxChildren(
       new Paragraph({
         children: htmlListItemToRuns(childElement),
         bullet: {
-          level: Math.min(listLevel, 3),
-        },
-      }),
+          level: Math.min(listLevel, 3)
+        }
+      })
     ];
   });
 }
@@ -828,7 +828,7 @@ function htmlListItemToRuns(element: Element): ParagraphChild[] {
       const nestedElement = childNode as unknown as Element;
       const nestedTagName = nestedElement.tagName.toLowerCase();
 
-      return nestedTagName !== "ol" && nestedTagName !== "ul";
+      return nestedTagName !== 'ol' && nestedTagName !== 'ul';
     }
 
     return true;
@@ -839,12 +839,12 @@ function htmlListItemToRuns(element: Element): ParagraphChild[] {
 
 function htmlTableToDocxTable(element: Element): DocxTable {
   // HTML table 逐列逐格轉成 docx TableRow / TableCell。
-  const rowElements = Array.from(element.querySelectorAll("tr"));
+  const rowElements = Array.from(element.querySelectorAll('tr'));
 
   return new DocxTable({
     width: {
       size: 100,
-      type: WidthType.PERCENTAGE,
+      type: WidthType.PERCENTAGE
     },
     rows: rowElements.map((rowElement) => {
       const cellElements = Array.from(rowElement.children);
@@ -859,13 +859,13 @@ function htmlTableToDocxTable(element: Element): DocxTable {
                 children:
                   paragraphChildren.length > 0
                     ? paragraphChildren
-                    : [new TextRun("")],
-              }),
-            ],
+                    : [new TextRun('')]
+              })
+            ]
           });
-        }),
+        })
       });
-    }),
+    })
   });
 }
 
@@ -877,18 +877,18 @@ function htmlInlineNodesToRuns(nodes: ChildNode[]): ParagraphChild[] {
   // inline 節點最後都會變成 TextRun 或 ImageRun，這是 docx paragraph 的子節點。
   const runs = nodes.flatMap((childNode) => htmlNodeToRuns(childNode, {}));
 
-  return runs.length > 0 ? runs : [new TextRun("")];
+  return runs.length > 0 ? runs : [new TextRun('')];
 }
 
 function htmlNodeToRuns(
   node: ChildNode,
-  inheritedOptions: IRunOptions,
+  inheritedOptions: IRunOptions
 ): ParagraphChild[] {
   // 遞迴繼承粗體、斜體、字型等樣式，避免 <strong><em>文字</em></strong> 遺失格式。
   if (node.nodeType === Node.TEXT_NODE) {
-    const textContent = node.textContent ?? "";
+    const textContent = node.textContent ?? '';
 
-    return textContent !== ""
+    return textContent !== ''
       ? [new TextRun({ ...inheritedOptions, text: textContent })]
       : [];
   }
@@ -900,11 +900,11 @@ function htmlNodeToRuns(
   const element = node as unknown as HTMLElement;
   const tagName = element.tagName.toLowerCase();
 
-  if (tagName === "br") {
-    return [new TextRun({ text: "", break: 1 })];
+  if (tagName === 'br') {
+    return [new TextRun({ text: '', break: 1 })];
   }
 
-  if (tagName === "img") {
+  if (tagName === 'img') {
     const imageRun = htmlImageElementToRun(element);
 
     return imageRun === null ? [] : [imageRun];
@@ -913,33 +913,33 @@ function htmlNodeToRuns(
   const nextOptions: IRunOptions = {
     ...inheritedOptions,
     bold:
-      inheritedOptions.bold === true || tagName === "strong" || tagName === "b",
+      inheritedOptions.bold === true || tagName === 'strong' || tagName === 'b',
     italics:
-      inheritedOptions.italics === true || tagName === "em" || tagName === "i",
-    underline: tagName === "u" ? {} : inheritedOptions.underline,
+      inheritedOptions.italics === true || tagName === 'em' || tagName === 'i',
+    underline: tagName === 'u' ? {} : inheritedOptions.underline,
     strike:
       inheritedOptions.strike === true ||
-      tagName === "s" ||
-      tagName === "strike",
+      tagName === 's' ||
+      tagName === 'strike',
     color: normalizeCssColor(element.style.color) ?? inheritedOptions.color,
     font:
-      element.style.fontFamily !== ""
+      element.style.fontFamily !== ''
         ? element.style.fontFamily
         : inheritedOptions.font,
     size:
-      cssFontSizeToHalfPoints(element.style.fontSize) ?? inheritedOptions.size,
+      cssFontSizeToHalfPoints(element.style.fontSize) ?? inheritedOptions.size
   };
 
   return Array.from(element.childNodes).flatMap((childNode) =>
-    htmlNodeToRuns(childNode, nextOptions),
+    htmlNodeToRuns(childNode, nextOptions)
   );
 }
 
 function htmlImageElementToRun(element: Element): ImageRun | null {
   // docx 只能寫入實際圖片資料；外部 URL 圖片在此 POC 先不轉換。
-  const src = element.getAttribute("src");
+  const src = element.getAttribute('src');
 
-  if (src === null || src.startsWith("data:image/") !== true) {
+  if (src === null || src.startsWith('data:image/') !== true) {
     return null;
   }
 
@@ -954,31 +954,31 @@ function htmlImageElementToRun(element: Element): ImageRun | null {
     data: imageData.data,
     transformation: {
       width: 420,
-      height: 260,
-    },
+      height: 260
+    }
   });
 }
 
 function dataUrlToImageData(
-  dataUrl: string,
-): { type: "jpg" | "png" | "gif" | "bmp"; data: Uint8Array } | null {
+  dataUrl: string
+): { type: 'jpg' | 'png' | 'gif' | 'bmp'; data: Uint8Array } | null {
   // 將 data URL 拆成圖片格式與二進位資料，供 docx ImageRun 使用。
   const match = /^data:image\/(png|jpeg|jpg|gif|bmp);base64,(.+)$/.exec(
-    dataUrl,
+    dataUrl
   );
 
   if (match === null) {
     return null;
   }
 
-  const imageType = match[1] === "jpeg" ? "jpg" : match[1];
+  const imageType = match[1] === 'jpeg' ? 'jpg' : match[1];
   const base64Data = match[2];
 
   if (
-    (imageType === "jpg" ||
-      imageType === "png" ||
-      imageType === "gif" ||
-      imageType === "bmp") &&
+    (imageType === 'jpg' ||
+      imageType === 'png' ||
+      imageType === 'gif' ||
+      imageType === 'bmp') &&
     base64Data !== undefined
   ) {
     const binaryString = window.atob(base64Data);
@@ -990,7 +990,7 @@ function dataUrlToImageData(
 
     return {
       type: imageType,
-      data: bytes,
+      data: bytes
     };
   }
 
@@ -999,12 +999,12 @@ function dataUrlToImageData(
 
 function normalizeCssColor(color: string): string | undefined {
   // docx 色碼不需要 #，且此 POC 只處理已經是 hex 的 CSS color。
-  if (color === "") {
+  if (color === '') {
     return undefined;
   }
 
-  if (color.startsWith("#")) {
-    return color.replace("#", "");
+  if (color.startsWith('#')) {
+    return color.replace('#', '');
   }
 
   return undefined;
@@ -1012,11 +1012,11 @@ function normalizeCssColor(color: string): string | undefined {
 
 function cssFontSizeToHalfPoints(fontSize: string): number | undefined {
   // docx 的 size 單位是 half-points；16px 約等於 12pt，也就是 24 half-points。
-  if (fontSize.endsWith("px") !== true) {
+  if (fontSize.endsWith('px') !== true) {
     return undefined;
   }
 
-  const parsedSize = Number.parseFloat(fontSize.replace("px", ""));
+  const parsedSize = Number.parseFloat(fontSize.replace('px', ''));
 
   if (Number.isFinite(parsedSize) !== true) {
     return undefined;
@@ -1026,7 +1026,7 @@ function cssFontSizeToHalfPoints(fontSize: string): number | undefined {
 }
 
 defineExpose({
-  editor,
+  editor
 });
 </script>
 
@@ -1438,7 +1438,7 @@ defineExpose({
 .tiptap_doc_editor-doc_button_chapter,
 .tiptap_doc_editor-doc_button_undo,
 .tiptap_doc_editor-doc_button_redo,
-[class^="tiptap_doc_editor-tool_button_"] {
+[class^='tiptap_doc_editor-tool_button_'] {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1466,7 +1466,7 @@ defineExpose({
   cursor: not-allowed;
 }
 
-[class^="tiptap_doc_editor-tool_button_"][css-is-active="true"] {
+[class^='tiptap_doc_editor-tool_button_'][css-is-active='true'] {
   border-color: #2563eb;
   color: #ffffff;
   background: #2563eb;
@@ -1613,19 +1613,19 @@ defineExpose({
   width: 32px;
   color: #1f2937;
   text-align: right;
-  content: counter(tiptap-doc-editor-list, cjk-ideographic) "、";
+  content: counter(tiptap-doc-editor-list, cjk-ideographic) '、';
 }
 
 .tiptap_doc_editor-canvas :deep(ol ol > li::before) {
-  content: "(" counter(tiptap-doc-editor-list, cjk-ideographic) ")";
+  content: '(' counter(tiptap-doc-editor-list, cjk-ideographic) ')';
 }
 
 .tiptap_doc_editor-canvas :deep(ol ol ol > li::before) {
-  content: counter(tiptap-doc-editor-list, decimal) "、";
+  content: counter(tiptap-doc-editor-list, decimal) '、';
 }
 
 .tiptap_doc_editor-canvas :deep(ol ol ol ol > li::before) {
-  content: "(" counter(tiptap-doc-editor-list, decimal) ")";
+  content: '(' counter(tiptap-doc-editor-list, decimal) ')';
 }
 
 .tiptap_doc_editor-canvas :deep(ul) {
@@ -1685,13 +1685,13 @@ defineExpose({
 .tiptap_doc_editor-support_item_list,
 .tiptap_doc_editor-support_item_region,
 .tiptap_doc_editor-support_item_excel,
-[class^="tiptap_doc_editor-import_message_"] {
+[class^='tiptap_doc_editor-import_message_'] {
   font-size: 13px;
   line-height: 1.55;
   color: #475569;
 }
 
-[class^="tiptap_doc_editor-history_item_"] {
+[class^='tiptap_doc_editor-history_item_'] {
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 4px 8px;

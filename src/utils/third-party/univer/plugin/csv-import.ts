@@ -1,11 +1,11 @@
 import type {
   ISetRangeValuesMutationParams,
   ISetWorksheetColumnCountMutationParams,
-  ISetWorksheetRowCountMutationParams,
-} from '@univerjs/preset-sheets-core'
-import type { ICommand, IMutationInfo, Workbook } from '@univerjs/presets'
-import { Observable } from 'rxjs'
-import { FolderIcon } from '@univerjs/icons'
+  ISetWorksheetRowCountMutationParams
+} from '@univerjs/preset-sheets-core';
+import type { ICommand, IMutationInfo, Workbook } from '@univerjs/presets';
+import { Observable } from 'rxjs';
+import { FolderIcon } from '@univerjs/icons';
 import {
   ComponentManager,
   IMenuManagerService,
@@ -16,8 +16,8 @@ import {
   SetWorksheetColumnCountMutation,
   SetWorksheetColumnCountUndoMutationFactory,
   SetWorksheetRowCountMutation,
-  SetWorksheetRowCountUndoMutationFactory,
-} from '@univerjs/preset-sheets-core'
+  SetWorksheetRowCountUndoMutationFactory
+} from '@univerjs/preset-sheets-core';
 import {
   CommandType,
   covertCellValues,
@@ -28,28 +28,30 @@ import {
   IUniverInstanceService,
   Plugin,
   sequenceExecute,
-  UniverInstanceType,
-} from '@univerjs/presets'
-import { handleSelectCSVFile } from '@src/utils/helpers/select-csv-file'
+  UniverInstanceType
+} from '@univerjs/presets';
+import { handleSelectCSVFile } from '@src/utils/helpers/select-csv-file';
 
 /**
  * Import CSV Button Plugin
  * A simple Plugin example, show how to write a plugin.
  */
 export class ImportCSVButtonPlugin extends Plugin {
-  static override pluginName = 'import-csv-plugin'
+  static override pluginName = 'import-csv-plugin';
 
   constructor(
     // inject injector, required
     @Inject(Injector) readonly _injector: Injector,
     // inject menu service, to add toolbar button
-    @Inject(IMenuManagerService) private readonly menuManagerService: IMenuManagerService,
+    @Inject(IMenuManagerService)
+    private readonly menuManagerService: IMenuManagerService,
     // inject command service, to register command handler
     @Inject(ICommandService) private readonly commandService: ICommandService,
     // inject component manager, to register icon component
-    @Inject(ComponentManager) private readonly componentManager: ComponentManager,
+    @Inject(ComponentManager)
+    private readonly componentManager: ComponentManager
   ) {
-    super()
+    super();
   }
 
   /**
@@ -61,92 +63,118 @@ export class ImportCSVButtonPlugin extends Plugin {
 
   override onStarting() {
     // register icon component
-    this.componentManager.register('FolderIcon', FolderIcon)
+    this.componentManager.register('FolderIcon', FolderIcon);
 
-    const buttonId = 'import-csv-button'
+    const buttonId = 'import-csv-button';
 
     const command: ICommand = {
       type: CommandType.OPERATION,
       id: buttonId,
       handler: (accessor) => {
         // inject univer instance service
-        const univerInstanceService = accessor.get(IUniverInstanceService)
-        const commandService = accessor.get(ICommandService)
-        const undoRedoService = accessor.get(IUndoRedoService)
+        const univerInstanceService = accessor.get(IUniverInstanceService);
+        const commandService = accessor.get(ICommandService);
+        const undoRedoService = accessor.get(IUndoRedoService);
 
         // get current sheet
-        const worksheet = univerInstanceService.getCurrentUnitOfType<Workbook>(UniverInstanceType.UNIVER_SHEET)!.getActiveSheet()
-        const unitId = worksheet.getUnitId()
-        const subUnitId = worksheet.getSheetId()
+        const worksheet = univerInstanceService
+          .getCurrentUnitOfType<Workbook>(UniverInstanceType.UNIVER_SHEET)!
+          .getActiveSheet();
+        const unitId = worksheet.getUnitId();
+        const subUnitId = worksheet.getSheetId();
 
         // wait user select csv file, then assemble multiple mutations operation to enable correct undo/redo
         return handleSelectCSVFile(({ data, rowsCount, colsCount }) => {
-          const redoMutations: IMutationInfo[] = []
-          const undoMutations: IMutationInfo[] = []
+          const redoMutations: IMutationInfo[] = [];
+          const undoMutations: IMutationInfo[] = [];
 
           // set sheet row count
-          const setRowCountMutationRedoParams: ISetWorksheetRowCountMutationParams = {
-            unitId,
-            subUnitId,
-            rowCount: rowsCount,
-          }
-          const setRowCountMutationUndoParams: ISetWorksheetRowCountMutationParams = SetWorksheetRowCountUndoMutationFactory(
-            accessor,
-            setRowCountMutationRedoParams,
-          )
-          redoMutations.push({ id: SetWorksheetRowCountMutation.id, params: setRowCountMutationRedoParams })
-          undoMutations.push({ id: SetWorksheetRowCountMutation.id, params: setRowCountMutationUndoParams })
+          const setRowCountMutationRedoParams: ISetWorksheetRowCountMutationParams =
+            {
+              unitId,
+              subUnitId,
+              rowCount: rowsCount
+            };
+          const setRowCountMutationUndoParams: ISetWorksheetRowCountMutationParams =
+            SetWorksheetRowCountUndoMutationFactory(
+              accessor,
+              setRowCountMutationRedoParams
+            );
+          redoMutations.push({
+            id: SetWorksheetRowCountMutation.id,
+            params: setRowCountMutationRedoParams
+          });
+          undoMutations.push({
+            id: SetWorksheetRowCountMutation.id,
+            params: setRowCountMutationUndoParams
+          });
 
           // set sheet column count
-          const setColumnCountMutationRedoParams: ISetWorksheetColumnCountMutationParams = {
-            unitId,
-            subUnitId,
-            columnCount: colsCount,
-          }
-          const setColumnCountMutationUndoParams: ISetWorksheetColumnCountMutationParams = SetWorksheetColumnCountUndoMutationFactory(
-            accessor,
-            setColumnCountMutationRedoParams,
-          )
-          redoMutations.push({ id: SetWorksheetColumnCountMutation.id, params: setColumnCountMutationRedoParams })
-          undoMutations.unshift({ id: SetWorksheetColumnCountMutation.id, params: setColumnCountMutationUndoParams })
+          const setColumnCountMutationRedoParams: ISetWorksheetColumnCountMutationParams =
+            {
+              unitId,
+              subUnitId,
+              columnCount: colsCount
+            };
+          const setColumnCountMutationUndoParams: ISetWorksheetColumnCountMutationParams =
+            SetWorksheetColumnCountUndoMutationFactory(
+              accessor,
+              setColumnCountMutationRedoParams
+            );
+          redoMutations.push({
+            id: SetWorksheetColumnCountMutation.id,
+            params: setColumnCountMutationRedoParams
+          });
+          undoMutations.unshift({
+            id: SetWorksheetColumnCountMutation.id,
+            params: setColumnCountMutationUndoParams
+          });
 
           // parse csv to univer data
           const cellValue = covertCellValues(data, {
             startColumn: 0, // start column index
             startRow: 0, // start row index
             endColumn: colsCount - 1, // end column index
-            endRow: rowsCount - 1, // end row index
-          })
+            endRow: rowsCount - 1 // end row index
+          });
 
           // set sheet data
-          const setRangeValuesMutationRedoParams: ISetRangeValuesMutationParams = {
-            unitId,
-            subUnitId,
-            cellValue,
-          }
-          const setRangeValuesMutationUndoParams: ISetRangeValuesMutationParams = SetRangeValuesUndoMutationFactory(
-            accessor,
-            setRangeValuesMutationRedoParams,
-          )
-          redoMutations.push({ id: SetRangeValuesMutation.id, params: setRangeValuesMutationRedoParams })
-          undoMutations.unshift({ id: SetRangeValuesMutation.id, params: setRangeValuesMutationUndoParams })
+          const setRangeValuesMutationRedoParams: ISetRangeValuesMutationParams =
+            {
+              unitId,
+              subUnitId,
+              cellValue
+            };
+          const setRangeValuesMutationUndoParams: ISetRangeValuesMutationParams =
+            SetRangeValuesUndoMutationFactory(
+              accessor,
+              setRangeValuesMutationRedoParams
+            );
+          redoMutations.push({
+            id: SetRangeValuesMutation.id,
+            params: setRangeValuesMutationRedoParams
+          });
+          undoMutations.unshift({
+            id: SetRangeValuesMutation.id,
+            params: setRangeValuesMutationUndoParams
+          });
 
-          const result = sequenceExecute(redoMutations, commandService)
+          const result = sequenceExecute(redoMutations, commandService);
 
           if (result.result) {
             undoRedoService.pushUndoRedo({
               unitID: unitId,
               undoMutations,
-              redoMutations,
-            })
+              redoMutations
+            });
 
-            return true
+            return true;
           }
 
-          return false
-        })
-      },
-    }
+          return false;
+        });
+      }
+    };
 
     const menuItemFactory = () => ({
       id: buttonId,
@@ -155,28 +183,32 @@ export class ImportCSVButtonPlugin extends Plugin {
       icon: 'FolderIcon', // icon name
       type: MenuItemType.BUTTON,
       hidden$: new Observable<boolean>((subscriber) => {
-        const univerInstanceService = this._injector.get(IUniverInstanceService)
-        const subscription = univerInstanceService.focused$.subscribe((unitId) => {
-          if (!unitId) {
-            subscriber.next(true)
-            return
+        const univerInstanceService = this._injector.get(
+          IUniverInstanceService
+        );
+        const subscription = univerInstanceService.focused$.subscribe(
+          (unitId) => {
+            if (!unitId) {
+              subscriber.next(true);
+              return;
+            }
+            const unit = univerInstanceService.getUnit(unitId);
+            subscriber.next(unit?.type !== UniverInstanceType.UNIVER_SHEET);
           }
-          const unit = univerInstanceService.getUnit(unitId)
-          subscriber.next(unit?.type !== UniverInstanceType.UNIVER_SHEET)
-        })
-        return () => subscription.unsubscribe()
-      }),
-    })
+        );
+        return () => subscription.unsubscribe();
+      })
+    });
     this.menuManagerService.mergeMenu({
       [RibbonStartGroup.OTHERS]: {
         [buttonId]: {
           order: 10,
-          menuItemFactory,
-        },
-      },
-    })
+          menuItemFactory
+        }
+      }
+    });
 
-    this.commandService.registerCommand(command)
+    this.commandService.registerCommand(command);
   }
 }
 

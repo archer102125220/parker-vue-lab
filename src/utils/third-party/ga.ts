@@ -1,7 +1,7 @@
-import { googleGtagInit } from "@src/utils/third-party/gtag";
+import { googleGtagInit } from '@src/utils/third-party/gtag';
 
 export function googleGAInit(
-  googleGAID: string = "",
+  googleGAID: string = '',
   debug: boolean = import.meta.env?.DEV === true,
   log: boolean = false,
   callback?: (
@@ -10,12 +10,11 @@ export function googleGAInit(
     ...arg: unknown[]
   ) => void
 ): void {
-
-  if (typeof googleGAID !== "string" || googleGAID === "") {
-    console.error("缺少google ga id");
+  if (typeof googleGAID !== 'string' || googleGAID === '') {
+    console.error('缺少google ga id');
     return;
-  } else if (typeof document !== "object" || document === null) {
-    console.error("document API遺失");
+  } else if (typeof document !== 'object' || document === null) {
+    console.error('document API遺失');
     return;
   }
 
@@ -24,13 +23,13 @@ export function googleGAInit(
     gtm: (trackData?: Record<string, unknown>) => void,
     ...arg: unknown[]
   ) {
-    if (typeof gtag === "function") {
-      gtag("js", new Date());
-      gtag("config", googleGAID, {
-        debug_mode: debug,
+    if (typeof gtag === 'function') {
+      gtag('js', new Date());
+      gtag('config', googleGAID, {
+        debug_mode: debug
       });
     }
-    if (typeof callback === "function") {
+    if (typeof callback === 'function') {
       callback(gtag, gtm, ...arg);
     }
   }
@@ -38,16 +37,16 @@ export function googleGAInit(
 
   const src = `https://www.googletagmanager.com/gtag/js?id=${googleGAID}`;
 
-  const script = document.createElement("script");
+  const script = document.createElement('script');
 
-  script.id = "gaScript";
-  script.setAttribute("id", "gaScript");
+  script.id = 'gaScript';
+  script.setAttribute('id', 'gaScript');
   script.async = true;
-  script.setAttribute("async", "true");
+  script.setAttribute('async', 'true');
   script.src = src;
-  script.setAttribute("src", src);
+  script.setAttribute('src', src);
 
-  document.querySelector("head")?.append(script);
+  document.querySelector('head')?.append(script);
 }
 
 export default googleGAInit;

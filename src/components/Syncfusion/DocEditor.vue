@@ -1,10 +1,10 @@
 <script lang="ts" setup>
 // https://help.syncfusion.com/document-processing/excel/spreadsheet/vue/vue-3-getting-started
-import { ref, reactive, onMounted, onBeforeUnmount, watch } from "vue";
+import { ref, reactive, onMounted, onBeforeUnmount, watch } from 'vue';
 
-import SkeletonLoader from "@src/components/SkeletonLoader.vue";
+import SkeletonLoader from '@src/components/SkeletonLoader.vue';
 defineOptions({
-  inheritAttrs: false,
+  inheritAttrs: false
 });
 
 const props = defineProps({});
@@ -27,15 +27,15 @@ const loading = ref(true);
 </template>
 
 <style lang="scss">
-@import "@syncfusion/ej2-base/styles/tailwind3.css";
-@import "@syncfusion/ej2-buttons/styles/tailwind3.css";
-@import "@syncfusion/ej2-dropdowns/styles/tailwind3.css";
-@import "@syncfusion/ej2-inputs/styles/tailwind3.css";
-@import "@syncfusion/ej2-navigations/styles/tailwind3.css";
-@import "@syncfusion/ej2-popups/styles/tailwind3.css";
-@import "@syncfusion/ej2-splitbuttons/styles/tailwind3.css";
-@import "@syncfusion/ej2-grids/styles/tailwind3.css";
-@import "@syncfusion/ej2-vue-spreadsheet/styles/tailwind3.css";
+@import '@syncfusion/ej2-base/styles/tailwind3.css';
+@import '@syncfusion/ej2-buttons/styles/tailwind3.css';
+@import '@syncfusion/ej2-dropdowns/styles/tailwind3.css';
+@import '@syncfusion/ej2-inputs/styles/tailwind3.css';
+@import '@syncfusion/ej2-navigations/styles/tailwind3.css';
+@import '@syncfusion/ej2-popups/styles/tailwind3.css';
+@import '@syncfusion/ej2-splitbuttons/styles/tailwind3.css';
+@import '@syncfusion/ej2-grids/styles/tailwind3.css';
+@import '@syncfusion/ej2-vue-spreadsheet/styles/tailwind3.css';
 </style>
 
 <style lang="scss" scoped>

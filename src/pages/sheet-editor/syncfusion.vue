@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import DefaultLayout from "@src/layouts/default.vue";
-import SyncfusionSheetEditor from "@src/components/Syncfusion/SheetEditor.vue";
+import DefaultLayout from '@src/layouts/default.vue';
+import SyncfusionSheetEditor from '@src/components/Syncfusion/SheetEditor.vue';
 </script>
 
 <template>

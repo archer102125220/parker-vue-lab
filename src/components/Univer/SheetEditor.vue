@@ -3,7 +3,6 @@ import {
   createSheetInstance,
   type univerInstanceRef
 } from '@src/utils/third-party/univer';
-
 </script>
 
 <script lang="ts" setup>
@@ -12,7 +11,7 @@ import { ref, watch, reactive, onMounted, onBeforeUnmount } from 'vue';
 import SkeletonLoader from '@src/components/SkeletonLoader.vue';
 
 defineOptions({
-  inheritAttrs: false,
+  inheritAttrs: false
 });
 
 const disposableList = [];
@@ -144,7 +143,9 @@ async function handleUniverSheet() {
   try {
     if (container.value instanceof HTMLElement === false) return;
 
-    const { univer, univerAPI, LocaleType } = await createSheetInstance(container.value);
+    const { univer, univerAPI, LocaleType } = await createSheetInstance(
+      container.value
+    );
 
     disposableList.push(
       univerAPI.addEvent(univerAPI.Event.LifeCycleChanged, (event) => {
@@ -198,7 +199,10 @@ watch(
   () => props.locale,
   (newLocale) => {
     if (typeof univerInstance.univer?.setLocale === 'function') {
-      const locale = newLocale === 'zhTW' ? univerInstance.LocaleType?.ZH_TW : univerInstance.LocaleType?.EN_US;
+      const locale =
+        newLocale === 'zhTW'
+          ? univerInstance.LocaleType?.ZH_TW
+          : univerInstance.LocaleType?.EN_US;
       if (typeof locale !== 'string') return;
       univerInstance.univer?.setLocale(locale);
     }
@@ -223,7 +227,11 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="univer_sheet">
-    <SkeletonLoader v-if="loading" :loading="true" class="univer_sheet-skeleton" />
+    <SkeletonLoader
+      v-if="loading"
+      :loading="true"
+      class="univer_sheet-skeleton"
+    />
     <div ref="container" class="univer_sheet-editor" />
   </div>
 </template>

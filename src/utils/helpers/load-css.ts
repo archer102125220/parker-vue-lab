@@ -2,9 +2,9 @@ export function loadCSS(
   id: string,
   href: string,
   attributes: Record<string, unknown> = {},
-  successDelay = 0,
+  successDelay = 0
 ): Promise<void> {
-  if (typeof document === "undefined") {
+  if (typeof document === 'undefined') {
     return Promise.resolve();
   }
 
@@ -13,9 +13,9 @@ export function loadCSS(
   }
 
   return new Promise((resolve, reject) => {
-    const link = document.createElement("link");
+    const link = document.createElement('link');
     link.id = id;
-    link.rel = "stylesheet";
+    link.rel = 'stylesheet';
     link.href = href;
 
     Object.keys(attributes).forEach((key) => {
@@ -26,7 +26,7 @@ export function loadCSS(
     const errorEvent = attributes.error;
 
     link.onload = (...args) => {
-      if (typeof loadEvent === "function") {
+      if (typeof loadEvent === 'function') {
         loadEvent(...args);
       }
       if (successDelay > 0) {
@@ -36,7 +36,7 @@ export function loadCSS(
       }
     };
     link.onerror = (...args) => {
-      if (typeof errorEvent === "function") {
+      if (typeof errorEvent === 'function') {
         errorEvent(...args);
       }
       reject();

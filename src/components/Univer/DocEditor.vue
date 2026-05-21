@@ -3,10 +3,14 @@ import { ref, reactive, onMounted, onBeforeUnmount, watch } from 'vue';
 
 import SkeletonLoader from '@src/components/SkeletonLoader.vue';
 
-import { createDocInstance, type univerInstanceRef, type IDisposable } from '@src/utils/third-party/univer';
+import {
+  createDocInstance,
+  type univerInstanceRef,
+  type IDisposable
+} from '@src/utils/third-party/univer';
 
 defineOptions({
-  inheritAttrs: false,
+  inheritAttrs: false
 });
 
 const disposableList: IDisposable[] = [];
@@ -201,7 +205,10 @@ watch(
   () => props.locale,
   (newLocale) => {
     if (typeof univerInstance.univer?.setLocale === 'function') {
-      const locale = newLocale === 'zhTW' ? univerInstance.LocaleType?.ZH_TW : univerInstance.LocaleType?.EN_US;
+      const locale =
+        newLocale === 'zhTW'
+          ? univerInstance.LocaleType?.ZH_TW
+          : univerInstance.LocaleType?.EN_US;
       if (typeof locale !== 'string') return;
       univerInstance.univer?.setLocale(locale);
     }
@@ -235,7 +242,11 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="univer_docxs">
-    <SkeletonLoader v-if="loading" :loading="true" class="univer_docxs-skeleton" />
+    <SkeletonLoader
+      v-if="loading"
+      :loading="true"
+      class="univer_docxs-skeleton"
+    />
     <div ref="container" class="univer_docxs-editor" @keydown="handleKeyDown" />
   </div>
 </template>

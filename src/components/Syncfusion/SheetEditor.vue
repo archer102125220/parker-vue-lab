@@ -1,11 +1,11 @@
 <script lang="ts" setup>
 // https://help.syncfusion.com/document-processing/word/word-processor/vue/getting-started-vue-3
-import { ref, watch, reactive, onMounted, onBeforeUnmount } from "vue";
+import { ref, watch, reactive, onMounted, onBeforeUnmount } from 'vue';
 
-import SkeletonLoader from "@src/components/SkeletonLoader.vue";
+import SkeletonLoader from '@src/components/SkeletonLoader.vue';
 
 defineOptions({
-  inheritAttrs: false,
+  inheritAttrs: false
 });
 
 const props = defineProps({});
@@ -27,15 +27,15 @@ const loading = ref(true);
 </template>
 
 <style lang="scss">
-@import "@syncfusion/ej2-base/styles/material.css";
-@import "@syncfusion/ej2-buttons/styles/material.css";
-@import "@syncfusion/ej2-inputs/styles/material.css";
-@import "@syncfusion/ej2-popups/styles/material.css";
-@import "@syncfusion/ej2-lists/styles/material.css";
-@import "@syncfusion/ej2-navigations/styles/material.css";
-@import "@syncfusion/ej2-splitbuttons/styles/material.css";
-@import "@syncfusion/ej2-dropdowns/styles/material.css";
-@import "@syncfusion/ej2-vue-documenteditor/styles/material.css";
+@import '@syncfusion/ej2-base/styles/material.css';
+@import '@syncfusion/ej2-buttons/styles/material.css';
+@import '@syncfusion/ej2-inputs/styles/material.css';
+@import '@syncfusion/ej2-popups/styles/material.css';
+@import '@syncfusion/ej2-lists/styles/material.css';
+@import '@syncfusion/ej2-navigations/styles/material.css';
+@import '@syncfusion/ej2-splitbuttons/styles/material.css';
+@import '@syncfusion/ej2-dropdowns/styles/material.css';
+@import '@syncfusion/ej2-vue-documenteditor/styles/material.css';
 </style>
 
 <style lang="scss" scoped>

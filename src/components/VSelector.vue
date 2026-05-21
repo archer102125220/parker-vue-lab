@@ -1,29 +1,32 @@
 <script lang="ts" setup>
 import { computed, ref, onMounted, onUnmounted, type CSSProperties } from 'vue';
 
-const props = withDefaults(defineProps<{
-  ripple?: boolean;
-  returnObject?: boolean;
-  modelValue?: string | number | null;
-  label?: string | null;
-  value?: string | number | null;
-  displayKey?: string;
-  valueKey?: string;
-  menuFullWidth?: boolean;
-  ariaLabel?: string;
-  optionList?: unknown[];
-}>(), {
-  ripple: true,
-  returnObject: false,
-  modelValue: null,
-  label: null,
-  value: null,
-  displayKey: 'label',
-  valueKey: 'value',
-  menuFullWidth: false,
-  ariaLabel: 'Selector',
-  optionList: () => []
-});
+const props = withDefaults(
+  defineProps<{
+    ripple?: boolean;
+    returnObject?: boolean;
+    modelValue?: string | number | null;
+    label?: string | null;
+    value?: string | number | null;
+    displayKey?: string;
+    valueKey?: string;
+    menuFullWidth?: boolean;
+    ariaLabel?: string;
+    optionList?: unknown[];
+  }>(),
+  {
+    ripple: true,
+    returnObject: false,
+    modelValue: null,
+    label: null,
+    value: null,
+    displayKey: 'label',
+    valueKey: 'value',
+    menuFullWidth: false,
+    ariaLabel: 'Selector',
+    optionList: () => []
+  }
+);
 
 const emits = defineEmits<{
   (e: 'update:modelValue', value: unknown): void;
@@ -57,7 +60,9 @@ function getValue(item: unknown): string | number {
 function getLabel(item: unknown): string | number {
   if (typeof item === 'object' && item !== null) {
     const record = item as unknown as Record<string, unknown>;
-    return (record[props.displayKey] ?? record.label ?? item) as string | number;
+    return (record[props.displayKey] ?? record.label ?? item) as
+      | string
+      | number;
   }
   return item as string | number;
 }
@@ -108,8 +113,14 @@ function handleClickOutside(event: MouseEvent) {
 </script>
 
 <template>
-  <div class=" v_selector" :style="cssVariable">
-    <button ref="buttonRef" v-ripple="ripple" class="v_selector-button" :aria-label="ariaLabel" @click="toggleMenu">
+  <div class="v_selector" :style="cssVariable">
+    <button
+      ref="buttonRef"
+      v-ripple="ripple"
+      class="v_selector-button"
+      :aria-label="ariaLabel"
+      @click="toggleMenu"
+    >
       <slot :is-open="isOpen">
         <slot name="label" :is-open="isOpen">
           <label class="v_selector-button-label">
@@ -125,11 +136,17 @@ function handleClickOutside(event: MouseEvent) {
     <div v-if="isOpen" ref="menuRef" class="v_selector-menu" :style="menuStyle">
       <div class="v_selector-menu-backdrop" @click="closeMenu" />
       <div class="v_selector-menu-content">
-        <button v-for="option in optionList" :key="getValue(option)" v-ripple="ripple" class="v_selector-menu-item"
+        <button
+          v-for="option in optionList"
+          :key="getValue(option)"
+          v-ripple="ripple"
+          class="v_selector-menu-item"
           :class="{
             'v_selector-menu-item-active':
               getValue(currentValue) === getValue(option)
-          }" @click="handleChange(option)">
+          }"
+          @click="handleChange(option)"
+        >
           {{ getLabel(option) }}
         </button>
       </div>

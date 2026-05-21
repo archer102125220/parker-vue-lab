@@ -35,7 +35,10 @@ const cssVariable = computed(() => {
   };
 
   let height = '6px';
-  if (typeof props.height === 'number' || (typeof props.height === 'string' && /^\d+$/.test(props.height))) {
+  if (
+    typeof props.height === 'number' ||
+    (typeof props.height === 'string' && /^\d+$/.test(props.height))
+  ) {
     height = `${props.height}px`;
   } else if (typeof props.height === 'string') {
     height = props.height;
@@ -43,7 +46,10 @@ const cssVariable = computed(() => {
   newCssVariable['--loading_height'] = height;
 
   let width = '100%';
-  if (typeof props.width === 'number' || (typeof props.width === 'string' && /^\d+$/.test(props.width))) {
+  if (
+    typeof props.width === 'number' ||
+    (typeof props.width === 'string' && /^\d+$/.test(props.width))
+  ) {
     width = `${props.width}px`;
   } else if (typeof props.width === 'string') {
     width = props.width;
@@ -51,7 +57,10 @@ const cssVariable = computed(() => {
   newCssVariable['--loading_width'] = width;
 
   let top: string | null = null;
-  if (typeof props.top === 'number' || (typeof props.top === 'string' && /^\d+$/.test(props.top))) {
+  if (
+    typeof props.top === 'number' ||
+    (typeof props.top === 'string' && /^\d+$/.test(props.top))
+  ) {
     top = `${props.top}px`;
   } else if (typeof props.top === 'string') {
     top = props.top;
@@ -61,7 +70,10 @@ const cssVariable = computed(() => {
   }
 
   let bottom: string | null = null;
-  if (typeof props.bottom === 'number' || (typeof props.bottom === 'string' && /^\d+$/.test(props.bottom))) {
+  if (
+    typeof props.bottom === 'number' ||
+    (typeof props.bottom === 'string' && /^\d+$/.test(props.bottom))
+  ) {
     bottom = `${props.bottom}px`;
   } else if (typeof props.bottom === 'string') {
     bottom = props.bottom;
@@ -71,7 +83,10 @@ const cssVariable = computed(() => {
   }
 
   let left: string | null = null;
-  if (typeof props.left === 'number' || (typeof props.left === 'string' && /^\d+$/.test(props.left))) {
+  if (
+    typeof props.left === 'number' ||
+    (typeof props.left === 'string' && /^\d+$/.test(props.left))
+  ) {
     left = `${props.left}px`;
   } else if (typeof props.left === 'string') {
     left = props.left;
@@ -81,7 +96,10 @@ const cssVariable = computed(() => {
   }
 
   let right: string | null = null;
-  if (typeof props.right === 'number' || (typeof props.right === 'string' && /^\d+$/.test(props.right))) {
+  if (
+    typeof props.right === 'number' ||
+    (typeof props.right === 'string' && /^\d+$/.test(props.right))
+  ) {
     right = `${props.right}px`;
   } else if (typeof props.right === 'string') {
     right = props.right;

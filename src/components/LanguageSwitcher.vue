@@ -18,7 +18,7 @@ watch(
   () => locale.value,
   (newLocale) => console.log({ newLocale }),
   { immediate: true }
-)
+);
 
 const localeList = computed(() => [
   { code: 'en', label: 'en' },
@@ -36,7 +36,7 @@ function handleLanguageSwitch(newLang: unknown) {
   } else if (typeof newLang === 'string') {
     newLangCode = newLang;
   }
-  locale.value = newLangCode
+  locale.value = newLangCode;
   const path = switchLocalePath(newLangCode);
   router.replace(path);
   closeMenu();
@@ -65,9 +65,21 @@ function handleClickOutside(event: MouseEvent) {
 
 <template>
   <div class="language_switcher">
-    <VSelector class="language_switcher-button" aria-label="Language Switcher" value-key="code" display-key="label"
-      :return-object="true" :value="locale" :option-list="localeList" @update:value="handleLanguageSwitch">
-      <img src="/img/i18n/i18n.v-04.webp" alt="i18n" class="language_switcher-button-icon" />
+    <VSelector
+      class="language_switcher-button"
+      aria-label="Language Switcher"
+      value-key="code"
+      display-key="label"
+      :return-object="true"
+      :value="locale"
+      :option-list="localeList"
+      @update:value="handleLanguageSwitch"
+    >
+      <img
+        src="/img/i18n/i18n.v-04.webp"
+        alt="i18n"
+        class="language_switcher-button-icon"
+      />
     </VSelector>
   </div>
 </template>

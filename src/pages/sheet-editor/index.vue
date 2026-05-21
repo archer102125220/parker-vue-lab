@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import { RouterLink } from "vue-router";
-import defaultLayout from "@src/layouts/default.vue";
+import { RouterLink } from 'vue-router';
+import defaultLayout from '@src/layouts/default.vue';
 </script>
 
 <template>

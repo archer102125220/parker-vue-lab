@@ -1,76 +1,76 @@
-import type { univerInstance } from "@src/utils/third-party/univer/index";
+import type { univerInstance } from '@src/utils/third-party/univer/index';
 
 export async function importSheet() {
   return await Promise.all([
-    import("@univerjs/presets"),
-    import("@univerjs/preset-sheets-core"),
-    import("@univerjs/preset-sheets-core/locales/zh-TW"),
-    import("@univerjs/preset-sheets-core/locales/en-US"),
-    import("@univerjs/preset-sheets-filter"),
-    import("@univerjs/preset-sheets-filter/locales/zh-TW"),
-    import("@univerjs/preset-sheets-filter/locales/en-US"),
-    import("@univerjs/preset-sheets-sort"),
-    import("@univerjs/preset-sheets-sort/locales/zh-TW"),
-    import("@univerjs/preset-sheets-sort/locales/en-US"),
-    import("@univerjs/preset-sheets-data-validation"),
-    import("@univerjs/preset-sheets-data-validation/locales/zh-TW"),
-    import("@univerjs/preset-sheets-data-validation/locales/en-US"),
-    import("@univerjs/preset-sheets-conditional-formatting"),
-    import("@univerjs/preset-sheets-conditional-formatting/locales/zh-TW"),
-    import("@univerjs/preset-sheets-conditional-formatting/locales/en-US"),
-    import("@univerjs/preset-sheets-hyper-link"),
-    import("@univerjs/preset-sheets-hyper-link/locales/zh-TW"),
-    import("@univerjs/preset-sheets-hyper-link/locales/en-US"),
-    import("@univerjs/preset-sheets-find-replace"),
-    import("@univerjs/preset-sheets-find-replace/locales/zh-TW"),
-    import("@univerjs/preset-sheets-find-replace/locales/en-US"),
-    import("@univerjs/uniscript"),
-    import("@univerjs/preset-sheets-drawing"),
-    import("@univerjs/preset-sheets-drawing/locales/zh-TW"),
-    import("@univerjs/preset-sheets-drawing/locales/en-US"),
-    import("@univerjs/preset-sheets-thread-comment"),
-    import("@univerjs/preset-sheets-thread-comment/locales/zh-TW"),
-    import("@univerjs/preset-sheets-thread-comment/locales/en-US"),
-    import("@univerjs/preset-sheets-note"),
-    import("@univerjs/preset-sheets-note/locales/zh-TW"),
-    import("@univerjs/preset-sheets-note/locales/en-US"),
-    import("@univerjs/preset-sheets-table"),
-    import("@univerjs/preset-sheets-table/locales/zh-TW"),
-    import("@univerjs/preset-sheets-table/locales/en-US"),
-    import("@univerjs/watermark"),
-    import("@univerjs/sheets-crosshair-highlight"),
-    import("@univerjs/sheets-zen-editor"),
-    import("@univerjs/sheets-zen-editor/locale/zh-TW"),
-    import("@univerjs/sheets-zen-editor/locale/en-US"),
-    import("@univerjs/preset-sheets-advanced"),
-    import("@univerjs/preset-sheets-advanced/locales/zh-TW"),
-    import("@univerjs/preset-sheets-advanced/locales/en-US"),
+    import('@univerjs/presets'),
+    import('@univerjs/preset-sheets-core'),
+    import('@univerjs/preset-sheets-core/locales/zh-TW'),
+    import('@univerjs/preset-sheets-core/locales/en-US'),
+    import('@univerjs/preset-sheets-filter'),
+    import('@univerjs/preset-sheets-filter/locales/zh-TW'),
+    import('@univerjs/preset-sheets-filter/locales/en-US'),
+    import('@univerjs/preset-sheets-sort'),
+    import('@univerjs/preset-sheets-sort/locales/zh-TW'),
+    import('@univerjs/preset-sheets-sort/locales/en-US'),
+    import('@univerjs/preset-sheets-data-validation'),
+    import('@univerjs/preset-sheets-data-validation/locales/zh-TW'),
+    import('@univerjs/preset-sheets-data-validation/locales/en-US'),
+    import('@univerjs/preset-sheets-conditional-formatting'),
+    import('@univerjs/preset-sheets-conditional-formatting/locales/zh-TW'),
+    import('@univerjs/preset-sheets-conditional-formatting/locales/en-US'),
+    import('@univerjs/preset-sheets-hyper-link'),
+    import('@univerjs/preset-sheets-hyper-link/locales/zh-TW'),
+    import('@univerjs/preset-sheets-hyper-link/locales/en-US'),
+    import('@univerjs/preset-sheets-find-replace'),
+    import('@univerjs/preset-sheets-find-replace/locales/zh-TW'),
+    import('@univerjs/preset-sheets-find-replace/locales/en-US'),
+    import('@univerjs/uniscript'),
+    import('@univerjs/preset-sheets-drawing'),
+    import('@univerjs/preset-sheets-drawing/locales/zh-TW'),
+    import('@univerjs/preset-sheets-drawing/locales/en-US'),
+    import('@univerjs/preset-sheets-thread-comment'),
+    import('@univerjs/preset-sheets-thread-comment/locales/zh-TW'),
+    import('@univerjs/preset-sheets-thread-comment/locales/en-US'),
+    import('@univerjs/preset-sheets-note'),
+    import('@univerjs/preset-sheets-note/locales/zh-TW'),
+    import('@univerjs/preset-sheets-note/locales/en-US'),
+    import('@univerjs/preset-sheets-table'),
+    import('@univerjs/preset-sheets-table/locales/zh-TW'),
+    import('@univerjs/preset-sheets-table/locales/en-US'),
+    import('@univerjs/watermark'),
+    import('@univerjs/sheets-crosshair-highlight'),
+    import('@univerjs/sheets-zen-editor'),
+    import('@univerjs/sheets-zen-editor/locale/zh-TW'),
+    import('@univerjs/sheets-zen-editor/locale/en-US'),
+    import('@univerjs/preset-sheets-advanced'),
+    import('@univerjs/preset-sheets-advanced/locales/zh-TW'),
+    import('@univerjs/preset-sheets-advanced/locales/en-US'),
 
-    import("@src/utils/third-party/univer/plugin/csv-import"),
-    import("@src/utils/third-party/univer/plugin/csv-export"),
+    import('@src/utils/third-party/univer/plugin/csv-import'),
+    import('@src/utils/third-party/univer/plugin/csv-export'),
 
-    import("@univerjs/sheets-crosshair-highlight/facade"),
-    import("@univerjs/sheets-zen-editor/facade"),
+    import('@univerjs/sheets-crosshair-highlight/facade'),
+    import('@univerjs/sheets-zen-editor/facade'),
 
-    import("@univerjs/preset-sheets-core/lib/index.css"),
-    import("@univerjs/preset-sheets-filter/lib/index.css"),
-    import("@univerjs/preset-sheets-sort/lib/index.css"),
-    import("@univerjs/preset-sheets-data-validation/lib/index.css"),
-    import("@univerjs/preset-sheets-conditional-formatting/lib/index.css"),
-    import("@univerjs/preset-sheets-hyper-link/lib/index.css"),
-    import("@univerjs/preset-sheets-find-replace/lib/index.css"),
-    import("@univerjs/preset-sheets-drawing/lib/index.css"),
-    import("@univerjs/preset-sheets-thread-comment/lib/index.css"),
-    import("@univerjs/preset-sheets-note/lib/index.css"),
-    import("@univerjs/preset-sheets-table/lib/index.css"),
-    import("@univerjs/sheets-crosshair-highlight/lib/index.css"),
-    import("@univerjs/sheets-zen-editor/lib/index.css"),
-    import("@univerjs/preset-sheets-advanced/lib/index.css"),
+    import('@univerjs/preset-sheets-core/lib/index.css'),
+    import('@univerjs/preset-sheets-filter/lib/index.css'),
+    import('@univerjs/preset-sheets-sort/lib/index.css'),
+    import('@univerjs/preset-sheets-data-validation/lib/index.css'),
+    import('@univerjs/preset-sheets-conditional-formatting/lib/index.css'),
+    import('@univerjs/preset-sheets-hyper-link/lib/index.css'),
+    import('@univerjs/preset-sheets-find-replace/lib/index.css'),
+    import('@univerjs/preset-sheets-drawing/lib/index.css'),
+    import('@univerjs/preset-sheets-thread-comment/lib/index.css'),
+    import('@univerjs/preset-sheets-note/lib/index.css'),
+    import('@univerjs/preset-sheets-table/lib/index.css'),
+    import('@univerjs/sheets-crosshair-highlight/lib/index.css'),
+    import('@univerjs/sheets-zen-editor/lib/index.css'),
+    import('@univerjs/preset-sheets-advanced/lib/index.css')
   ]);
 }
 
 export async function createSheetInstance(
-  container: HTMLElement,
+  container: HTMLElement
 ): Promise<univerInstance> {
   const [
     { createUniver, LocaleType, mergeLocales },
@@ -111,7 +111,7 @@ export async function createSheetInstance(
     { UniverWatermarkPlugin: _UniverWatermarkPlugin },
     {
       UniverSheetsCrosshairHighlightPlugin:
-        _UniverSheetsCrosshairHighlightPlugin,
+        _UniverSheetsCrosshairHighlightPlugin
     },
     { UniverSheetsZenEditorPlugin: _UniverSheetsZenEditorPlugin },
     { default: UniverSheetsZenEditorZhTW },
@@ -120,7 +120,7 @@ export async function createSheetInstance(
     { default: UniverPresetSheetsAdvancedZhTW },
     { default: UniverPresetSheetsAdvancedEnUS },
     { ImportCSVButtonPlugin },
-    { ExportCSVButtonPlugin },
+    { ExportCSVButtonPlugin }
   ] = await importSheet();
 
   const univerInstance = createUniver({
@@ -139,7 +139,7 @@ export async function createSheetInstance(
         UniverPresetSheetsNoteZhTW,
         UniverPresetSheetsTableZhTW,
         UniverSheetsZenEditorZhTW,
-        UniverPresetSheetsAdvancedZhTW,
+        UniverPresetSheetsAdvancedZhTW
       ),
       [LocaleType.EN_US]: mergeLocales(
         UniverPresetSheetsCoreEnUS,
@@ -154,8 +154,8 @@ export async function createSheetInstance(
         UniverPresetSheetsNoteEnUS,
         UniverPresetSheetsTableEnUS,
         UniverSheetsZenEditorEnUS,
-        UniverPresetSheetsAdvancedEnUS,
-      ),
+        UniverPresetSheetsAdvancedEnUS
+      )
     },
     presets: [
       UniverSheetsCorePreset({ container }),
@@ -171,12 +171,12 @@ export async function createSheetInstance(
       UniverSheetsTablePreset(),
       UniverSheetsAdvancedPreset({
         license: import.meta.env.VITE_UNIVER_LICENSE,
-        useWorker: true,
-      }),
+        useWorker: true
+      })
     ],
     plugins: [
       ImportCSVButtonPlugin,
-      ExportCSVButtonPlugin,
+      ExportCSVButtonPlugin
       // [_UniverWatermarkPlugin, {
       //   textWatermarkSettings: {
       //     content: '測試浮水印',
@@ -186,7 +186,7 @@ export async function createSheetInstance(
       // _UniverSheetsCrosshairHighlightPlugin,
       // _UniverSheetsZenEditorPlugin,
       // _UniverUniscriptPlugin,
-    ],
+    ]
   });
 
   // window.univerInstance = univerInstance;

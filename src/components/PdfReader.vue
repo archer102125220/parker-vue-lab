@@ -928,13 +928,13 @@ export default {
   props: {
     src: {
       type: String,
-      required: true,
-    },
+      required: true
+    }
   },
   data() {
     return {
-      pdfSrc: "",
-      pdfTitle: "",
+      pdfSrc: '',
+      pdfTitle: ''
     };
   },
   computed: {
@@ -963,7 +963,7 @@ export default {
           print: this.$refs.print,
           presentationModeButton: this.$refs.presentationMode,
           download: this.$refs.download,
-          viewBookmark: this.$refs.viewBookmark,
+          viewBookmark: this.$refs.viewBookmark
         },
         secondaryToolbar: {
           toolbar: this.$refs.secondaryToolbar,
@@ -987,7 +987,7 @@ export default {
           spreadNoneButton: this.$refs.spreadNone,
           spreadOddButton: this.$refs.spreadOdd,
           spreadEvenButton: this.$refs.spreadEven,
-          documentPropertiesButton: this.$refs.documentProperties,
+          documentPropertiesButton: this.$refs.documentProperties
         },
         sidebar: {
           outerContainer: this.$refs.outerContainer,
@@ -1002,11 +1002,11 @@ export default {
           attachmentsView: this.$refs.attachmentsView,
           layersView: this.$refs.layersView,
           outlineOptionsContainer: this.$refs.outlineOptionsContainer,
-          currentOutlineItemButton: this.$refs.currentOutlineItem,
+          currentOutlineItemButton: this.$refs.currentOutlineItem
         },
         sidebarResizer: {
           outerContainer: this.$refs.outerContainer,
-          resizer: this.$refs.sidebarResizer,
+          resizer: this.$refs.sidebarResizer
         },
         findBar: {
           bar: this.$refs.findbar,
@@ -1018,18 +1018,18 @@ export default {
           findMsg: this.$refs.findMsg,
           findResultsCount: this.$refs.findResultsCount,
           findPreviousButton: this.$refs.findPrevious,
-          findNextButton: this.$refs.findNext,
+          findNextButton: this.$refs.findNext
         },
         passwordOverlay: {
-          overlayName: "passwordOverlay",
+          overlayName: 'passwordOverlay',
           container: this.$refs.passwordOverlay,
           label: this.$refs.passwordText,
           input: this.$refs.password,
           submitButton: this.$refs.passwordSubmit,
-          cancelButton: this.$refs.passwordCancel,
+          cancelButton: this.$refs.passwordCancel
         },
         documentProperties: {
-          overlayName: "documentPropertiesOverlay",
+          overlayName: 'documentPropertiesOverlay',
           container: this.$refs.documentPropertiesOverlay,
           closeButton: this.$refs.documentPropertiesClose,
           fields: {
@@ -1046,8 +1046,8 @@ export default {
             version: this.$refs.versionField,
             pageCount: this.$refs.pageCountField,
             pageSize: this.$refs.pageSizeField,
-            linearized: this.$refs.linearizedField,
-          },
+            linearized: this.$refs.linearizedField
+          }
         },
         errorWrapper: {
           container: this.$refs.errorWrapper,
@@ -1055,26 +1055,26 @@ export default {
           closeButton: this.$refs.errorClose,
           errorMoreInfo: this.$refs.errorMoreInfo,
           moreInfoButton: this.$refs.errorShowMore,
-          lessInfoButton: this.$refs.errorShowLess,
+          lessInfoButton: this.$refs.errorShowLess
         },
         printContainer: this.$refs.printContainer,
-        openFileInputName: "fileInput",
+        openFileInputName: 'fileInput'
       };
-    },
+    }
   },
   mounted() {
     if (process.env.USE_PDF_READER !== true) {
-      console.error("nuxtEnv not setting USE_PDF_READER");
+      console.error('nuxtEnv not setting USE_PDF_READER');
     }
-    if (document.querySelector("#pdf_reader_resource") === null) {
-      const pdfReaderResource = document.createElement("link");
-      pdfReaderResource.setAttribute("id", "pdf_reader_resource");
-      pdfReaderResource.setAttribute("rel", "resource");
-      pdfReaderResource.setAttribute("type", "application/l10n");
-      pdfReaderResource.setAttribute("href", "l10n/locale.properties");
+    if (document.querySelector('#pdf_reader_resource') === null) {
+      const pdfReaderResource = document.createElement('link');
+      pdfReaderResource.setAttribute('id', 'pdf_reader_resource');
+      pdfReaderResource.setAttribute('rel', 'resource');
+      pdfReaderResource.setAttribute('type', 'application/l10n');
+      pdfReaderResource.setAttribute('href', 'l10n/locale.properties');
       document.head.append(pdfReaderResource);
     }
-    if (typeof this.src === "string" && this.src !== "") this.init();
+    if (typeof this.src === 'string' && this.src !== '') this.init();
   },
   beforeUpdate() {
     this.removePdfFileInput();
@@ -1084,8 +1084,8 @@ export default {
   },
   watch: {
     src(src) {
-      if (typeof src === "string" && src !== "") this.init();
-    },
+      if (typeof src === 'string' && src !== '') this.init();
+    }
   },
   methods: {
     init() {
@@ -1102,24 +1102,24 @@ export default {
       await this.PDFViewer.run(this.PDFViewerConfig);
       await Promise.all([this.PDFViewer.initializedPromise]);
       // TODO 核心 pdfViewerAppOptions
-      this.$pdfViewerAppOptions.set("defaultUrl", url);
+      this.$pdfViewerAppOptions.set('defaultUrl', url);
       await this.PDFViewer.open(url);
     },
     removePdfFileInput() {
       const fileInput = document.querySelectorAll(
-        "body #" + this.PDFViewerConfig.openFileInputName,
+        'body #' + this.PDFViewerConfig.openFileInputName
       );
       fileInput.forEach((fileInput) => fileInput.remove());
     },
     getPdfTitle(pdfTitle) {
       this.pdfTitle = pdfTitle;
-    },
-  },
+    }
+  }
 };
 </script>
 
 <style lang="scss">
-@import "pdfjs-dist/web/pdf_viewer.css";
+@import 'pdfjs-dist/web/pdf_viewer.css';
 /* Copyright 2014 Mozilla Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -1160,364 +1160,364 @@ export default {
     scrollbar-color: var(--scrollbar-color) var(--scrollbar-bg-color);
   }
 }
-html[dir="ltr"] .verticalToolbarSeparator {
+html[dir='ltr'] .verticalToolbarSeparator {
   margin-left: 2px;
 }
-html[dir="rtl"] .verticalToolbarSeparator {
+html[dir='rtl'] .verticalToolbarSeparator {
   margin-right: 2px;
 }
 
-html[dir="ltr"] .secondaryToolbarButton {
+html[dir='ltr'] .secondaryToolbarButton {
   padding-left: 36px;
   text-align: left;
 }
-html[dir="rtl"] .secondaryToolbarButton {
+html[dir='rtl'] .secondaryToolbarButton {
   padding-right: 36px;
   text-align: right;
 }
 
-html[dir="ltr"] .secondaryToolbarButton > span {
+html[dir='ltr'] .secondaryToolbarButton > span {
   padding-right: 4px;
 }
-html[dir="rtl"] .secondaryToolbarButton > span {
+html[dir='rtl'] .secondaryToolbarButton > span {
   padding-left: 4px;
 }
 
-html[dir="ltr"] .toolbarButton.pdfSidebarNotification::after {
+html[dir='ltr'] .toolbarButton.pdfSidebarNotification::after {
   left: 17px;
 }
-html[dir="rtl"] .toolbarButton.pdfSidebarNotification::after {
+html[dir='rtl'] .toolbarButton.pdfSidebarNotification::after {
   right: 17px;
 }
 
-html[dir="rtl"] .toolbarButton#secondaryToolbarToggle::before {
+html[dir='rtl'] .toolbarButton#secondaryToolbarToggle::before {
   transform: scaleX(-1);
 }
 
-html[dir="ltr"] .secondaryToolbarButton::before {
+html[dir='ltr'] .secondaryToolbarButton::before {
   left: 12px;
 }
-html[dir="rtl"] .secondaryToolbarButton::before {
+html[dir='rtl'] .secondaryToolbarButton::before {
   right: 12px;
 }
 
-html[dir="ltr"] .dropdownToolbarButton > select {
+html[dir='ltr'] .dropdownToolbarButton > select {
   padding-left: 4px;
 }
-html[dir="rtl"] .dropdownToolbarButton > select {
+html[dir='rtl'] .dropdownToolbarButton > select {
   padding-right: 4px;
 }
 
-html[dir="ltr"] .dropdownToolbarButton::after {
+html[dir='ltr'] .dropdownToolbarButton::after {
   right: 7px;
 }
-html[dir="rtl"] .dropdownToolbarButton::after {
+html[dir='rtl'] .dropdownToolbarButton::after {
   left: 7px;
 }
 
-html[dir="ltr"] #toolbarViewerLeft > .toolbarButton:first-child,
-html[dir="rtl"] #toolbarViewerRight > .toolbarButton:last-child {
+html[dir='ltr'] #toolbarViewerLeft > .toolbarButton:first-child,
+html[dir='rtl'] #toolbarViewerRight > .toolbarButton:last-child {
   margin-left: 2px;
 }
 
-html[dir="ltr"] #toolbarViewerRight > .toolbarButton:last-child,
-html[dir="rtl"] #toolbarViewerLeft > .toolbarButton:first-child {
+html[dir='ltr'] #toolbarViewerRight > .toolbarButton:last-child,
+html[dir='rtl'] #toolbarViewerLeft > .toolbarButton:first-child {
   margin-right: 2px;
 }
 
-html[dir="ltr"] .splitToolbarButtonSeparator {
+html[dir='ltr'] .splitToolbarButtonSeparator {
   float: left;
 }
-html[dir="rtl"] .splitToolbarButtonSeparator {
+html[dir='rtl'] .splitToolbarButtonSeparator {
   float: right;
 }
 
-html[dir="ltr"] .splitToolbarButton > .toolbarButton:first-child,
-html[dir="rtl"] .splitToolbarButton > .toolbarButton:last-child {
+html[dir='ltr'] .splitToolbarButton > .toolbarButton:first-child,
+html[dir='rtl'] .splitToolbarButton > .toolbarButton:last-child {
   margin: 0;
 }
-html[dir="ltr"] .splitToolbarButton > .toolbarButton:last-child,
-html[dir="rtl"] .splitToolbarButton > .toolbarButton:first-child {
+html[dir='ltr'] .splitToolbarButton > .toolbarButton:last-child,
+html[dir='rtl'] .splitToolbarButton > .toolbarButton:first-child {
   margin: 0;
 }
 
-html[dir="ltr"] .splitToolbarButton > .toolbarButton {
+html[dir='ltr'] .splitToolbarButton > .toolbarButton {
   float: left;
 }
-html[dir="rtl"] .splitToolbarButton > .toolbarButton {
+html[dir='rtl'] .splitToolbarButton > .toolbarButton {
   float: right;
 }
 
-html[dir="ltr"] #toolbarViewerLeft,
-html[dir="rtl"] #toolbarViewerRight,
-html[dir="ltr"] #toolbarSidebarLeft,
-html[dir="rtl"] #toolbarSidebarRight {
+html[dir='ltr'] #toolbarViewerLeft,
+html[dir='rtl'] #toolbarViewerRight,
+html[dir='ltr'] #toolbarSidebarLeft,
+html[dir='rtl'] #toolbarSidebarRight {
   float: left;
 }
-html[dir="ltr"] #toolbarViewerRight,
-html[dir="rtl"] #toolbarViewerLeft,
-html[dir="ltr"] #toolbarSidebarRight,
-html[dir="rtl"] #toolbarSidebarLeft {
+html[dir='ltr'] #toolbarViewerRight,
+html[dir='rtl'] #toolbarViewerLeft,
+html[dir='ltr'] #toolbarSidebarRight,
+html[dir='rtl'] #toolbarSidebarLeft {
   float: right;
 }
-html[dir="ltr"] #toolbarViewerLeft > *,
-html[dir="ltr"] #toolbarViewerMiddle > *,
-html[dir="ltr"] #toolbarViewerRight > *,
-html[dir="ltr"] #toolbarSidebarLeft *,
-html[dir="ltr"] #toolbarSidebarRight *,
-html[dir="ltr"] .findbar * {
+html[dir='ltr'] #toolbarViewerLeft > *,
+html[dir='ltr'] #toolbarViewerMiddle > *,
+html[dir='ltr'] #toolbarViewerRight > *,
+html[dir='ltr'] #toolbarSidebarLeft *,
+html[dir='ltr'] #toolbarSidebarRight *,
+html[dir='ltr'] .findbar * {
   position: relative;
   float: left;
 }
-html[dir="rtl"] #toolbarViewerLeft > *,
-html[dir="rtl"] #toolbarViewerMiddle > *,
-html[dir="rtl"] #toolbarViewerRight > *,
-html[dir="rtl"] #toolbarSidebarLeft *,
-html[dir="rtl"] #toolbarSidebarRight *,
-html[dir="rtl"] .findbar * {
+html[dir='rtl'] #toolbarViewerLeft > *,
+html[dir='rtl'] #toolbarViewerMiddle > *,
+html[dir='rtl'] #toolbarViewerRight > *,
+html[dir='rtl'] #toolbarSidebarLeft *,
+html[dir='rtl'] #toolbarSidebarRight *,
+html[dir='rtl'] .findbar * {
   position: relative;
   float: right;
 }
 
-html[dir="ltr"] .doorHanger:after,
-html[dir="rtl"] .doorHangerRight:after {
+html[dir='ltr'] .doorHanger:after,
+html[dir='rtl'] .doorHangerRight:after {
   left: 10px;
   margin-left: -8px;
 }
 
-html[dir="ltr"] .doorHanger:before,
-html[dir="rtl"] .doorHangerRight:before {
+html[dir='ltr'] .doorHanger:before,
+html[dir='rtl'] .doorHangerRight:before {
   left: 10px;
   margin-left: -9px;
 }
 
-html[dir="rtl"] .doorHanger:after,
-html[dir="ltr"] .doorHangerRight:after {
+html[dir='rtl'] .doorHanger:after,
+html[dir='ltr'] .doorHangerRight:after {
   right: 10px;
   margin-right: -8px;
 }
 
-html[dir="rtl"] .doorHanger:before,
-html[dir="ltr"] .doorHangerRight:before {
+html[dir='rtl'] .doorHanger:before,
+html[dir='ltr'] .doorHangerRight:before {
   right: 10px;
   margin-right: -9px;
 }
 
-html[dir="ltr"] .secondaryToolbar {
+html[dir='ltr'] .secondaryToolbar {
   right: 4px;
 }
-html[dir="rtl"] .secondaryToolbar {
+html[dir='rtl'] .secondaryToolbar {
   left: 4px;
 }
 
-html[dir="ltr"] #findInput {
+html[dir='ltr'] #findInput {
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
 }
-html[dir="rtl"] #findInput {
+html[dir='rtl'] #findInput {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
 }
 
-html[dir="ltr"] .findbar .splitToolbarButton > .findNext {
+html[dir='ltr'] .findbar .splitToolbarButton > .findNext {
   border-bottom-right-radius: 2px;
   border-top-right-radius: 2px;
   border-right: 1px solid var(--field-border-color);
 }
-html[dir="rtl"] .findbar .splitToolbarButton > .findNext {
+html[dir='rtl'] .findbar .splitToolbarButton > .findNext {
   border-bottom-left-radius: 2px;
   border-top-left-radius: 2px;
   border-left: 1px solid var(--field-border-color);
 }
 
-html[dir="ltr"] .findbar .splitToolbarButton {
+html[dir='ltr'] .findbar .splitToolbarButton {
   margin-left: 0;
   margin-right: 5px;
 }
-html[dir="rtl"] .findbar .splitToolbarButton {
+html[dir='rtl'] .findbar .splitToolbarButton {
   margin-left: 5px;
   margin-right: 0;
 }
 
-html[dir="ltr"] .findbar {
+html[dir='ltr'] .findbar {
   left: 64px;
 }
-html[dir="rtl"] .findbar {
+html[dir='rtl'] .findbar {
   right: 64px;
 }
 
-html[dir="ltr"] #loadingBar {
+html[dir='ltr'] #loadingBar {
   transition-property: left;
   left: 0;
   right: var(--loadingBar-end-offset);
 }
-html[dir="rtl"] #loadingBar {
+html[dir='rtl'] #loadingBar {
   transition-property: right;
   left: var(--loadingBar-end-offset);
   right: 0;
 }
 
-html[dir="ltr"] #outerContainer.sidebarOpen #loadingBar {
+html[dir='ltr'] #outerContainer.sidebarOpen #loadingBar {
   left: var(--sidebar-width);
 }
-html[dir="rtl"] #outerContainer.sidebarOpen #loadingBar {
+html[dir='rtl'] #outerContainer.sidebarOpen #loadingBar {
   right: var(--sidebar-width);
 }
 
-html[dir="ltr"] #sidebarResizer {
+html[dir='ltr'] #sidebarResizer {
   right: -6px;
 }
-html[dir="rtl"] #sidebarResizer {
+html[dir='rtl'] #sidebarResizer {
   left: -6px;
 }
 
-html[dir="ltr"] #toolbarSidebar {
+html[dir='ltr'] #toolbarSidebar {
   box-shadow:
     inset -1px 0 0 rgba(0, 0, 0, 0.25),
     0 1px 0 rgba(0, 0, 0, 0.15),
     0 0 1px rgba(0, 0, 0, 0.1);
 }
-html[dir="rtl"] #toolbarSidebar {
+html[dir='rtl'] #toolbarSidebar {
   box-shadow:
     inset 1px 0 0 rgba(0, 0, 0, 0.25),
     0 1px 0 rgba(0, 0, 0, 0.15),
     0 0 1px rgba(0, 0, 0, 0.1);
 }
 
-html[dir="ltr"] #toolbarSidebar .toolbarButton {
+html[dir='ltr'] #toolbarSidebar .toolbarButton {
   // margin-right: 2px !important;
   margin-right: 2px;
 }
-html[dir="rtl"] #toolbarSidebar .toolbarButton {
+html[dir='rtl'] #toolbarSidebar .toolbarButton {
   // margin-left: 2px !important;
   margin-left: 2px;
 }
 
-html[dir="ltr"] #toolbarSidebarRight .toolbarButton {
+html[dir='ltr'] #toolbarSidebarRight .toolbarButton {
   // margin-right: 3px !important;
   margin-right: 3px;
 }
-html[dir="rtl"] #toolbarSidebarRight .toolbarButton {
+html[dir='rtl'] #toolbarSidebarRight .toolbarButton {
   // margin-left: 3px !important;
   margin-left: 3px;
 }
 
-html[dir="ltr"]
+html[dir='ltr']
   #outerContainer.sidebarOpen
   #viewerContainer:not(.pdfPresentationMode) {
   transition-property: left;
   left: var(--sidebar-width);
 }
-html[dir="rtl"]
+html[dir='rtl']
   #outerContainer.sidebarOpen
   #viewerContainer:not(.pdfPresentationMode) {
   transition-property: right;
   right: var(--sidebar-width);
 }
 
-html[dir="ltr"] #sidebarContent {
+html[dir='ltr'] #sidebarContent {
   left: 0;
   box-shadow: inset -1px 0 0 rgba(0, 0, 0, 0.25);
 }
-html[dir="rtl"] #sidebarContent {
+html[dir='rtl'] #sidebarContent {
   right: 0;
   box-shadow: inset 1px 0 0 rgba(0, 0, 0, 0.25);
 }
 
-html[dir="ltr"] #outerContainer.sidebarOpen #sidebarContainer {
+html[dir='ltr'] #outerContainer.sidebarOpen #sidebarContainer {
   left: 0;
 }
-html[dir="rtl"] #outerContainer.sidebarOpen #sidebarContainer {
+html[dir='rtl'] #outerContainer.sidebarOpen #sidebarContainer {
   right: 0;
 }
 
-html[dir="ltr"] #sidebarContainer {
+html[dir='ltr'] #sidebarContainer {
   transition-property: left;
   left: calc(0px - var(--sidebar-width));
   border-right: var(--doorhanger-border-color-whcm);
 }
-html[dir="rtl"] #sidebarContainer {
+html[dir='rtl'] #sidebarContainer {
   transition-property: right;
   right: calc(0px - var(--sidebar-width));
   border-left: var(--doorhanger-border-color-whcm);
 }
 
-html[dir="ltr"] #numPages.toolbarLabel {
+html[dir='ltr'] #numPages.toolbarLabel {
   padding-left: 3px;
 }
-html[dir="rtl"] #numPages.toolbarLabel {
+html[dir='rtl'] #numPages.toolbarLabel {
   padding-right: 3px;
 }
 
-html[dir="ltr"] .thumbnail {
+html[dir='ltr'] .thumbnail {
   float: left;
 }
-html[dir="rtl"] .thumbnail {
+html[dir='rtl'] .thumbnail {
   float: right;
 }
 
-html[dir="ltr"] .treeWithDeepNesting > .treeItem,
-html[dir="ltr"] .treeItem > .treeItems {
+html[dir='ltr'] .treeWithDeepNesting > .treeItem,
+html[dir='ltr'] .treeItem > .treeItems {
   margin-left: 20px;
 }
 
-html[dir="rtl"] .treeWithDeepNesting > .treeItem,
-html[dir="rtl"] .treeItem > .treeItems {
+html[dir='rtl'] .treeWithDeepNesting > .treeItem,
+html[dir='rtl'] .treeItem > .treeItems {
   margin-right: 20px;
 }
-html[dir="ltr"] .treeItem > a {
+html[dir='ltr'] .treeItem > a {
   padding: 2px 0 5px 4px;
 }
-html[dir="rtl"] .treeItem > a {
+html[dir='rtl'] .treeItem > a {
   padding: 2px 4px 5px 0;
 }
 
-html[dir="ltr"] #layersView .treeItem > a > label {
+html[dir='ltr'] #layersView .treeItem > a > label {
   padding-left: 4px;
 }
-html[dir="rtl"] #layersView .treesItem > a > label {
+html[dir='rtl'] #layersView .treesItem > a > label {
   padding-right: 4px;
 }
 
-html[dir="rtl"] .treeItemToggler.treeItemsHidden::before {
+html[dir='rtl'] .treeItemToggler.treeItemsHidden::before {
   transform: scaleX(-1);
 }
 
-html[dir="ltr"] .treeItemToggler {
+html[dir='ltr'] .treeItemToggler {
   float: left;
 }
-html[dir="rtl"] .treeItemToggler {
+html[dir='rtl'] .treeItemToggler {
   float: right;
 }
-html[dir="ltr"] .treeItemToggler::before {
+html[dir='ltr'] .treeItemToggler::before {
   right: 4px;
 }
-html[dir="rtl"] .treeItemToggler::before {
+html[dir='rtl'] .treeItemToggler::before {
   left: 4px;
 }
-html[dir="ltr"] #documentPropertiesOverlay .row > * {
+html[dir='ltr'] #documentPropertiesOverlay .row > * {
   text-align: left;
 }
-html[dir="rtl"] #documentPropertiesOverlay .row > * {
+html[dir='rtl'] #documentPropertiesOverlay .row > * {
   text-align: right;
 }
 
 @media all and (max-width: 840px) {
-  html[dir="ltr"] #outerContainer.sidebarOpen #viewerContainer {
+  html[dir='ltr'] #outerContainer.sidebarOpen #viewerContainer {
     // left: 0 !important;
     left: 0;
   }
-  html[dir="rtl"] #outerContainer.sidebarOpen #viewerContainer {
+  html[dir='rtl'] #outerContainer.sidebarOpen #viewerContainer {
     // right: 0 !important;
     right: 0;
   }
 }
 
 @media all and (max-width: 640px) {
-  html[dir="ltr"] .findbar {
+  html[dir='ltr'] .findbar {
     left: 34px;
   }
-  html[dir="rtl"] .findbar {
+  html[dir='rtl'] .findbar {
     right: 34px;
   }
 }
@@ -1552,7 +1552,7 @@ body[data-pdfjsprinting] #printContainer {
   top: 0;
   right: 0;
   bottom: 0;
-  background: url("@/static/img/pdfjs/loading-icon.gif") center no-repeat;
+  background: url('@/static/img/pdfjs/loading-icon.gif') center no-repeat;
 }
 .pdfViewer .page .loadingIcon.notVisible {
   background: none;
@@ -1750,7 +1750,7 @@ body[data-pdfjsprinting] #printContainer {
 .annotationLayer .buttonWidgetAnnotation.checkBox input:checked:after,
 .annotationLayer .buttonWidgetAnnotation.radioButton input:checked:before {
   background-color: rgba(0, 0, 0, 1);
-  content: "";
+  content: '';
   display: block;
   position: absolute;
 }
@@ -2185,7 +2185,7 @@ body[data-pdfjsprinting] #printContainer {
     -moz-appearance: none;
     appearance: none;
     text-indent: 1px;
-    text-overflow: "";
+    text-overflow: '';
   }
 }
 
@@ -2215,8 +2215,8 @@ body[data-pdfjsprinting] #printContainer {
   overflow: visible;
   border: var(--page-border);
   background-clip: content-box;
-  -o-border-image: url("@/static/img/pdfjs/shadow.png") 9 9 repeat;
-  border-image: url("@/static/img/pdfjs/shadow.png") 9 9 repeat;
+  -o-border-image: url('@/static/img/pdfjs/shadow.png') 9 9 repeat;
+  border-image: url('@/static/img/pdfjs/shadow.png') 9 9 repeat;
   background-color: rgba(255, 255, 255, 1);
 }
 
@@ -2357,43 +2357,43 @@ body[data-pdfjsprinting] #printContainer {
   --overlay-button-bg-color: rgba(12, 12, 13, 0.1);
   --overlay-button-hover-bg-color: rgba(12, 12, 13, 0.3);
 
-  --loading-icon: url("@/static/img/pdfjs/loading.svg");
-  --treeitem-expanded-icon: url("@/static/img/pdfjs/treeitem-expanded.svg");
-  --treeitem-collapsed-icon: url("@/static/img/pdfjs/treeitem-collapsed.svg");
-  --toolbarButton-menuArrow-icon: url("@/static/img/pdfjs/toolbarButton-menuArrow.svg");
-  --toolbarButton-sidebarToggle-icon: url("@/static/img/pdfjs/toolbarButton-sidebarToggle.svg");
-  --toolbarButton-secondaryToolbarToggle-icon: url("@/static/img/pdfjs/toolbarButton-secondaryToolbarToggle.svg");
-  --toolbarButton-pageUp-icon: url("@/static/img/pdfjs/toolbarButton-pageUp.svg");
-  --toolbarButton-pageDown-icon: url("@/static/img/pdfjs/toolbarButton-pageDown.svg");
-  --toolbarButton-zoomOut-icon: url("@/static/img/pdfjs/toolbarButton-zoomOut.svg");
-  --toolbarButton-zoomIn-icon: url("@/static/img/pdfjs/toolbarButton-zoomIn.svg");
-  --toolbarButton-presentationMode-icon: url("@/static/img/pdfjs/toolbarButton-presentationMode.svg");
-  --toolbarButton-print-icon: url("@/static/img/pdfjs/toolbarButton-print.svg");
-  --toolbarButton-openFile-icon: url("@/static/img/pdfjs/toolbarButton-openFile.svg");
-  --toolbarButton-download-icon: url("@/static/img/pdfjs/toolbarButton-download.svg");
-  --toolbarButton-bookmark-icon: url("@/static/img/pdfjs/toolbarButton-bookmark.svg");
-  --toolbarButton-viewThumbnail-icon: url("@/static/img/pdfjs/toolbarButton-viewThumbnail.svg");
-  --toolbarButton-viewOutline-icon: url("@/static/img/pdfjs/toolbarButton-viewOutline.svg");
-  --toolbarButton-viewAttachments-icon: url("@/static/img/pdfjs/toolbarButton-viewAttachments.svg");
-  --toolbarButton-viewLayers-icon: url("@/static/img/pdfjs/toolbarButton-viewLayers.svg");
-  --toolbarButton-currentOutlineItem-icon: url("@/static/img/pdfjs/toolbarButton-currentOutlineItem.svg");
-  --toolbarButton-search-icon: url("@/static/img/pdfjs/toolbarButton-search.svg");
-  --findbarButton-previous-icon: url("@/static/img/pdfjs/findbarButton-previous.svg");
-  --findbarButton-next-icon: url("@/static/img/pdfjs/findbarButton-next.svg");
-  --secondaryToolbarButton-firstPage-icon: url("@/static/img/pdfjs/secondaryToolbarButton-firstPage.svg");
-  --secondaryToolbarButton-lastPage-icon: url("@/static/img/pdfjs/secondaryToolbarButton-lastPage.svg");
-  --secondaryToolbarButton-rotateCcw-icon: url("@/static/img/pdfjs/secondaryToolbarButton-rotateCcw.svg");
-  --secondaryToolbarButton-rotateCw-icon: url("@/static/img/pdfjs/secondaryToolbarButton-rotateCw.svg");
-  --secondaryToolbarButton-selectTool-icon: url("@/static/img/pdfjs/secondaryToolbarButton-selectTool.svg");
-  --secondaryToolbarButton-handTool-icon: url("@/static/img/pdfjs/secondaryToolbarButton-handTool.svg");
-  --secondaryToolbarButton-scrollPage-icon: url("@/static/img/pdfjs/secondaryToolbarButton-scrollPage.svg");
-  --secondaryToolbarButton-scrollVertical-icon: url("@/static/img/pdfjs/secondaryToolbarButton-scrollVertical.svg");
-  --secondaryToolbarButton-scrollHorizontal-icon: url("@/static/img/pdfjs/secondaryToolbarButton-scrollHorizontal.svg");
-  --secondaryToolbarButton-scrollWrapped-icon: url("@/static/img/pdfjs/secondaryToolbarButton-scrollWrapped.svg");
-  --secondaryToolbarButton-spreadNone-icon: url("@/static/img/pdfjs/secondaryToolbarButton-spreadNone.svg");
-  --secondaryToolbarButton-spreadOdd-icon: url("@/static/img/pdfjs/secondaryToolbarButton-spreadOdd.svg");
-  --secondaryToolbarButton-spreadEven-icon: url("@/static/img/pdfjs/secondaryToolbarButton-spreadEven.svg");
-  --secondaryToolbarButton-documentProperties-icon: url("@/static/img/pdfjs/secondaryToolbarButton-documentProperties.svg");
+  --loading-icon: url('@/static/img/pdfjs/loading.svg');
+  --treeitem-expanded-icon: url('@/static/img/pdfjs/treeitem-expanded.svg');
+  --treeitem-collapsed-icon: url('@/static/img/pdfjs/treeitem-collapsed.svg');
+  --toolbarButton-menuArrow-icon: url('@/static/img/pdfjs/toolbarButton-menuArrow.svg');
+  --toolbarButton-sidebarToggle-icon: url('@/static/img/pdfjs/toolbarButton-sidebarToggle.svg');
+  --toolbarButton-secondaryToolbarToggle-icon: url('@/static/img/pdfjs/toolbarButton-secondaryToolbarToggle.svg');
+  --toolbarButton-pageUp-icon: url('@/static/img/pdfjs/toolbarButton-pageUp.svg');
+  --toolbarButton-pageDown-icon: url('@/static/img/pdfjs/toolbarButton-pageDown.svg');
+  --toolbarButton-zoomOut-icon: url('@/static/img/pdfjs/toolbarButton-zoomOut.svg');
+  --toolbarButton-zoomIn-icon: url('@/static/img/pdfjs/toolbarButton-zoomIn.svg');
+  --toolbarButton-presentationMode-icon: url('@/static/img/pdfjs/toolbarButton-presentationMode.svg');
+  --toolbarButton-print-icon: url('@/static/img/pdfjs/toolbarButton-print.svg');
+  --toolbarButton-openFile-icon: url('@/static/img/pdfjs/toolbarButton-openFile.svg');
+  --toolbarButton-download-icon: url('@/static/img/pdfjs/toolbarButton-download.svg');
+  --toolbarButton-bookmark-icon: url('@/static/img/pdfjs/toolbarButton-bookmark.svg');
+  --toolbarButton-viewThumbnail-icon: url('@/static/img/pdfjs/toolbarButton-viewThumbnail.svg');
+  --toolbarButton-viewOutline-icon: url('@/static/img/pdfjs/toolbarButton-viewOutline.svg');
+  --toolbarButton-viewAttachments-icon: url('@/static/img/pdfjs/toolbarButton-viewAttachments.svg');
+  --toolbarButton-viewLayers-icon: url('@/static/img/pdfjs/toolbarButton-viewLayers.svg');
+  --toolbarButton-currentOutlineItem-icon: url('@/static/img/pdfjs/toolbarButton-currentOutlineItem.svg');
+  --toolbarButton-search-icon: url('@/static/img/pdfjs/toolbarButton-search.svg');
+  --findbarButton-previous-icon: url('@/static/img/pdfjs/findbarButton-previous.svg');
+  --findbarButton-next-icon: url('@/static/img/pdfjs/findbarButton-next.svg');
+  --secondaryToolbarButton-firstPage-icon: url('@/static/img/pdfjs/secondaryToolbarButton-firstPage.svg');
+  --secondaryToolbarButton-lastPage-icon: url('@/static/img/pdfjs/secondaryToolbarButton-lastPage.svg');
+  --secondaryToolbarButton-rotateCcw-icon: url('@/static/img/pdfjs/secondaryToolbarButton-rotateCcw.svg');
+  --secondaryToolbarButton-rotateCw-icon: url('@/static/img/pdfjs/secondaryToolbarButton-rotateCw.svg');
+  --secondaryToolbarButton-selectTool-icon: url('@/static/img/pdfjs/secondaryToolbarButton-selectTool.svg');
+  --secondaryToolbarButton-handTool-icon: url('@/static/img/pdfjs/secondaryToolbarButton-handTool.svg');
+  --secondaryToolbarButton-scrollPage-icon: url('@/static/img/pdfjs/secondaryToolbarButton-scrollPage.svg');
+  --secondaryToolbarButton-scrollVertical-icon: url('@/static/img/pdfjs/secondaryToolbarButton-scrollVertical.svg');
+  --secondaryToolbarButton-scrollHorizontal-icon: url('@/static/img/pdfjs/secondaryToolbarButton-scrollHorizontal.svg');
+  --secondaryToolbarButton-scrollWrapped-icon: url('@/static/img/pdfjs/secondaryToolbarButton-scrollWrapped.svg');
+  --secondaryToolbarButton-spreadNone-icon: url('@/static/img/pdfjs/secondaryToolbarButton-spreadNone.svg');
+  --secondaryToolbarButton-spreadOdd-icon: url('@/static/img/pdfjs/secondaryToolbarButton-spreadOdd.svg');
+  --secondaryToolbarButton-spreadEven-icon: url('@/static/img/pdfjs/secondaryToolbarButton-spreadEven.svg');
+  --secondaryToolbarButton-documentProperties-icon: url('@/static/img/pdfjs/secondaryToolbarButton-documentProperties.svg');
 }
 
 @media (prefers-color-scheme: dark) {
@@ -2439,7 +2439,7 @@ body[data-pdfjsprinting] #printContainer {
     /* This image is used in <input> elements, which unfortunately means that
      * the `mask-image` approach used with all of the other images doesn't work
      * here; hence why we still have two versions of this particular image. */
-    --loading-icon: url("@/static/img/pdfjs/loading-dark.svg");
+    --loading-icon: url('@/static/img/pdfjs/loading-dark.svg');
   }
 }
 
@@ -2740,7 +2740,7 @@ body[data-pdfjsprinting] #printContainer {
   width: 29px;
 }
 
-.findbar input[type="checkbox"] {
+.findbar input[type='checkbox'] {
   pointer-events: none;
 }
 
@@ -2756,7 +2756,7 @@ body[data-pdfjsprinting] #printContainer {
   background-color: var(--button-hover-color);
 }
 
-.findbar .toolbarField[type="checkbox"]:checked + .toolbarLabel {
+.findbar .toolbarField[type='checkbox']:checked + .toolbarLabel {
   // background-color: var(--toggled-btn-bg-color) !important;
   background-color: var(--toggled-btn-bg-color);
   color: var(--toggled-btn-color);
@@ -2771,15 +2771,15 @@ body[data-pdfjsprinting] #printContainer {
 #findInput::placeholder {
   font-style: normal;
 }
-#findInput[data-status="pending"] {
+#findInput[data-status='pending'] {
   background-image: var(--loading-icon);
   background-repeat: no-repeat;
   background-position: 98%;
 }
-html[dir="rtl"] #findInput[data-status="pending"] {
+html[dir='rtl'] #findInput[data-status='pending'] {
   background-position: 3px;
 }
-#findInput[data-status="notFound"] {
+#findInput[data-status='notFound'] {
   background-color: rgba(255, 102, 102, 1);
 }
 
@@ -2812,7 +2812,7 @@ html[dir="rtl"] #findInput[data-status="pending"] {
 .doorHangerRight:before {
   bottom: 100%;
   border: solid rgba(0, 0, 0, 0);
-  content: " ";
+  content: ' ';
   height: 0;
   width: 0;
   position: absolute;
@@ -3037,7 +3037,7 @@ html[dir="rtl"] #findInput[data-status="pending"] {
   width: 16px;
   height: 16px;
 
-  content: "";
+  content: '';
   background-color: var(--toolbar-icon-bg-color);
   -webkit-mask-size: cover;
   mask-size: cover;
@@ -3071,7 +3071,7 @@ html[dir="rtl"] #findInput[data-status="pending"] {
   -webkit-mask-image: var(--toolbarButton-sidebarToggle-icon);
   mask-image: var(--toolbarButton-sidebarToggle-icon);
 }
-html[dir="rtl"] .toolbarButton#sidebarToggle::before {
+html[dir='rtl'] .toolbarButton#sidebarToggle::before {
   transform: scaleX(-1);
 }
 
@@ -3139,7 +3139,7 @@ html[dir="rtl"] .toolbarButton#sidebarToggle::before {
   text-decoration: none;
 }
 
-.bookmark[href="#"] {
+.bookmark[href='#'] {
   opacity: 0.5;
   pointer-events: none;
 }
@@ -3159,7 +3159,7 @@ html[dir="rtl"] .toolbarButton#sidebarToggle::before {
   -webkit-mask-image: var(--toolbarButton-viewOutline-icon);
   mask-image: var(--toolbarButton-viewOutline-icon);
 }
-html[dir="rtl"] #viewOutline.toolbarButton::before {
+html[dir='rtl'] #viewOutline.toolbarButton::before {
   transform: scaleX(-1);
 }
 
@@ -3177,7 +3177,7 @@ html[dir="rtl"] #viewOutline.toolbarButton::before {
   -webkit-mask-image: var(--toolbarButton-currentOutlineItem-icon);
   mask-image: var(--toolbarButton-currentOutlineItem-icon);
 }
-html[dir="rtl"] #currentOutlineItem.toolbarButton::before {
+html[dir='rtl'] #currentOutlineItem.toolbarButton::before {
   transform: scaleX(-1);
 }
 
@@ -3191,7 +3191,7 @@ html[dir="rtl"] #currentOutlineItem.toolbarButton::before {
   display: inline-block;
   top: 1px;
   /* Create a filled circle, with a diameter of 9 pixels, using only CSS: */
-  content: "";
+  content: '';
   background-color: rgba(112, 219, 85, 1);
   height: 9px;
   width: 9px;
@@ -3313,18 +3313,18 @@ html[dir="rtl"] #currentOutlineItem.toolbarButton::before {
   outline-style: none;
 }
 
-.toolbarField[type="checkbox"] {
+.toolbarField[type='checkbox'] {
   opacity: 0;
   // position: absolute !important;
   position: absolute;
   left: 0;
 }
 
-html[dir="ltr"] .toolbarField[type="checkbox"] {
+html[dir='ltr'] .toolbarField[type='checkbox'] {
   margin: 10px 0 3px 7px;
 }
 
-html[dir="rtl"] .toolbarField[type="checkbox"] {
+html[dir='rtl'] .toolbarField[type='checkbox'] {
   margin: 10px 7px 3px 0;
 }
 
