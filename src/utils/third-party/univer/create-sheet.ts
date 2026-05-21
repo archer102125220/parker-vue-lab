@@ -1,4 +1,4 @@
-import type { univerInstance } from '@src/utils/third-party/univer/index';
+import type { univerInstance } from "@src/utils/third-party/univer/index";
 
 export async function importSheet() {
   return await Promise.all([
@@ -24,7 +24,7 @@ export async function importSheet() {
     import("@univerjs/preset-sheets-find-replace"),
     import("@univerjs/preset-sheets-find-replace/locales/zh-TW"),
     import("@univerjs/preset-sheets-find-replace/locales/en-US"),
-    import('@univerjs/uniscript'),
+    import("@univerjs/uniscript"),
     import("@univerjs/preset-sheets-drawing"),
     import("@univerjs/preset-sheets-drawing/locales/zh-TW"),
     import("@univerjs/preset-sheets-drawing/locales/en-US"),
@@ -46,7 +46,7 @@ export async function importSheet() {
     import("@univerjs/preset-sheets-advanced/locales/zh-TW"),
     import("@univerjs/preset-sheets-advanced/locales/en-US"),
 
-    import('@src/utils/third-party/univer/plugin/csv-import'),
+    import("@src/utils/third-party/univer/plugin/csv-import"),
 
     import("@univerjs/sheets-crosshair-highlight/facade"),
     import("@univerjs/sheets-zen-editor/facade"),
@@ -68,7 +68,9 @@ export async function importSheet() {
   ]);
 }
 
-export async function createSheetInstance(container: HTMLElement): Promise<univerInstance> {
+export async function createSheetInstance(
+  container: HTMLElement,
+): Promise<univerInstance> {
   const [
     { createUniver, LocaleType, mergeLocales },
     { UniverSheetsCorePreset },
@@ -92,7 +94,7 @@ export async function createSheetInstance(container: HTMLElement): Promise<unive
     { UniverSheetsFindReplacePreset },
     { default: UniverPresetSheetsFindReplaceZhTW },
     { default: UniverPresetSheetsFindReplaceEnUS },
-    { UniverUniscriptPlugin:_UniverUniscriptPlugin },
+    { UniverUniscriptPlugin: _UniverUniscriptPlugin },
     { UniverSheetsDrawingPreset },
     { default: UniverPresetSheetsDrawingZhTW },
     { default: UniverPresetSheetsDrawingEnUS },
@@ -106,14 +108,17 @@ export async function createSheetInstance(container: HTMLElement): Promise<unive
     { default: UniverPresetSheetsTableZhTW },
     { default: UniverPresetSheetsTableEnUS },
     { UniverWatermarkPlugin: _UniverWatermarkPlugin },
-    { UniverSheetsCrosshairHighlightPlugin: _UniverSheetsCrosshairHighlightPlugin },
+    {
+      UniverSheetsCrosshairHighlightPlugin:
+        _UniverSheetsCrosshairHighlightPlugin,
+    },
     { UniverSheetsZenEditorPlugin: _UniverSheetsZenEditorPlugin },
     { default: UniverSheetsZenEditorZhTW },
     { default: UniverSheetsZenEditorEnUS },
     { UniverSheetsAdvancedPreset },
     { default: UniverPresetSheetsAdvancedZhTW },
     { default: UniverPresetSheetsAdvancedEnUS },
-    { ImportCSVButtonPlugin }
+    { ImportCSVButtonPlugin },
   ] = await importSheet();
 
   const univerInstance = createUniver({
@@ -162,7 +167,10 @@ export async function createSheetInstance(container: HTMLElement): Promise<unive
       UniverSheetsThreadCommentPreset(),
       UniverSheetsNotePreset(),
       UniverSheetsTablePreset(),
-      UniverSheetsAdvancedPreset({ license: "fake.txt", useWorker: true }),
+      UniverSheetsAdvancedPreset({
+        license: import.meta.env.VITE_UNIVER_LICENSE,
+        useWorker: true,
+      }),
     ],
     plugins: [
       ImportCSVButtonPlugin,
