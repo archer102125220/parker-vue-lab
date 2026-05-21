@@ -36,6 +36,12 @@ jobs:
 
       - name: Build
         run: yarn build
+        env:
+          # 讀取 Secrets 的語法：${{ secrets.變數名稱 }}
+          VITE_UNIVER_LICENSE: ${{ secrets.VITE_UNIVER_LICENSE }}
+          
+          # 讀取 Variables 的語法：${{ vars.變數名稱 }}
+          # VITE_API_BASE_URL: ${{ vars.VITE_API_BASE_URL }}
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
