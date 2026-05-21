@@ -602,6 +602,129 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@napi-rs/canvas-android-arm64@npm:0.1.100":
+  version: 0.1.100
+  resolution: "@napi-rs/canvas-android-arm64@npm:0.1.100"
+  conditions: os=android & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@napi-rs/canvas-darwin-arm64@npm:0.1.100":
+  version: 0.1.100
+  resolution: "@napi-rs/canvas-darwin-arm64@npm:0.1.100"
+  conditions: os=darwin & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@napi-rs/canvas-darwin-x64@npm:0.1.100":
+  version: 0.1.100
+  resolution: "@napi-rs/canvas-darwin-x64@npm:0.1.100"
+  conditions: os=darwin & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@napi-rs/canvas-linux-arm-gnueabihf@npm:0.1.100":
+  version: 0.1.100
+  resolution: "@napi-rs/canvas-linux-arm-gnueabihf@npm:0.1.100"
+  conditions: os=linux & cpu=arm
+  languageName: node
+  linkType: hard
+
+"@napi-rs/canvas-linux-arm64-gnu@npm:0.1.100":
+  version: 0.1.100
+  resolution: "@napi-rs/canvas-linux-arm64-gnu@npm:0.1.100"
+  conditions: os=linux & cpu=arm64 & libc=glibc
+  languageName: node
+  linkType: hard
+
+"@napi-rs/canvas-linux-arm64-musl@npm:0.1.100":
+  version: 0.1.100
+  resolution: "@napi-rs/canvas-linux-arm64-musl@npm:0.1.100"
+  conditions: os=linux & cpu=arm64 & libc=musl
+  languageName: node
+  linkType: hard
+
+"@napi-rs/canvas-linux-riscv64-gnu@npm:0.1.100":
+  version: 0.1.100
+  resolution: "@napi-rs/canvas-linux-riscv64-gnu@npm:0.1.100"
+  conditions: os=linux & cpu=riscv64 & libc=glibc
+  languageName: node
+  linkType: hard
+
+"@napi-rs/canvas-linux-x64-gnu@npm:0.1.100":
+  version: 0.1.100
+  resolution: "@napi-rs/canvas-linux-x64-gnu@npm:0.1.100"
+  conditions: os=linux & cpu=x64 & libc=glibc
+  languageName: node
+  linkType: hard
+
+"@napi-rs/canvas-linux-x64-musl@npm:0.1.100":
+  version: 0.1.100
+  resolution: "@napi-rs/canvas-linux-x64-musl@npm:0.1.100"
+  conditions: os=linux & cpu=x64 & libc=musl
+  languageName: node
+  linkType: hard
+
+"@napi-rs/canvas-win32-arm64-msvc@npm:0.1.100":
+  version: 0.1.100
+  resolution: "@napi-rs/canvas-win32-arm64-msvc@npm:0.1.100"
+  conditions: os=win32 & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@napi-rs/canvas-win32-x64-msvc@npm:0.1.100":
+  version: 0.1.100
+  resolution: "@napi-rs/canvas-win32-x64-msvc@npm:0.1.100"
+  conditions: os=win32 & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@napi-rs/canvas@npm:^0.1.100":
+  version: 0.1.100
+  resolution: "@napi-rs/canvas@npm:0.1.100"
+  dependencies:
+    "@napi-rs/canvas-android-arm64": "npm:0.1.100"
+    "@napi-rs/canvas-darwin-arm64": "npm:0.1.100"
+    "@napi-rs/canvas-darwin-x64": "npm:0.1.100"
+    "@napi-rs/canvas-linux-arm-gnueabihf": "npm:0.1.100"
+    "@napi-rs/canvas-linux-arm64-gnu": "npm:0.1.100"
+    "@napi-rs/canvas-linux-arm64-musl": "npm:0.1.100"
+    "@napi-rs/canvas-linux-riscv64-gnu": "npm:0.1.100"
+    "@napi-rs/canvas-linux-x64-gnu": "npm:0.1.100"
+    "@napi-rs/canvas-linux-x64-musl": "npm:0.1.100"
+    "@napi-rs/canvas-win32-arm64-msvc": "npm:0.1.100"
+    "@napi-rs/canvas-win32-x64-msvc": "npm:0.1.100"
+  dependenciesMeta:
+    "@napi-rs/canvas-android-arm64":
+      optional: true
+    "@napi-rs/canvas-darwin-arm64":
+      optional: true
+    "@napi-rs/canvas-darwin-x64":
+      optional: true
+    "@napi-rs/canvas-linux-arm-gnueabihf":
+      optional: true
+    "@napi-rs/canvas-linux-arm64-gnu":
+      optional: true
+    "@napi-rs/canvas-linux-arm64-musl":
+      optional: true
+    "@napi-rs/canvas-linux-riscv64-gnu":
+      optional: true
+    "@napi-rs/canvas-linux-x64-gnu":
+      optional: true
+    "@napi-rs/canvas-linux-x64-musl":
+      optional: true
+    "@napi-rs/canvas-win32-arm64-msvc":
+      optional: true
+    "@napi-rs/canvas-win32-x64-msvc":
+      optional: true
+    canvas:
+      built: true
+    skia-canvas:
+      built: true
+  checksum: 10c0/d3dfca5620a41c34addd344bd4c448a5334d3f32f2562ec8390507b3897747ed1de9f08fcb9169cff6dd27111afb5b3eaf7e42cc1494c8fa4128e7d4235f6bea
+  languageName: node
+  linkType: hard
+
 "@napi-rs/wasm-runtime@npm:^1.1.4":
   version: 1.1.4
   resolution: "@napi-rs/wasm-runtime@npm:1.1.4"
@@ -1895,7 +2018,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tiptap/core@npm:3.23.5, @tiptap/core@npm:^3.23.5":
+"@tiptap/core@npm:^3.23.5":
   version: 3.23.5
   resolution: "@tiptap/core@npm:3.23.5"
   peerDependencies:
@@ -1962,7 +2085,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tiptap/extension-color@npm:3.23.5":
+"@tiptap/extension-color@npm:^3.23.5":
   version: 3.23.5
   resolution: "@tiptap/extension-color@npm:3.23.5"
   peerDependencies:
@@ -2000,7 +2123,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tiptap/extension-font-family@npm:3.23.5":
+"@tiptap/extension-font-family@npm:^3.23.5":
   version: 3.23.5
   resolution: "@tiptap/extension-font-family@npm:3.23.5"
   peerDependencies:
@@ -2036,7 +2159,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tiptap/extension-highlight@npm:3.23.5":
+"@tiptap/extension-highlight@npm:^3.23.5":
   version: 3.23.5
   resolution: "@tiptap/extension-highlight@npm:3.23.5"
   peerDependencies:
@@ -2055,7 +2178,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tiptap/extension-image@npm:3.23.5":
+"@tiptap/extension-image@npm:^3.23.5":
   version: 3.23.5
   resolution: "@tiptap/extension-image@npm:3.23.5"
   peerDependencies:
@@ -2140,7 +2263,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tiptap/extension-table-cell@npm:3.23.5":
+"@tiptap/extension-table-cell@npm:^3.23.5":
   version: 3.23.5
   resolution: "@tiptap/extension-table-cell@npm:3.23.5"
   peerDependencies:
@@ -2149,7 +2272,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tiptap/extension-table-header@npm:3.23.5":
+"@tiptap/extension-table-header@npm:^3.23.5":
   version: 3.23.5
   resolution: "@tiptap/extension-table-header@npm:3.23.5"
   peerDependencies:
@@ -2158,7 +2281,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tiptap/extension-table-row@npm:3.23.5":
+"@tiptap/extension-table-row@npm:^3.23.5":
   version: 3.23.5
   resolution: "@tiptap/extension-table-row@npm:3.23.5"
   peerDependencies:
@@ -2167,7 +2290,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tiptap/extension-table@npm:3.23.5":
+"@tiptap/extension-table@npm:^3.23.5":
   version: 3.23.5
   resolution: "@tiptap/extension-table@npm:3.23.5"
   peerDependencies:
@@ -2177,7 +2300,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tiptap/extension-text-align@npm:3.23.5":
+"@tiptap/extension-text-align@npm:^3.23.5":
   version: 3.23.5
   resolution: "@tiptap/extension-text-align@npm:3.23.5"
   peerDependencies:
@@ -2186,7 +2309,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tiptap/extension-text-style@npm:3.23.5":
+"@tiptap/extension-text-style@npm:^3.23.5":
   version: 3.23.5
   resolution: "@tiptap/extension-text-style@npm:3.23.5"
   peerDependencies:
@@ -5729,17 +5852,17 @@ __metadata:
     "@mdi/font": "npm:^7.4.47"
     "@syncfusion/ej2-vue-documenteditor": "npm:^33.2.7"
     "@syncfusion/ej2-vue-spreadsheet": "npm:^33.2.7"
-    "@tiptap/core": "npm:3.23.5"
-    "@tiptap/extension-color": "npm:3.23.5"
-    "@tiptap/extension-font-family": "npm:3.23.5"
-    "@tiptap/extension-highlight": "npm:3.23.5"
-    "@tiptap/extension-image": "npm:3.23.5"
-    "@tiptap/extension-table": "npm:3.23.5"
-    "@tiptap/extension-table-cell": "npm:3.23.5"
-    "@tiptap/extension-table-header": "npm:3.23.5"
-    "@tiptap/extension-table-row": "npm:3.23.5"
-    "@tiptap/extension-text-align": "npm:3.23.5"
-    "@tiptap/extension-text-style": "npm:3.23.5"
+    "@tiptap/core": "npm:^3.23.5"
+    "@tiptap/extension-color": "npm:^3.23.5"
+    "@tiptap/extension-font-family": "npm:^3.23.5"
+    "@tiptap/extension-highlight": "npm:^3.23.5"
+    "@tiptap/extension-image": "npm:^3.23.5"
+    "@tiptap/extension-table": "npm:^3.23.5"
+    "@tiptap/extension-table-cell": "npm:^3.23.5"
+    "@tiptap/extension-table-header": "npm:^3.23.5"
+    "@tiptap/extension-table-row": "npm:^3.23.5"
+    "@tiptap/extension-text-align": "npm:^3.23.5"
+    "@tiptap/extension-text-style": "npm:^3.23.5"
     "@tiptap/pm": "npm:^3.23.5"
     "@tiptap/starter-kit": "npm:^3.23.5"
     "@tiptap/vue-3": "npm:^3.23.5"
@@ -5783,6 +5906,7 @@ __metadata:
     lodash: "npm:^4.18.1"
     mammoth: "npm:^1.12.0"
     npm-run-all2: "npm:^8.0.4"
+    pdfjs-dist: "npm:^5.7.284"
     postcss-pxtorem: "npm:^6.1.0"
     react: "npm:^19.2.6"
     react-dom: "npm:^19.2.6"
@@ -5829,6 +5953,18 @@ __metadata:
   version: 2.0.3
   resolution: "pathe@npm:2.0.3"
   checksum: 10c0/c118dc5a8b5c4166011b2b70608762e260085180bb9e33e80a50dcdb1e78c010b1624f4280c492c92b05fc276715a4c357d1f9edc570f8f1b3d90b6839ebaca1
+  languageName: node
+  linkType: hard
+
+"pdfjs-dist@npm:^5.7.284":
+  version: 5.7.284
+  resolution: "pdfjs-dist@npm:5.7.284"
+  dependencies:
+    "@napi-rs/canvas": "npm:^0.1.100"
+  dependenciesMeta:
+    "@napi-rs/canvas":
+      optional: true
+  checksum: 10c0/5ff7678e9b197acb90b22329753c11e45dbb862d8e1d721e311fc13d5cfab4f6b87114d75307b5db8b057e25c732226ef0a9feff89dbb1f2bbc3ef362ca649af
   languageName: node
   linkType: hard
 
