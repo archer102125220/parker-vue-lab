@@ -43,6 +43,10 @@ jobs:
           # 讀取 Variables 的語法：${{ vars.變數名稱 }}
           # VITE_API_BASE_URL: ${{ vars.VITE_API_BASE_URL }}
 
+        # 解決 SPA 重新整理 404 的問題
+      - name: Copy index to 404
+        run: cp ./dist/index.html ./dist/404.html
+
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
