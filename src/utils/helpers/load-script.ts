@@ -1,5 +1,10 @@
-export function loadScript(id: string, src: string): Promise<void> {
-  if (typeof document === 'undefined') {
+export function loadScript(
+  id: string,
+  src: string,
+  attributes: Record<string, unknown> = {},
+  successDelay = 500,
+): Promise<void> {
+  if (typeof document === "undefined") {
     return Promise.resolve();
   }
 
@@ -8,12 +13,34 @@ export function loadScript(id: string, src: string): Promise<void> {
   }
 
   return new Promise((resolve, reject) => {
-    const script = document.createElement('script');
+    const script = document.createElement("script");
     script.id = id;
     script.src = src;
-    // 完全不設定 async，讓瀏覽器依照插入順序執行
-    script.onload = () => resolve();
-    script.onerror = reject;
+
+    Object.keys(attributes).forEach((key) => {
+      script.setAttribute(key, attributes[key] as string);
+    });
+
+    const loadEvent = attributes.load;
+    const errorEvent = attributes.error;
+
+    script.onload = (...args) => {
+      if (typeof loadEvent === "function") {
+        loadEvent(...args);
+      }
+
+      if (successDelay > 0) {
+        setTimeout(resolve, successDelay);
+      } else {
+        resolve();
+      }
+    };
+    script.onerror = (...args) => {
+      if (typeof errorEvent === "function") {
+        errorEvent(...args);
+      }
+      reject();
+    };
     document.head.appendChild(script);
   });
 }

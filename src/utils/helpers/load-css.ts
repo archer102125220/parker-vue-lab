@@ -1,5 +1,10 @@
-export function loadCSS(id: string, href: string): Promise<void> {
-    if (typeof document === 'undefined') {
+export function loadCSS(
+  id: string,
+  href: string,
+  attributes: Record<string, unknown> = {},
+  successDelay = 0,
+): Promise<void> {
+  if (typeof document === "undefined") {
     return Promise.resolve();
   }
 
@@ -8,12 +13,34 @@ export function loadCSS(id: string, href: string): Promise<void> {
   }
 
   return new Promise((resolve, reject) => {
-    const link = document.createElement('link');
+    const link = document.createElement("link");
     link.id = id;
-    link.rel = 'stylesheet';
+    link.rel = "stylesheet";
     link.href = href;
-    link.onload = () => resolve();
-    link.onerror = reject;
+
+    Object.keys(attributes).forEach((key) => {
+      link.setAttribute(key, attributes[key] as string);
+    });
+
+    const loadEvent = attributes.load;
+    const errorEvent = attributes.error;
+
+    link.onload = (...args) => {
+      if (typeof loadEvent === "function") {
+        loadEvent(...args);
+      }
+      if (successDelay > 0) {
+        setTimeout(resolve, successDelay);
+      } else {
+        resolve();
+      }
+    };
+    link.onerror = (...args) => {
+      if (typeof errorEvent === "function") {
+        errorEvent(...args);
+      }
+      reject();
+    };
     document.head.appendChild(link);
   });
 }
