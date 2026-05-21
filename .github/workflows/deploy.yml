@@ -22,7 +22,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-        # 1. 在 Setup Node 之前加入這步，啟用 Corepack
       - name: Enable Corepack
         run: corepack enable
 
