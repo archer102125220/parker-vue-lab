@@ -27,6 +27,7 @@ export class ExportCSVButtonPlugin extends Plugin {
   static override pluginName = 'export-csv-plugin';
 
   constructor(
+    _config: unknown, // Univer dynamically passes a config object as the first parameter
     // Injector is the core dependency injection container in Univer.
     // It manages the creation and lifecycle of all services and plugins.
     @Inject(Injector) readonly _injector: Injector,

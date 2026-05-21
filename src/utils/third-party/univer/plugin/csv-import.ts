@@ -40,6 +40,7 @@ export class ImportCSVButtonPlugin extends Plugin {
   static override pluginName = 'import-csv-plugin';
 
   constructor(
+    _config: unknown, // Univer dynamically passes a config object as the first parameter
     // inject injector, required
     @Inject(Injector) readonly _injector: Injector,
     // inject menu service, to add toolbar button
