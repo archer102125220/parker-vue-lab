@@ -95,9 +95,6 @@ export async function importSheet() {
     import('@univerjs/sheets-zen-editor'),
     import('@univerjs/sheets-zen-editor/locale/zh-TW'),
     import('@univerjs/sheets-zen-editor/locale/en-US'),
-    import('@univerjs/preset-sheets-advanced'),
-    import('@univerjs/preset-sheets-advanced/locales/zh-TW'),
-    import('@univerjs/preset-sheets-advanced/locales/en-US'),
 
     import('@univerjs/sheets-crosshair-highlight/facade'),
     import('@univerjs/sheets-zen-editor/facade'),
@@ -114,12 +111,10 @@ export async function importSheet() {
     import('@univerjs/preset-sheets-note/lib/index.css'),
     import('@univerjs/preset-sheets-table/lib/index.css'),
     import('@univerjs/sheets-crosshair-highlight/lib/index.css'),
-    import('@univerjs/sheets-zen-editor/lib/index.css'),
+    import('@univerjs/sheets-zen-editor/lib/index.css')
 
     // uniscript 好像是 experimental ，並且 CDN 需要額外想辦法處理 monaco-editor ，暫先註解掉
     // import('@univerjs/uniscript/lib/index.css'),
-
-    import('@univerjs/preset-sheets-advanced/lib/index.css')
   ]);
 
   return {
@@ -192,7 +187,9 @@ export async function importSheetAdvanced() {
   ] = await Promise.all([
     import('@univerjs/preset-sheets-advanced'),
     import('@univerjs/preset-sheets-advanced/locales/zh-TW'),
-    import('@univerjs/preset-sheets-advanced/locales/en-US')
+    import('@univerjs/preset-sheets-advanced/locales/en-US'),
+
+    import('@univerjs/preset-sheets-advanced/lib/index.css')
   ]);
 
   return {
@@ -202,7 +199,7 @@ export async function importSheetAdvanced() {
   };
 }
 
-export async function importCollaboration() {
+export async function importSheetCollaboration() {
   const [
     UniverPresetSheetsCollaboration,
     { default: UniverSheetsCollaborationPresetZhTW },
@@ -210,7 +207,9 @@ export async function importCollaboration() {
   ] = await Promise.all([
     import('@univerjs/preset-sheets-collaboration'),
     import('@univerjs/preset-sheets-collaboration/locales/zh-TW'),
-    import('@univerjs/preset-sheets-collaboration/locales/en-US')
+    import('@univerjs/preset-sheets-collaboration/locales/en-US'),
+
+    import('@univerjs/preset-sheets-collaboration/lib/index.css')
   ]);
 
   return {
@@ -349,7 +348,7 @@ export async function createSheetInstance(
       UniverPresetSheetsCollaboration,
       UniverSheetsCollaborationPresetZhTW,
       UniverSheetsCollaborationPresetEnUS
-    } = await importCollaboration();
+    } = await importSheetCollaboration();
 
     const { UniverSheetsCollaborationPreset } = UniverPresetSheetsCollaboration;
 
