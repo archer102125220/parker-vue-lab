@@ -1,0 +1,198 @@
+import { Observable } from 'rxjs';
+import { Inject, Injector, type IAccessor } from '@wendellhu/redi';
+import {
+  ComponentManager,
+  IMenuManagerService,
+  MenuItemType,
+  RibbonStartGroup,
+} from '@univerjs/ui';
+import {
+  CommandType,
+  ICommandService,
+  IUniverInstanceService,
+  Plugin,
+  UniverInstanceType,
+  type ICommand,
+} from '@univerjs/core';
+
+/**
+ * 本地文件匯出外掛 (支援 Word / Excel)
+ * 專門處理「非協同模式」下，前端建立的本地檔案如何正確匯出為 DOCX / XLSX
+ */
+export class LocalExportButtonPlugin extends Plugin {
+  static override pluginName = 'local-export-plugin';
+
+  constructor(
+    _config: unknown,
+    @Inject(Injector) protected override _injector: Injector,
+    @Inject(IMenuManagerService) private readonly menuManagerService: IMenuManagerService,
+    @Inject(ICommandService) private readonly commandService: ICommandService,
+    @Inject(ComponentManager) private readonly componentManager: ComponentManager
+  ) {
+    super();
+  }
+
+  override onStarting(): void {
+    const buttonId = 'local-export-button';
+
+    const command: ICommand = {
+      type: CommandType.OPERATION,
+      id: buttonId,
+      handler: async (accessor: IAccessor) => {
+        const univerInstanceService = accessor.get(IUniverInstanceService);
+        const doc = univerInstanceService.getFocusedUnit();
+        if (!doc) return false;
+        const focusedUnitId = doc.getUnitId();
+        if (typeof focusedUnitId !== 'string' || focusedUnitId === '') return false;
+
+
+        const isDoc = doc.type === UniverInstanceType.UNIVER_DOC;
+        const isSheet = doc.type === UniverInstanceType.UNIVER_SHEET;
+
+        if (!isDoc && !isSheet) return false;
+
+        const fileType = isDoc ? 1 : 2; // 1: Doc, 2: Sheet
+        const fileExtension = isDoc ? 'docx' : 'xlsx';
+
+        try {
+          alert('正在為您匯出文件，這可能需要幾秒鐘的時間，請稍候...');
+
+          // 1. 取得完整的文件 Snapshot JSON
+          const snapshot = doc.getSnapshot();
+          const snapshotStr = JSON.stringify(snapshot);
+
+          // 定義後端 API 路徑
+          const UNIVERSER_HOST = import.meta.env.VITE_UNIVERSER_DOCKER_HOST || 'http://localhost:8000';
+          const API_PREFIX = `${UNIVERSER_HOST}/universer-api`;
+
+          // 2. 上傳快照到 Universer 取得 FileId (jsonID)
+          const formData = new FormData();
+          formData.append(
+            'file',
+            new Blob([snapshotStr], { type: 'application/json' }),
+            'snapshot.json'
+          );
+
+          const uploadUrl = `${API_PREFIX}/stream/file/upload?size=${snapshotStr.length}&source=1&flate=false`;
+          const uploadRes = await fetch(uploadUrl, {
+            method: 'POST',
+            body: formData,
+          });
+          const uploadData = await uploadRes.json() as { FileId?: string };
+
+          if (typeof uploadData !== 'object' || uploadData === null || !uploadData.FileId) {
+            throw new Error('上傳 Snapshot 失敗');
+          }
+          const fileId = uploadData.FileId;
+
+          // 3. 呼叫匯出 API
+          const exportUrl = `${API_PREFIX}/exchange/${fileType}/export`;
+          const exportRes = await fetch(exportUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              unitID: '',
+              jsonID: fileId,
+              type: fileType,
+            }),
+          });
+          const exportData = await exportRes.json() as { taskID?: string };
+
+          const taskID = exportData.taskID;
+          if (typeof taskID !== 'string' || taskID === '') {
+            throw new Error('呼叫匯出任務失敗，未取得 taskID');
+          }
+
+          // 4. Polling (輪詢) 檢查任務狀態
+          let isSuccess = false;
+          let finalTaskData: { status?: string; error?: { message?: string }; url?: string; downloadUrl?: string; fileID?: string; fileId?: string } | null = null;
+
+          for (let i = 0; i < 30; i++) {
+            const taskUrl = `${API_PREFIX}/exchange/task/${taskID}`;
+            const taskRes = await fetch(taskUrl);
+            const taskData = await taskRes.json() as { status?: string; error?: { message?: string }; url?: string; downloadUrl?: string; fileID?: string; fileId?: string };
+
+            if (taskData.status === 'success') {
+              isSuccess = true;
+              finalTaskData = taskData;
+              break;
+            } else if (taskData.status === 'error' || taskData.status === 'failed') {
+              throw new Error(taskData.error?.message || '後端匯出任務執行失敗');
+            }
+
+            await new Promise((r) => setTimeout(r, 1000));
+          }
+
+          if (!isSuccess || finalTaskData === null) {
+            throw new Error('匯出任務超時');
+          }
+
+          // 5. 下載檔案
+          let downloadUrl = '';
+          if (typeof finalTaskData.url === 'string' && finalTaskData.url !== '') {
+            downloadUrl = finalTaskData.url;
+          } else if (typeof finalTaskData.downloadUrl === 'string' && finalTaskData.downloadUrl !== '') {
+            downloadUrl = finalTaskData.downloadUrl;
+          } else if (typeof finalTaskData.fileID === 'string' && finalTaskData.fileID !== '') {
+            downloadUrl = `${UNIVERSER_HOST}/file/${finalTaskData.fileID}/download`;
+          } else if (typeof finalTaskData.fileId === 'string' && finalTaskData.fileId !== '') {
+            downloadUrl = `${UNIVERSER_HOST}/file/${finalTaskData.fileId}/download`;
+          } else {
+            downloadUrl = `${UNIVERSER_HOST}/file/${taskID}/download`;
+            console.warn('未在任務結果中找到明確的下載欄位，嘗試使用預設組合:', finalTaskData);
+          }
+
+          const link = document.createElement('a');
+          link.href = downloadUrl;
+          link.target = '_blank';
+          link.download = `export.${fileExtension}`;
+          link.style.display = 'none';
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+
+          return true;
+        } catch (err: unknown) {
+          console.error('[LocalExportPlugin] Error:', err);
+          const errorMessage = err instanceof Error ? err.message : String(err);
+          alert('匯出發生錯誤：' + errorMessage);
+          return false;
+        }
+      },
+    };
+
+    const menuItemFactory = () => ({
+      id: buttonId,
+      title: 'Export File',
+      tooltip: 'Export as Local File',
+      icon: 'ExportIcon',
+      type: MenuItemType.BUTTON,
+      hidden$: new Observable<boolean>((subscriber) => {
+        const univerInstanceService = this._injector.get(IUniverInstanceService);
+        const subscription = univerInstanceService.focused$.subscribe((unitId) => {
+          if (typeof unitId !== 'string' || unitId === '') {
+            subscriber.next(true);
+            return;
+          }
+          const unit = univerInstanceService.getUnit(unitId);
+          subscriber.next(
+            unit?.type !== UniverInstanceType.UNIVER_DOC &&
+            unit?.type !== UniverInstanceType.UNIVER_SHEET
+          );
+        });
+        return () => subscription.unsubscribe();
+      }),
+    });
+
+    this.menuManagerService.mergeMenu({
+      [RibbonStartGroup.OTHERS]: {
+        [buttonId]: {
+          order: 20,
+          menuItemFactory,
+        },
+      },
+    });
+
+    this.commandService.registerCommand(command);
+  }
+}
