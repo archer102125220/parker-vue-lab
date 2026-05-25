@@ -5,7 +5,7 @@ import {
   IMenuManagerService,
   MenuItemType,
   RibbonStartGroup,
-  IMessageService,
+  IMessageService
 } from '@univerjs/ui';
 import { MessageType } from '@univerjs/design';
 import {
@@ -14,7 +14,7 @@ import {
   IUniverInstanceService,
   Plugin,
   UniverInstanceType,
-  type ICommand,
+  type ICommand
 } from '@univerjs/core';
 
 /**
@@ -27,9 +27,11 @@ export class LocalExportButtonPlugin extends Plugin {
   constructor(
     _config: unknown,
     @Inject(Injector) protected override _injector: Injector,
-    @Inject(IMenuManagerService) private readonly menuManagerService: IMenuManagerService,
+    @Inject(IMenuManagerService)
+    private readonly menuManagerService: IMenuManagerService,
     @Inject(ICommandService) private readonly commandService: ICommandService,
-    @Inject(ComponentManager) private readonly componentManager: ComponentManager
+    @Inject(ComponentManager)
+    private readonly componentManager: ComponentManager
   ) {
     super();
   }
@@ -46,8 +48,8 @@ export class LocalExportButtonPlugin extends Plugin {
         const doc = univerInstanceService.getFocusedUnit();
         if (!doc) return false;
         const focusedUnitId = doc.getUnitId();
-        if (typeof focusedUnitId !== 'string' || focusedUnitId === '') return false;
-
+        if (typeof focusedUnitId !== 'string' || focusedUnitId === '')
+          return false;
 
         const isDoc = doc.type === UniverInstanceType.UNIVER_DOC;
         const isSheet = doc.type === UniverInstanceType.UNIVER_SHEET;
@@ -60,7 +62,7 @@ export class LocalExportButtonPlugin extends Plugin {
         try {
           messageService.show({
             type: MessageType.Info,
-            content: '正在為您匯出文件，這可能需要幾秒鐘的時間，請稍候...',
+            content: '正在為您匯出文件，這可能需要幾秒鐘的時間，請稍候...'
           });
 
           // 1. 取得完整的文件 Snapshot JSON
@@ -68,25 +70,34 @@ export class LocalExportButtonPlugin extends Plugin {
           const snapshotStr = JSON.stringify(snapshot);
 
           // 定義後端 API 路徑
-          const UNIVERSER_HOST = import.meta.env.VITE_UNIVERSER_DOCKER_HOST || 'http://localhost:8000';
+          const UNIVERSER_HOST =
+            import.meta.env.VITE_UNIVERSER_DOCKER_HOST ||
+            'http://localhost:8000';
           const API_PREFIX = `${UNIVERSER_HOST}/universer-api`;
 
           // 2. 上傳快照到 Universer 取得 FileId (jsonID)
+          const blob = new Blob([snapshotStr], { type: 'application/json' });
           const formData = new FormData();
-          formData.append(
-            'file',
-            new Blob([snapshotStr], { type: 'application/json' }),
-            'snapshot.json'
-          );
+          // 必須使用 Blob 封裝以符合 multipart/form-data 格式
+          formData.append('file', blob, 'snapshot.json');
 
-          const uploadUrl = `${API_PREFIX}/stream/file/upload?size=${snapshotStr.length}&source=1&flate=false`;
+          const uploadUrl = `${API_PREFIX}/stream/file/upload?size=${blob.size}&source=1&flate=false`;
           const uploadRes = await fetch(uploadUrl, {
             method: 'POST',
-            body: formData,
+            body: formData
           });
-          const uploadData = await uploadRes.json() as { FileId?: string };
 
-          if (typeof uploadData !== 'object' || uploadData === null || !uploadData.FileId) {
+          if (!uploadRes.ok) {
+            const errText = await uploadRes.text();
+            throw new Error(`上傳失敗 (${uploadRes.status}): ${errText}`);
+          }
+          const uploadData = (await uploadRes.json()) as { FileId?: string };
+
+          if (
+            typeof uploadData !== 'object' ||
+            uploadData === null ||
+            !uploadData.FileId
+          ) {
             throw new Error('上傳 Snapshot 失敗');
           }
           const fileId = uploadData.FileId;
@@ -99,10 +110,10 @@ export class LocalExportButtonPlugin extends Plugin {
             body: JSON.stringify({
               unitID: '',
               jsonID: fileId,
-              type: fileType,
-            }),
+              type: fileType
+            })
           });
-          const exportData = await exportRes.json() as { taskID?: string };
+          const exportData = (await exportRes.json()) as { taskID?: string };
 
           const taskID = exportData.taskID;
           if (typeof taskID !== 'string' || taskID === '') {
@@ -111,19 +122,38 @@ export class LocalExportButtonPlugin extends Plugin {
 
           // 4. Polling (輪詢) 檢查任務狀態
           let isSuccess = false;
-          let finalTaskData: { status?: string; error?: { message?: string }; url?: string; downloadUrl?: string; fileID?: string; fileId?: string } | null = null;
+          let finalTaskData: {
+            status?: string;
+            error?: { message?: string };
+            url?: string;
+            downloadUrl?: string;
+            fileID?: string;
+            fileId?: string;
+          } | null = null;
 
           for (let i = 0; i < 30; i++) {
             const taskUrl = `${API_PREFIX}/exchange/task/${taskID}`;
             const taskRes = await fetch(taskUrl);
-            const taskData = await taskRes.json() as { status?: string; error?: { message?: string }; url?: string; downloadUrl?: string; fileID?: string; fileId?: string };
+            const taskData = (await taskRes.json()) as {
+              status?: string;
+              error?: { message?: string };
+              url?: string;
+              downloadUrl?: string;
+              fileID?: string;
+              fileId?: string;
+            };
 
             if (taskData.status === 'success') {
               isSuccess = true;
               finalTaskData = taskData;
               break;
-            } else if (taskData.status === 'error' || taskData.status === 'failed') {
-              throw new Error(taskData.error?.message || '後端匯出任務執行失敗');
+            } else if (
+              taskData.status === 'error' ||
+              taskData.status === 'failed'
+            ) {
+              throw new Error(
+                taskData.error?.message || '後端匯出任務執行失敗'
+              );
             }
 
             await new Promise((r) => setTimeout(r, 1000));
@@ -135,17 +165,32 @@ export class LocalExportButtonPlugin extends Plugin {
 
           // 5. 下載檔案
           let downloadUrl = '';
-          if (typeof finalTaskData.url === 'string' && finalTaskData.url !== '') {
+          if (
+            typeof finalTaskData.url === 'string' &&
+            finalTaskData.url !== ''
+          ) {
             downloadUrl = finalTaskData.url;
-          } else if (typeof finalTaskData.downloadUrl === 'string' && finalTaskData.downloadUrl !== '') {
+          } else if (
+            typeof finalTaskData.downloadUrl === 'string' &&
+            finalTaskData.downloadUrl !== ''
+          ) {
             downloadUrl = finalTaskData.downloadUrl;
-          } else if (typeof finalTaskData.fileID === 'string' && finalTaskData.fileID !== '') {
+          } else if (
+            typeof finalTaskData.fileID === 'string' &&
+            finalTaskData.fileID !== ''
+          ) {
             downloadUrl = `${UNIVERSER_HOST}/file/${finalTaskData.fileID}/download`;
-          } else if (typeof finalTaskData.fileId === 'string' && finalTaskData.fileId !== '') {
+          } else if (
+            typeof finalTaskData.fileId === 'string' &&
+            finalTaskData.fileId !== ''
+          ) {
             downloadUrl = `${UNIVERSER_HOST}/file/${finalTaskData.fileId}/download`;
           } else {
             downloadUrl = `${UNIVERSER_HOST}/file/${taskID}/download`;
-            console.warn('未在任務結果中找到明確的下載欄位，嘗試使用預設組合:', finalTaskData);
+            console.warn(
+              '未在任務結果中找到明確的下載欄位，嘗試使用預設組合:',
+              finalTaskData
+            );
           }
 
           const link = document.createElement('a');
@@ -163,11 +208,11 @@ export class LocalExportButtonPlugin extends Plugin {
           const errorMessage = err instanceof Error ? err.message : String(err);
           messageService.show({
             type: MessageType.Error,
-            content: '匯出發生錯誤：' + errorMessage,
+            content: '匯出發生錯誤：' + errorMessage
           });
           return false;
         }
-      },
+      }
     };
 
     const menuItemFactory = () => ({
@@ -177,29 +222,33 @@ export class LocalExportButtonPlugin extends Plugin {
       icon: 'ExportIcon',
       type: MenuItemType.BUTTON,
       hidden$: new Observable<boolean>((subscriber) => {
-        const univerInstanceService = this._injector.get(IUniverInstanceService);
-        const subscription = univerInstanceService.focused$.subscribe((unitId) => {
-          if (typeof unitId !== 'string' || unitId === '') {
-            subscriber.next(true);
-            return;
+        const univerInstanceService = this._injector.get(
+          IUniverInstanceService
+        );
+        const subscription = univerInstanceService.focused$.subscribe(
+          (unitId) => {
+            if (typeof unitId !== 'string' || unitId === '') {
+              subscriber.next(true);
+              return;
+            }
+            const unit = univerInstanceService.getUnit(unitId);
+            subscriber.next(
+              unit?.type !== UniverInstanceType.UNIVER_DOC &&
+                unit?.type !== UniverInstanceType.UNIVER_SHEET
+            );
           }
-          const unit = univerInstanceService.getUnit(unitId);
-          subscriber.next(
-            unit?.type !== UniverInstanceType.UNIVER_DOC &&
-            unit?.type !== UniverInstanceType.UNIVER_SHEET
-          );
-        });
+        );
         return () => subscription.unsubscribe();
-      }),
+      })
     });
 
     this.menuManagerService.mergeMenu({
       [RibbonStartGroup.OTHERS]: {
         [buttonId]: {
           order: 20,
-          menuItemFactory,
-        },
-      },
+          menuItemFactory
+        }
+      }
     });
 
     this.commandService.registerCommand(command);
