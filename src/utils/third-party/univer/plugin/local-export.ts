@@ -24,14 +24,36 @@ import {
 } from '@univerjs-pro/exchange-client';
 
 /**
+ * `LocalExportButtonPlugin` 的設定選項。
+ */
+export interface ILocalExportPluginConfig {
+  /**
+   * 自訂後端 API 請求的前綴路徑。
+   * 若未提供，將預設使用 `VITE_UNIVERSER_DOCKER_HOST` 環境變數加上 `/universer-api`，
+   * 或是 `http://localhost:8000/universer-api`。
+   * 
+   * @example
+   * 'https://api.example.com/universer-api'
+   */
+  apiPrefix?: string;
+}
+
+/**
  * 本地文件匯出外掛 (支援 Word / Excel)
  * 專門處理「非協同模式」下，前端建立的本地檔案如何正確匯出為 DOCX / XLSX
+ * 
+ * @example
+ * ```typescript
+ * univer.registerPlugin(LocalExportButtonPlugin, {
+ *   apiPrefix: 'https://api.example.com/universer-api'
+ * });
+ * ```
  */
 export class LocalExportButtonPlugin extends Plugin {
   static override pluginName = 'local-export-plugin';
 
   constructor(
-    _config: unknown,
+    private readonly _config: Partial<ILocalExportPluginConfig> | undefined = {},
     @Inject(Injector) protected override _injector: Injector,
     @Inject(IMenuManagerService)
     private readonly menuManagerService: IMenuManagerService,
@@ -95,7 +117,7 @@ export class LocalExportButtonPlugin extends Plugin {
           const UNIVERSER_HOST =
             (import.meta as any).env.VITE_UNIVERSER_DOCKER_HOST ||
             'http://localhost:8000';
-          const API_PREFIX = `${UNIVERSER_HOST}/universer-api`;
+          const API_PREFIX = this._config?.apiPrefix || `${UNIVERSER_HOST}/universer-api`;
 
           // 2. 上傳快照到 Universer 取得 FileId (jsonID)
           const blob = new Blob([snapshotStr], { type: 'application/json' });
