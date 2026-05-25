@@ -67,7 +67,20 @@ export class LocalExportButtonPlugin extends Plugin {
 
           // 1. 取得完整的文件 Snapshot JSON
           const snapshot = doc.getSnapshot();
-          const snapshotStr = JSON.stringify(snapshot);
+          // 為了相容 Universer 的 Protobuf 定義，深拷貝一份，並移除後端不認識的屬性
+          const clonedSnapshot = JSON.parse(JSON.stringify(snapshot));
+          if (clonedSnapshot) {
+            const invalidKeys = [
+              'id', 'documentStyle', 'locale', 'title', 'settings', 'disabled', 'rev', 
+              'tableSource', 'footers', 'headers', 'lists', 'drawings', 'drawingsOrder', 
+              'headerFooterDrawingsOrder', 'resources'
+            ];
+            invalidKeys.forEach(key => {
+              if (key in clonedSnapshot) delete clonedSnapshot[key];
+            });
+          }
+          
+          const snapshotStr = JSON.stringify(clonedSnapshot);
 
           // 定義後端 API 路徑
           const UNIVERSER_HOST =
@@ -151,8 +164,9 @@ export class LocalExportButtonPlugin extends Plugin {
               taskData.status === 'error' ||
               taskData.status === 'failed'
             ) {
+              console.error('[LocalExportPlugin] Task failed details:', taskData);
               throw new Error(
-                taskData.error?.message || '後端匯出任務執行失敗'
+                taskData.error?.message || '後端匯出任務執行失敗: ' + JSON.stringify(taskData)
               );
             }
 
