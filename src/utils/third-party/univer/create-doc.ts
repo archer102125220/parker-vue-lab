@@ -92,7 +92,7 @@ export async function importDoc() {
   };
 }
 
-export async function importCustomPlugin() {
+export async function importCustomDocPlugin() {
   const [{ LocalExportButtonPlugin }] = await Promise.all([
     import('@src/utils/third-party/univer/plugin/local-export')
   ]);
@@ -183,7 +183,7 @@ export async function createDocInstance(
   // uniscript 好像是 experimental ，並且 CDN 需要額外想辦法處理 monaco-editor ，暫先註解掉
   // const { UniverUniscriptPlugin } = UniverUniscript;
 
-  const { LocalExportButtonPlugin } = await importCustomPlugin();
+  const { LocalExportButtonPlugin } = await importCustomDocPlugin();
 
   const {
     UniverPresetDocsAdvanced,

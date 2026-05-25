@@ -74,18 +74,21 @@ export class LocalExportButtonPlugin extends Plugin {
         const univerInstanceService = accessor.get(IUniverInstanceService);
         const messageService = accessor.get(IMessageService);
         const doc = univerInstanceService.getFocusedUnit();
-        if (!doc) return false;
+        if (typeof doc !== 'object' || doc === null) return false;
         const focusedUnitId = doc.getUnitId();
-        if (typeof focusedUnitId !== 'string' || focusedUnitId === '')
+        if (typeof focusedUnitId !== 'string' || focusedUnitId === '') {
           return false;
+        }
 
         const isDoc = doc.type === UniverInstanceType.UNIVER_DOC;
         const isSheet = doc.type === UniverInstanceType.UNIVER_SHEET;
 
-        if (!isDoc && !isSheet) return false;
+        if (isDoc === false && isSheet === false) {
+          return false;
+        }
 
-        const fileType = isDoc ? 1 : 2; // 1: Doc, 2: Sheet
-        const fileExtension = isDoc ? 'docx' : 'xlsx';
+        const fileType = isDoc === true ? 1 : 2; // 1: Doc, 2: Sheet
+        const fileExtension = isDoc === true ? 'docx' : 'xlsx';
 
         try {
           messageService.show({
@@ -97,11 +100,11 @@ export class LocalExportButtonPlugin extends Plugin {
           const snapshot = doc.getSnapshot();
           let exportJson;
 
-          if (isDoc) {
+          if (isDoc === true) {
             exportJson = await transformDocumentDataToSnapshotJson(
               snapshot as IDocumentData
             );
-          } else if (isSheet) {
+          } else if (isSheet === true) {
             exportJson = await transformWorkbookDataToSnapshotJson(
               snapshot as IWorkbookData
             );
@@ -131,7 +134,7 @@ export class LocalExportButtonPlugin extends Plugin {
             body: formData
           });
 
-          if (!uploadRes.ok) {
+          if (uploadRes.ok === false) {
             const errText = await uploadRes.text();
             throw new Error(`上傳失敗 (${uploadRes.status}): ${errText}`);
           }
@@ -140,7 +143,8 @@ export class LocalExportButtonPlugin extends Plugin {
           if (
             typeof uploadData !== 'object' ||
             uploadData === null ||
-            !uploadData.FileId
+            typeof uploadData.FileId !== 'string' ||
+            uploadData.FileId === ''
           ) {
             throw new Error('上傳 Snapshot 失敗');
           }

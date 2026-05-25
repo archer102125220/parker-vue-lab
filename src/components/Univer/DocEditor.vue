@@ -6,7 +6,8 @@ import SkeletonLoader from '@src/components/SkeletonLoader.vue';
 import {
   createDocInstance,
   type univerInstanceRef,
-  type IDisposable
+  type IDisposable,
+  type IDocumentData
 } from '@src/utils/third-party/univer';
 
 defineOptions({
@@ -21,6 +22,10 @@ const props = defineProps({
     default() {
       return 'zhTW';
     }
+  },
+  openFile: {
+    type: String,
+    default: ''
   },
   doc: {
     type: Object,
@@ -175,7 +180,13 @@ async function handleUniverDoc() {
     //     emits('univerChangeEnd', event);
     //   })
     // );
-    currentDoc.value = univerAPI.createUniverDoc(props.doc);
+    if (props.openFile) {
+      const snapshot = await univerAPI.importDOCXToSnapshotAsync(props.openFile);
+
+      currentDoc.value = univerAPI.createUniverDoc(snapshot as Partial<IDocumentData>);
+    } else {
+      currentDoc.value = univerAPI.createUniverDoc(props.doc);
+    }
 
     univerInstance.univer = univer;
     univerInstance.univerAPI = univerAPI;
@@ -242,11 +253,7 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="univer_docxs">
-    <SkeletonLoader
-      v-if="loading"
-      :loading="true"
-      class="univer_docxs-skeleton"
-    />
+    <SkeletonLoader v-if="loading" :loading="true" class="univer_docxs-skeleton" />
     <div ref="container" class="univer_docxs-editor" @keydown="handleKeyDown" />
   </div>
 </template>

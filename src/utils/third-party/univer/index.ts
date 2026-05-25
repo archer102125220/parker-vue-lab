@@ -1,7 +1,7 @@
-import type { FUniver, Univer } from '@univerjs/presets';
+import type { FUniver, Univer, IDocumentData } from '@univerjs/presets';
 import { LocaleType, type IDisposable } from '@univerjs/core';
 
-export type { IDisposable };
+export type { IDisposable, IDocumentData };
 
 export type univerInstance = {
   univer: Univer;

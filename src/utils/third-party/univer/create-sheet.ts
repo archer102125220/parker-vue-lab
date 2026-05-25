@@ -170,7 +170,7 @@ export async function importSheet() {
   };
 }
 
-export async function importCustomPlugin() {
+export async function importCustomSheetPlugin() {
   const [
     { ImportCSVButtonPlugin },
     { ExportCSVButtonPlugin },
@@ -304,7 +304,7 @@ export async function createSheetInstance(
   // const { UniverUniscriptPlugin } = UniverUniscript;
 
   const { ImportCSVButtonPlugin, ExportCSVButtonPlugin,LocalExportButtonPlugin } =
-    await importCustomPlugin();
+    await importCustomSheetPlugin();
 
   const {
     UniverPresetSheetsAdvanced,
