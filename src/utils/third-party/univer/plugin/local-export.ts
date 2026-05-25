@@ -5,7 +5,9 @@ import {
   IMenuManagerService,
   MenuItemType,
   RibbonStartGroup,
+  IMessageService,
 } from '@univerjs/ui';
+import { MessageType } from '@univerjs/design';
 import {
   CommandType,
   ICommandService,
@@ -40,6 +42,7 @@ export class LocalExportButtonPlugin extends Plugin {
       id: buttonId,
       handler: async (accessor: IAccessor) => {
         const univerInstanceService = accessor.get(IUniverInstanceService);
+        const messageService = accessor.get(IMessageService);
         const doc = univerInstanceService.getFocusedUnit();
         if (!doc) return false;
         const focusedUnitId = doc.getUnitId();
@@ -55,7 +58,10 @@ export class LocalExportButtonPlugin extends Plugin {
         const fileExtension = isDoc ? 'docx' : 'xlsx';
 
         try {
-          alert('正在為您匯出文件，這可能需要幾秒鐘的時間，請稍候...');
+          messageService.show({
+            type: MessageType.Info,
+            content: '正在為您匯出文件，這可能需要幾秒鐘的時間，請稍候...',
+          });
 
           // 1. 取得完整的文件 Snapshot JSON
           const snapshot = doc.getSnapshot();
@@ -155,7 +161,10 @@ export class LocalExportButtonPlugin extends Plugin {
         } catch (err: unknown) {
           console.error('[LocalExportPlugin] Error:', err);
           const errorMessage = err instanceof Error ? err.message : String(err);
-          alert('匯出發生錯誤：' + errorMessage);
+          messageService.show({
+            type: MessageType.Error,
+            content: '匯出發生錯誤：' + errorMessage,
+          });
           return false;
         }
       },
