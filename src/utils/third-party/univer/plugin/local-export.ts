@@ -14,8 +14,14 @@ import {
   IUniverInstanceService,
   Plugin,
   UniverInstanceType,
-  type ICommand
+  type ICommand,
+  type IDocumentData,
+  type IWorkbookData
 } from '@univerjs/core';
+import { 
+  transformDocumentDataToSnapshotJson, 
+  transformWorkbookDataToSnapshotJson 
+} from '@univerjs-pro/exchange-client';
 
 /**
  * 本地文件匯出外掛 (支援 Word / Excel)
@@ -67,24 +73,19 @@ export class LocalExportButtonPlugin extends Plugin {
 
           // 1. 取得完整的文件 Snapshot JSON
           const snapshot = doc.getSnapshot();
-          // 為了相容 Universer 的 Protobuf 定義，深拷貝一份，並移除後端不認識的屬性
-          const clonedSnapshot = JSON.parse(JSON.stringify(snapshot));
-          if (clonedSnapshot) {
-            const invalidKeys = [
-              'id', 'documentStyle', 'locale', 'title', 'settings', 'disabled', 'rev', 
-              'tableSource', 'footers', 'headers', 'lists', 'drawings', 'drawingsOrder', 
-              'headerFooterDrawingsOrder', 'resources'
-            ];
-            invalidKeys.forEach(key => {
-              if (key in clonedSnapshot) delete clonedSnapshot[key];
-            });
+          let exportJson;
+          
+          if (isDoc) {
+            exportJson = await transformDocumentDataToSnapshotJson(snapshot as IDocumentData);
+          } else {
+            exportJson = await transformWorkbookDataToSnapshotJson(snapshot as IWorkbookData);
           }
           
-          const snapshotStr = JSON.stringify(clonedSnapshot);
+          const snapshotStr = JSON.stringify(exportJson);
 
           // 定義後端 API 路徑
           const UNIVERSER_HOST =
-            import.meta.env.VITE_UNIVERSER_DOCKER_HOST ||
+            (import.meta as any).env.VITE_UNIVERSER_DOCKER_HOST ||
             'http://localhost:8000';
           const API_PREFIX = `${UNIVERSER_HOST}/universer-api`;
 
