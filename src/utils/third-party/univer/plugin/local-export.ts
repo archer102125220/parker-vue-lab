@@ -18,9 +18,9 @@ import {
   type IDocumentData,
   type IWorkbookData
 } from '@univerjs/core';
-import { 
-  transformDocumentDataToSnapshotJson, 
-  transformWorkbookDataToSnapshotJson 
+import {
+  transformDocumentDataToSnapshotJson,
+  transformWorkbookDataToSnapshotJson
 } from '@univerjs-pro/exchange-client';
 
 /**
@@ -74,13 +74,21 @@ export class LocalExportButtonPlugin extends Plugin {
           // 1. 取得完整的文件 Snapshot JSON
           const snapshot = doc.getSnapshot();
           let exportJson;
-          
+
           if (isDoc) {
-            exportJson = await transformDocumentDataToSnapshotJson(snapshot as IDocumentData);
+            exportJson = await transformDocumentDataToSnapshotJson(
+              snapshot as IDocumentData
+            );
+          } else if (isSheet) {
+            exportJson = await transformWorkbookDataToSnapshotJson(
+              snapshot as IWorkbookData
+            );
           } else {
-            exportJson = await transformWorkbookDataToSnapshotJson(snapshot as IWorkbookData);
+            throw new Error(
+              '未載入 UniverProExchangeClient，無法進行 Snapshot 轉換'
+            );
           }
-          
+
           const snapshotStr = JSON.stringify(exportJson);
 
           // 定義後端 API 路徑
@@ -167,9 +175,13 @@ export class LocalExportButtonPlugin extends Plugin {
               taskData.status === 'error' ||
               taskData.status === 'failed'
             ) {
-              console.error('[LocalExportPlugin] Task failed details:', taskData);
+              console.error(
+                '[LocalExportPlugin] Task failed details:',
+                taskData
+              );
               throw new Error(
-                taskData.error?.message || '後端匯出任務執行失敗: ' + JSON.stringify(taskData)
+                taskData.error?.message ||
+                  '後端匯出任務執行失敗: ' + JSON.stringify(taskData)
               );
             }
 
@@ -193,23 +205,23 @@ export class LocalExportButtonPlugin extends Plugin {
           ) {
             downloadUrl = finalTaskData.downloadUrl;
           } else if (
-            finalTaskData.export && 
+            finalTaskData.export &&
             typeof finalTaskData.export.fileID === 'string' &&
             finalTaskData.export.fileID !== ''
           ) {
-            downloadUrl = `${UNIVERSER_HOST}/file/${finalTaskData.export.fileID}/download`;
+            downloadUrl = `${API_PREFIX}/stream/file/download?file_id=${finalTaskData.export.fileID}`;
           } else if (
             typeof finalTaskData.fileID === 'string' &&
             finalTaskData.fileID !== ''
           ) {
-            downloadUrl = `${UNIVERSER_HOST}/file/${finalTaskData.fileID}/download`;
+            downloadUrl = `${API_PREFIX}/stream/file/download?file_id=${finalTaskData.fileID}`;
           } else if (
             typeof finalTaskData.fileId === 'string' &&
             finalTaskData.fileId !== ''
           ) {
-            downloadUrl = `${UNIVERSER_HOST}/file/${finalTaskData.fileId}/download`;
+            downloadUrl = `${API_PREFIX}/stream/file/download?file_id=${finalTaskData.fileId}`;
           } else {
-            downloadUrl = `${UNIVERSER_HOST}/file/${taskID}/download`;
+            downloadUrl = `${API_PREFIX}/stream/file/download?file_id=${taskID}`;
             console.warn(
               '未在任務結果中找到明確的下載欄位，嘗試使用預設組合:',
               finalTaskData
