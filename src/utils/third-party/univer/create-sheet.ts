@@ -171,15 +171,20 @@ export async function importSheet() {
 }
 
 export async function importCustomPlugin() {
-  const [{ ImportCSVButtonPlugin }, { ExportCSVButtonPlugin }] =
-    await Promise.all([
-      import('@src/utils/third-party/univer/plugin/csv-import'),
-      import('@src/utils/third-party/univer/plugin/csv-export')
-    ]);
+  const [
+    { ImportCSVButtonPlugin },
+    { ExportCSVButtonPlugin },
+    { LocalExportButtonPlugin }
+  ] = await Promise.all([
+    import('@src/utils/third-party/univer/plugin/csv-import'),
+    import('@src/utils/third-party/univer/plugin/csv-export'),
+    import('@src/utils/third-party/univer/plugin/local-export')
+  ]);
 
   return {
     ImportCSVButtonPlugin,
-    ExportCSVButtonPlugin
+    ExportCSVButtonPlugin,
+    LocalExportButtonPlugin
   };
 }
 
@@ -298,7 +303,7 @@ export async function createSheetInstance(
   // uniscript 好像是 experimental ，並且 CDN 需要額外想辦法處理 monaco-editor ，暫先註解掉
   // const { UniverUniscriptPlugin } = UniverUniscript;
 
-  const { ImportCSVButtonPlugin, ExportCSVButtonPlugin } =
+  const { ImportCSVButtonPlugin, ExportCSVButtonPlugin,LocalExportButtonPlugin } =
     await importCustomPlugin();
 
   const {
@@ -334,6 +339,7 @@ export async function createSheetInstance(
     plugins: [
       ImportCSVButtonPlugin,
       ExportCSVButtonPlugin,
+      LocalExportButtonPlugin,
       // [_UniverWatermarkPlugin, {
       //   textWatermarkSettings: {
       //     content: '測試浮水印',

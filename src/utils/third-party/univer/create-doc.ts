@@ -92,6 +92,16 @@ export async function importDoc() {
   };
 }
 
+export async function importCustomPlugin() {
+  const [{ LocalExportButtonPlugin }] = await Promise.all([
+    import('@src/utils/third-party/univer/plugin/local-export')
+  ]);
+
+  return {
+    LocalExportButtonPlugin
+  };
+}
+
 export async function importDocAdvanced() {
   const [
     UniverPresetDocsAdvanced,
@@ -173,6 +183,8 @@ export async function createDocInstance(
   // uniscript 好像是 experimental ，並且 CDN 需要額外想辦法處理 monaco-editor ，暫先註解掉
   // const { UniverUniscriptPlugin } = UniverUniscript;
 
+  const { LocalExportButtonPlugin } = await importCustomPlugin();
+
   const {
     UniverPresetDocsAdvanced,
     UniverPresetDocsAdvancedZhTW,
@@ -191,6 +203,7 @@ export async function createDocInstance(
       UniverDocsThreadCommentPreset()
     ],
     plugins: [
+      LocalExportButtonPlugin,
       UniverDocsQuickInsertUIPlugin
       // [_UniverWatermarkPlugin, {
       //   textWatermarkSettings: {
