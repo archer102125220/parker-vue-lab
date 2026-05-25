@@ -143,6 +143,7 @@ export class LocalExportButtonPlugin extends Plugin {
             downloadUrl?: string;
             fileID?: string;
             fileId?: string;
+            export?: { fileID?: string; fileUrl?: string };
           } | null = null;
 
           for (let i = 0; i < 30; i++) {
@@ -155,9 +156,10 @@ export class LocalExportButtonPlugin extends Plugin {
               downloadUrl?: string;
               fileID?: string;
               fileId?: string;
+              export?: { fileID?: string; fileUrl?: string };
             };
 
-            if (taskData.status === 'success') {
+            if (taskData.status === 'success' || taskData.status === 'done') {
               isSuccess = true;
               finalTaskData = taskData;
               break;
@@ -190,6 +192,12 @@ export class LocalExportButtonPlugin extends Plugin {
             finalTaskData.downloadUrl !== ''
           ) {
             downloadUrl = finalTaskData.downloadUrl;
+          } else if (
+            finalTaskData.export && 
+            typeof finalTaskData.export.fileID === 'string' &&
+            finalTaskData.export.fileID !== ''
+          ) {
+            downloadUrl = `${UNIVERSER_HOST}/file/${finalTaskData.export.fileID}/download`;
           } else if (
             typeof finalTaskData.fileID === 'string' &&
             finalTaskData.fileID !== ''
