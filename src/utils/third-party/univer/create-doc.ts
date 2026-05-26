@@ -204,7 +204,8 @@ export async function createDocInstance(
     UniverPresetDocsAdvancedZhTW,
     UniverPresetDocsAdvancedEnUS
   } = await importDocAdvanced();
-  const { UniverDocsAdvancedPreset } = UniverPresetDocsAdvanced;
+  const { UniverDocsAdvancedPreset, UniverDocsExchangeClientPlugin } =
+    UniverPresetDocsAdvanced;
 
   const univerConfig = {
     locale: locale.includes('zh') ? LocaleType.ZH_TW : LocaleType.EN_US,
@@ -304,14 +305,23 @@ export async function createDocInstance(
 
     univerConfig.collaboration = undefined;
 
+
+    const advancedPreset = UniverDocsAdvancedPreset({
+      license: import.meta.env.VITE_UNIVER_LICENSE,
+      useWorker: true,
+      // universerEndpoint: UNIVER_SERVER_ENDPOINT
+      universerEndpoint: UNIVERSER_DOCKER_HOST
+    });
+
+    // 過濾掉官方的匯出按鈕 UI Plugin，這樣在非共編狀態下就不會顯示官方按鈕
+    advancedPreset.plugins = advancedPreset.plugins.filter((plugin: any) => {
+      const pluginClass = Array.isArray(plugin) ? plugin[0] : plugin;
+      return pluginClass !== UniverDocsExchangeClientPlugin;
+    });
+
     univerConfig.presets.push(
       UniverDocsDrawingPreset(),
-      UniverDocsAdvancedPreset({
-        license: import.meta.env.VITE_UNIVER_LICENSE,
-        useWorker: true,
-        // universerEndpoint: UNIVER_SERVER_ENDPOINT
-        universerEndpoint: UNIVERSER_DOCKER_HOST
-      })
+      advancedPreset
     );
   }
 

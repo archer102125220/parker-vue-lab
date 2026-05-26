@@ -324,7 +324,21 @@ export async function createSheetInstance(
     UniverPresetSheetsAdvancedZhTW,
     UniverPresetSheetsAdvancedEnUS
   } = await importSheetAdvanced();
-  const { UniverSheetsAdvancedPreset } = UniverPresetSheetsAdvanced;
+  const { UniverSheetsAdvancedPreset, UniverSheetsExchangeClientPlugin } = UniverPresetSheetsAdvanced;
+
+  const advancedPreset = UniverSheetsAdvancedPreset({
+    license: import.meta.env.VITE_UNIVER_LICENSE,
+    useWorker: true,
+    universerEndpoint: import.meta.env.VITE_UNIVERSER_DOCKER_HOST || 'http://localhost:8000'
+  });
+
+  if (collaboration === false) {
+    // 過濾掉官方的匯出按鈕 UI Plugin，這樣在非共編狀態下就不會顯示官方按鈕
+    advancedPreset.plugins = advancedPreset.plugins.filter((p: any) => {
+      const pluginClass = Array.isArray(p) ? p[0] : p;
+      return pluginClass !== UniverSheetsExchangeClientPlugin;
+    });
+  }
 
   const univerConfig = {
     locale: locale.includes('zh') ? LocaleType.ZH_TW : LocaleType.EN_US,
@@ -342,12 +356,7 @@ export async function createSheetInstance(
       UniverSheetsThreadCommentPreset(),
       UniverSheetsNotePreset(),
       UniverSheetsTablePreset(),
-      UniverSheetsAdvancedPreset({
-        license: import.meta.env.VITE_UNIVER_LICENSE,
-        useWorker: true,
-        // universerEndpoint: UNIVER_SERVER_ENDPOINT
-        universerEndpoint: UNIVERSER_DOCKER_HOST
-      })
+      advancedPreset
     ],
     plugins: [
       // [_UniverWatermarkPlugin, {
