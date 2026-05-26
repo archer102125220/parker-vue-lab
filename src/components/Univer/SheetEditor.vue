@@ -3,6 +3,8 @@ import {
   createSheetInstance,
   type univerInstanceRef
 } from '@src/utils/third-party/univer';
+import { transformSnapshotJsonToWorkbookData } from '@univerjs-pro/exchange-client';
+import type { IWorkbookData } from '@univerjs/core';
 </script>
 
 <script lang="ts" setup>
@@ -159,7 +161,7 @@ async function handleUniverSheet(overrideSnapshot?: any) {
     const { univer, univerAPI, LocaleType } = await createSheetInstance(
       container.value,
       props.locale,
-      false
+      false // 強制關閉協作功能
     );
 
     disposableList.push(
@@ -201,11 +203,28 @@ async function handleUniverSheet(overrideSnapshot?: any) {
     if (overrideSnapshot) {
       currentWorkbook.value = univerAPI.createWorkbook(overrideSnapshot);
     } else {
-      const snapshot = { ...props.value };
       if (props.unitId) {
-        snapshot.id = props.unitId;
+        try {
+          const host = import.meta.env.VITE_UNIVERSER_DOCKER_HOST || 'http://localhost:8000';
+          const res = await fetch(`${host}/universer-api/snapshot/2/unit/${props.unitId}/rev/0`);
+          const data = await res.json();
+          if (data && data.snapshot && data.snapshot.workbook) {
+            const snapshot = transformSnapshotJsonToWorkbookData(data);
+            // 由於 exchange-client 的回傳型別與 univerAPI.createWorkbook 期望的 Partial<IWorkbookData> 可能存在嚴格模式推斷落差，
+            // 故使用雙重斷言處理，符合 AGENTS.md 規範。
+            currentWorkbook.value = univerAPI.createWorkbook(snapshot as unknown as Partial<IWorkbookData>);
+          } else {
+            throw new Error('Invalid snapshot data');
+          }
+        } catch (error) {
+          console.error('Failed to fetch remote snapshot manually:', error);
+          // Fallback
+          currentWorkbook.value = univerAPI.createWorkbook({ id: props.unitId });
+        }
+      } else {
+        const snapshot = { ...props.value };
+        currentWorkbook.value = univerAPI.createWorkbook(snapshot as unknown as Partial<IWorkbookData>);
       }
-      currentWorkbook.value = univerAPI.createWorkbook(snapshot);
     }
 
     univerInstance.univer = univer;

@@ -9,6 +9,7 @@ import {
   type IDisposable,
   type IDocumentData
 } from '@src/utils/third-party/univer';
+import { transformSnapshotJsonToDocumentData } from '@univerjs-pro/exchange-client';
 
 defineOptions({
   inheritAttrs: false
@@ -154,7 +155,8 @@ async function handleUniverDoc(overrideSnapshot?: any) {
 
     const { univer, univerAPI, LocaleType } = await createDocInstance(
       container.value,
-      props.locale
+      props.locale,
+      false // 強制關閉協作功能
     );
 
     // 只有出現在 univerAPI.Event 中的事件能被觸發
@@ -198,22 +200,35 @@ async function handleUniverDoc(overrideSnapshot?: any) {
       currentDoc.value = univerAPI.createUniverDoc(
         overrideSnapshot as Partial<IDocumentData>
       );
-    } else if (props.openFile) {
-      const snapshot = await univerAPI.importDOCXToSnapshotAsync(
-        props.openFile
-      );
-
-      currentDoc.value = univerAPI.createUniverDoc(
-        snapshot as Partial<IDocumentData>
-      );
     } else {
-      const snapshot = { ...props.doc };
       if (props.unitId) {
-        snapshot.id = props.unitId;
+        try {
+          const host = import.meta.env.VITE_UNIVERSER_DOCKER_HOST || 'http://localhost:8000';
+          const res = await fetch(`${host}/universer-api/snapshot/1/unit/${props.unitId}/rev/0`);
+          const data = await res.json();
+          if (data && data.snapshot && data.snapshot.doc) {
+            const snapshot = transformSnapshotJsonToDocumentData(data);
+            currentDoc.value = univerAPI.createUniverDoc(snapshot as unknown as Partial<IDocumentData>);
+          } else {
+            throw new Error('Invalid snapshot data');
+          }
+        } catch (error) {
+          console.error('Failed to fetch remote snapshot manually:', error);
+          // Fallback
+          currentDoc.value = univerAPI.createUniverDoc({
+            id: props.unitId,
+            body: {
+              dataStream: '\r\n',
+              textRuns: [],
+              paragraphs: [{ startIndex: 0 }],
+              sectionBreaks: [{ startIndex: 1 }]
+            }
+          });
+        }
+      } else {
+        const snapshot = { ...props.doc };
+        currentDoc.value = univerAPI.createUniverDoc(snapshot as unknown as Partial<IDocumentData>);
       }
-      currentDoc.value = univerAPI.createUniverDoc(
-        snapshot as Partial<IDocumentData>
-      );
     }
 
     univerInstance.univer = univer;
