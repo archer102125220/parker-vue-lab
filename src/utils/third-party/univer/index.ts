@@ -1,7 +1,13 @@
 import type { FUniver, Univer, IDocumentData } from '@univerjs/presets';
-import { LocaleType, type IDisposable } from '@univerjs/core';
+import {
+  LocaleType,
+  type IDisposable,
+  type IWorkbookData,
+  UniverInstanceType
+} from '@univerjs/core';
 
-export type { IDisposable, IDocumentData };
+export type { IDisposable, IDocumentData, IWorkbookData };
+export { UniverInstanceType };
 
 export type univerInstance = {
   univer: Univer;
@@ -16,3 +22,4 @@ export type univerInstanceRef = {
 
 export * from './create-sheet';
 export * from './create-doc';
+export * from './snapshot';

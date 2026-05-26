@@ -7,9 +7,10 @@ import {
   createDocInstance,
   type univerInstanceRef,
   type IDisposable,
-  type IDocumentData
+  type IDocumentData,
+  fetchUniverSnapshot,
+  UniverInstanceType
 } from '@src/utils/third-party/univer';
-import { transformSnapshotJsonToDocumentData } from '@univerjs-pro/exchange-client';
 
 defineOptions({
   inheritAttrs: false
@@ -203,15 +204,11 @@ async function handleUniverDoc(overrideSnapshot?: any) {
     } else {
       if (props.unitId) {
         try {
-          const host = import.meta.env.VITE_UNIVERSER_DOCKER_HOST || 'http://localhost:8000';
-          const res = await fetch(`${host}/universer-api/snapshot/1/unit/${props.unitId}/rev/0`);
-          const data = await res.json();
-          if (data && data.snapshot && data.snapshot.doc) {
-            const snapshot = transformSnapshotJsonToDocumentData(data);
-            currentDoc.value = univerAPI.createUniverDoc(snapshot as unknown as Partial<IDocumentData>);
-          } else {
-            throw new Error('Invalid snapshot data');
-          }
+          const snapshot = await fetchUniverSnapshot(
+            props.unitId,
+            UniverInstanceType.UNIVER_DOC
+          );
+          currentDoc.value = univerAPI.createUniverDoc(snapshot);
         } catch (error) {
           console.error('Failed to fetch remote snapshot manually:', error);
           // Fallback
@@ -227,7 +224,9 @@ async function handleUniverDoc(overrideSnapshot?: any) {
         }
       } else {
         const snapshot = { ...props.doc };
-        currentDoc.value = univerAPI.createUniverDoc(snapshot as unknown as Partial<IDocumentData>);
+        currentDoc.value = univerAPI.createUniverDoc(
+          snapshot as unknown as Partial<IDocumentData>
+        );
       }
     }
 

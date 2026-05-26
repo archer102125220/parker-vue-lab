@@ -1,10 +1,11 @@
 <script lang="ts">
 import {
   createSheetInstance,
-  type univerInstanceRef
+  type univerInstanceRef,
+  fetchUniverSnapshot,
+  UniverInstanceType,
+  type IWorkbookData
 } from '@src/utils/third-party/univer';
-import { transformSnapshotJsonToWorkbookData } from '@univerjs-pro/exchange-client';
-import type { IWorkbookData } from '@univerjs/core';
 </script>
 
 <script lang="ts" setup>
@@ -205,25 +206,23 @@ async function handleUniverSheet(overrideSnapshot?: any) {
     } else {
       if (props.unitId) {
         try {
-          const host = import.meta.env.VITE_UNIVERSER_DOCKER_HOST || 'http://localhost:8000';
-          const res = await fetch(`${host}/universer-api/snapshot/2/unit/${props.unitId}/rev/0`);
-          const data = await res.json();
-          if (data && data.snapshot && data.snapshot.workbook) {
-            const snapshot = transformSnapshotJsonToWorkbookData(data);
-            // 由於 exchange-client 的回傳型別與 univerAPI.createWorkbook 期望的 Partial<IWorkbookData> 可能存在嚴格模式推斷落差，
-            // 故使用雙重斷言處理，符合 AGENTS.md 規範。
-            currentWorkbook.value = univerAPI.createWorkbook(snapshot as unknown as Partial<IWorkbookData>);
-          } else {
-            throw new Error('Invalid snapshot data');
-          }
+          const snapshot = await fetchUniverSnapshot(
+            props.unitId,
+            UniverInstanceType.UNIVER_SHEET
+          );
+          currentWorkbook.value = univerAPI.createWorkbook(snapshot);
         } catch (error) {
           console.error('Failed to fetch remote snapshot manually:', error);
           // Fallback
-          currentWorkbook.value = univerAPI.createWorkbook({ id: props.unitId });
+          currentWorkbook.value = univerAPI.createWorkbook({
+            id: props.unitId
+          });
         }
       } else {
         const snapshot = { ...props.value };
-        currentWorkbook.value = univerAPI.createWorkbook(snapshot as unknown as Partial<IWorkbookData>);
+        currentWorkbook.value = univerAPI.createWorkbook(
+          snapshot as unknown as Partial<IWorkbookData>
+        );
       }
     }
 
