@@ -8,7 +8,6 @@ import {
   IMessageService
 } from '@univerjs/ui';
 import { MessageType } from '@univerjs/design';
-// import { DownloadIcon } from '@univerjs/icons';
 import {
   CommandType,
   ICommandService,
@@ -23,6 +22,9 @@ import {
   transformDocumentDataToSnapshotJson,
   transformWorkbookDataToSnapshotJson
 } from '@univerjs-pro/exchange-client';
+// import { DownloadIcon } from '@univerjs/icons';
+
+import Vue3DownloadIcon from '@src/components/Icon/Download';
 
 /**
  * `LocalExportButtonPlugin` 的設定選項。
@@ -67,6 +69,9 @@ export class LocalExportButtonPlugin extends Plugin {
 
   override onStarting(): void {
     // this.componentManager.register('DownloadIcon', DownloadIcon);
+    this.componentManager.register('Vue3DownloadIcon', Vue3DownloadIcon, {
+      framework: 'vue3'
+    });
 
     const buttonId = 'local-export-button';
 
@@ -96,7 +101,7 @@ export class LocalExportButtonPlugin extends Plugin {
         try {
           messageService.show({
             type: MessageType.Info,
-            content: '正在為您匯出文件，這可能需要幾秒鐘的時間，請稍候...'
+            content: '正在匯出文件，這可能需要幾秒鐘的時間，請稍候...'
           });
 
           // 1. 取得完整的文件 Snapshot JSON
@@ -283,7 +288,7 @@ export class LocalExportButtonPlugin extends Plugin {
       id: buttonId,
       title: 'Export File',
       tooltip: 'Export as Local File',
-      icon: 'DownloadIcon',
+      icon: 'Vue3DownloadIcon',
       type: MenuItemType.BUTTON,
       hidden$: new Observable<boolean>((subscriber) => {
         const univerInstanceService = this._injector.get(

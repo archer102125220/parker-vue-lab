@@ -115,7 +115,9 @@ export async function importSheet() {
     import('@univerjs/preset-sheets-note/lib/index.css'),
     import('@univerjs/preset-sheets-table/lib/index.css'),
     import('@univerjs/sheets-crosshair-highlight/lib/index.css'),
-    import('@univerjs/sheets-zen-editor/lib/index.css')
+    import('@univerjs/sheets-zen-editor/lib/index.css'),
+
+    import('@univerjs/ui/facade')
 
     // uniscript 好像是 experimental ，並且 CDN 需要額外想辦法處理 monaco-editor ，暫先註解掉
     // import('@univerjs/uniscript/lib/index.css'),
@@ -174,17 +176,20 @@ export async function importCustomSheetPlugin() {
   const [
     { ImportCSVButtonPlugin },
     { ExportCSVButtonPlugin },
-    { LocalExportButtonPlugin }
+    { LocalExportButtonPlugin },
+    { importRegisterVue }
   ] = await Promise.all([
     import('@src/utils/third-party/univer/plugin/csv-import'),
     import('@src/utils/third-party/univer/plugin/csv-export'),
-    import('@src/utils/third-party/univer/plugin/local-export')
+    import('@src/utils/third-party/univer/plugin/local-export'),
+    import('@src/utils/third-party/univer/plugin/register-vue')
   ]);
 
   return {
     ImportCSVButtonPlugin,
     ExportCSVButtonPlugin,
-    LocalExportButtonPlugin
+    LocalExportButtonPlugin,
+    importRegisterVue
   };
 }
 
@@ -303,8 +308,12 @@ export async function createSheetInstance(
   // uniscript 好像是 experimental ，並且 CDN 需要額外想辦法處理 monaco-editor ，暫先註解掉
   // const { UniverUniscriptPlugin } = UniverUniscript;
 
-  const { ImportCSVButtonPlugin, ExportCSVButtonPlugin,LocalExportButtonPlugin } =
-    await importCustomSheetPlugin();
+  const {
+    ImportCSVButtonPlugin,
+    ExportCSVButtonPlugin,
+    LocalExportButtonPlugin,
+    importRegisterVue
+  } = await importCustomSheetPlugin();
 
   const {
     UniverPresetSheetsAdvanced,
@@ -337,9 +346,6 @@ export async function createSheetInstance(
       })
     ],
     plugins: [
-      ImportCSVButtonPlugin,
-      ExportCSVButtonPlugin,
-      LocalExportButtonPlugin,
       // [_UniverWatermarkPlugin, {
       //   textWatermarkSettings: {
       //     content: '測試浮水印',
@@ -466,7 +472,12 @@ export async function createSheetInstance(
     univerConfig.collaboration = undefined;
   }
 
-  const univerInstance = createUniver(univerConfig);
+  const univerInstance = importRegisterVue(createUniver(univerConfig));
+  univerInstance.univer.registerPlugins([
+    [ImportCSVButtonPlugin],
+    [ExportCSVButtonPlugin],
+    [LocalExportButtonPlugin]
+  ]);
 
   // window.univerInstance = univerInstance;
 

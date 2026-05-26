@@ -1,5 +1,4 @@
 import type { univerInstance } from '@src/utils/third-party/univer/index';
-import { importRegisterVue } from '@src/utils/third-party/univer/plugin/register-vue'
 
 // const UNIVER_SERVER_ENDPOINT =
 //   import.meta.env.VITE_UNIVER_SERVER_ENDPOINT ||
@@ -61,7 +60,9 @@ export async function importDoc() {
     import('@univerjs/preset-docs-hyper-link/lib/index.css'),
     import('@univerjs/preset-docs-drawing/lib/index.css'),
     import('@univerjs/docs-quick-insert-ui/lib/index.css'),
-    import('@univerjs/preset-docs-thread-comment/lib/index.css')
+    import('@univerjs/preset-docs-thread-comment/lib/index.css'),
+
+    import('@univerjs/ui/facade')
 
     // uniscript 好像是 experimental ，並且 CDN 需要額外想辦法處理 monaco-editor ，暫先註解掉
     // import('@univerjs/uniscript/lib/index.css'),
@@ -94,14 +95,20 @@ export async function importDoc() {
 }
 
 export async function importCustomDocPlugin() {
-  const [{ LocalExportButtonPlugin }, { LocalImportButtonPlugin }] = await Promise.all([
+  const [
+    { LocalExportButtonPlugin },
+    { LocalImportButtonPlugin },
+    { importRegisterVue }
+  ] = await Promise.all([
     import('@src/utils/third-party/univer/plugin/local-export'),
-    import('@src/utils/third-party/univer/plugin/local-import')
+    import('@src/utils/third-party/univer/plugin/local-import'),
+    import('@src/utils/third-party/univer/plugin/register-vue')
   ]);
 
   return {
     LocalExportButtonPlugin,
-    LocalImportButtonPlugin
+    LocalImportButtonPlugin,
+    importRegisterVue
   };
 }
 
@@ -186,7 +193,11 @@ export async function createDocInstance(
   // uniscript 好像是 experimental ，並且 CDN 需要額外想辦法處理 monaco-editor ，暫先註解掉
   // const { UniverUniscriptPlugin } = UniverUniscript;
 
-  const { LocalExportButtonPlugin, LocalImportButtonPlugin } = await importCustomDocPlugin();
+  const {
+    LocalExportButtonPlugin,
+    LocalImportButtonPlugin,
+    importRegisterVue
+  } = await importCustomDocPlugin();
 
   const {
     UniverPresetDocsAdvanced,
@@ -206,8 +217,8 @@ export async function createDocInstance(
       UniverDocsThreadCommentPreset()
     ],
     plugins: [
-      LocalExportButtonPlugin,
-      LocalImportButtonPlugin,
+      // LocalExportButtonPlugin,
+      // LocalImportButtonPlugin,
       UniverDocsQuickInsertUIPlugin
       // [_UniverWatermarkPlugin, {
       //   textWatermarkSettings: {
@@ -305,6 +316,10 @@ export async function createDocInstance(
   }
 
   const univerInstance = importRegisterVue(createUniver(univerConfig));
+  univerInstance.univer.registerPlugins([
+    [LocalExportButtonPlugin],
+    [LocalImportButtonPlugin]
+  ]);
 
   // window.univerInstance = univerInstance;
 

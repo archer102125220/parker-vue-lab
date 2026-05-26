@@ -1,7 +1,5 @@
-import type { FUniver, Univer, IDocumentData } from '@univerjs/presets';
+import type { FUniver, Univer } from '@univerjs/presets';
 import { UniverVue3AdapterPlugin } from '@univerjs/ui-adapter-vue3';
-
-import DownloadIcon from '@src/components/Icon/Download';
 
 export function importRegisterVue(univerInstance: {
   univer: Univer;
@@ -11,17 +9,8 @@ export function importRegisterVue(univerInstance: {
     throw new Error('[importRegisterVue] univerInstance is not an object');
   }
 
-  const { univer, univerAPI } = univerInstance;
-  console.log('registerPlugin UniverVue3AdapterPlugin');
+  const { univer, univerAPI, ...others } = univerInstance;
   univer.registerPlugin(UniverVue3AdapterPlugin);
-  console.log('registerPlugin UniverVue3AdapterPlugin success');
 
-  console.log('registerComponent DownloadIcon');
-  univerAPI.registerComponent('DownloadIcon', DownloadIcon, {
-    framework: 'vue3'
-  });
-  console.log('registerComponent DownloadIcon success');
-  // window.DownloadIcon = DownloadIcon;
-
-  return { univer, univerAPI };
+  return { univer, univerAPI, ...others };
 }
