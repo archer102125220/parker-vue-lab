@@ -240,7 +240,7 @@ watch(
 
 const handleLocalImportEvent = (e: Event) => {
   const customEvent = e as CustomEvent;
-  if (customEvent.detail && customEvent.detail.snapshot) {
+  if (customEvent.detail && customEvent.detail.snapshot && customEvent.detail.type === 'doc') {
     handleUniverDoc(customEvent.detail.snapshot);
   }
 };

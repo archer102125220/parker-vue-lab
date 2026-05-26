@@ -41,11 +41,20 @@ export class LocalImportButtonPlugin extends Plugin {
         // 建立一個隱藏的 input 來選擇檔案
         const input = document.createElement('input');
         input.type = 'file';
-        input.accept = '.docx';
+        input.accept = '.docx,.xlsx';
         input.onchange = async (e: Event) => {
           const target = e.target as HTMLInputElement;
           const file = target.files?.[0];
           if (!file) return;
+
+          const extension = file.name.split('.').pop()?.toLowerCase();
+          if (extension !== 'docx' && extension !== 'xlsx') {
+            messageService.show({
+              type: MessageType.Error,
+              content: '不支援的檔案格式，請上傳 DOCX 或 XLSX'
+            });
+            return;
+          }
 
           try {
             messageService.show({
@@ -53,14 +62,22 @@ export class LocalImportButtonPlugin extends Plugin {
               content: '正在匯入文件，請稍候...'
             });
 
-            // 使用 importDOCXToSnapshotAsync 取得 Snapshot
-            const snapshot = await univerAPI.importDOCXToSnapshotAsync(file);
+            let snapshot: any = null;
+            let fileType = '';
+
+            if (extension === 'docx') {
+              snapshot = await univerAPI.importDOCXToSnapshotAsync(file);
+              fileType = 'doc';
+            } else if (extension === 'xlsx') {
+              snapshot = await univerAPI.importXLSXToSnapshotAsync(file);
+              fileType = 'sheet';
+            }
             
             if (snapshot) {
               // 發送一個自定義事件，讓 Vue 元件重新渲染編輯器
               document.dispatchEvent(
                 new CustomEvent('univer-local-import-snapshot', {
-                  detail: { snapshot }
+                  detail: { snapshot, type: fileType }
                 })
               );
               
@@ -86,7 +103,7 @@ export class LocalImportButtonPlugin extends Plugin {
     const menuItemFactory = () => ({
       id: buttonId,
       title: 'Local Import',
-      tooltip: 'Import DOCX (Local)',
+      tooltip: 'Import DOCX/XLSX (Local)',
       icon: 'ExportIcon',
       type: MenuItemType.BUTTON
     });

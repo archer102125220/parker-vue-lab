@@ -139,9 +139,18 @@ const univerInstance = reactive<univerInstanceRef>({
   LocaleType: null
 });
 
-async function handleUniverSheet() {
+async function handleUniverSheet(overrideSnapshot?: any) {
+  loading.value = true;
   try {
     if (container.value instanceof HTMLElement === false) return;
+
+    if (univerInstance.univer) {
+      univerInstance.univer.dispose();
+      univerInstance.univerAPI = null;
+      if (container.value) {
+        container.value.innerHTML = '';
+      }
+    }
 
     const { univer, univerAPI, LocaleType } = await createSheetInstance(
       container.value,
@@ -185,7 +194,11 @@ async function handleUniverSheet() {
         emits('update:worksheet', event?.worksheet);
       })
     );
-    currentWorkbook.value = univerAPI.createWorkbook(props.value);
+    if (overrideSnapshot) {
+      currentWorkbook.value = univerAPI.createWorkbook(overrideSnapshot);
+    } else {
+      currentWorkbook.value = univerAPI.createWorkbook(props.value);
+    }
 
     univerInstance.univer = univer;
     univerInstance.univerAPI = univerAPI;
@@ -211,11 +224,20 @@ watch(
   }
 );
 
+const handleLocalImportEvent = (e: Event) => {
+  const customEvent = e as CustomEvent;
+  if (customEvent.detail && customEvent.detail.snapshot && customEvent.detail.type === 'sheet') {
+    handleUniverSheet(customEvent.detail.snapshot);
+  }
+};
+
 onMounted(() => {
   handleUniverSheet();
+  document.addEventListener('univer-local-import-snapshot', handleLocalImportEvent);
 });
 
 onBeforeUnmount(() => {
+  document.removeEventListener('univer-local-import-snapshot', handleLocalImportEvent);
   if (typeof univerInstance.univer?.dispose === 'function') {
     univerInstance.univer?.dispose();
   }
