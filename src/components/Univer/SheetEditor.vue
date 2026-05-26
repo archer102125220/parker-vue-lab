@@ -232,17 +232,27 @@ const handleLocalImportEvent = (e: Event) => {
     if (detail.unitId && currentUnitId && detail.unitId !== currentUnitId) {
       return; // 忽略不是由當前編輯器觸發的事件
     }
-    handleUniverSheet(detail.snapshot);
+    if (univerInstance.univerAPI) {
+      try {
+        // 先建立新的試算表，讓 Univer UI 自動切換過去 (UI 會正常更新)
+        currentWorkbook.value = univerInstance.univerAPI.createWorkbook(detail.snapshot);
+        
+        // 註：不呼叫 disposeUnit()，因為 Univer 官方對於動態刪除當前 Unit 的支援有嚴重的 Bug
+        // (會導致 SheetsSelectionsService 的 RxJS 報錯)。
+        // 既然官方自己的匯入也是另開新分頁，我們在此為了確保 SPA 畫面不崩潰且無報錯，
+        // 選擇讓舊的資料保留在 Univer 的底層記憶體中，只做畫面的替換。
+      } catch (err) {
+        console.error('Failed to replace workbook:', err);
+      }
+    }
   }
 };
 
 onMounted(() => {
   handleUniverSheet();
-  document.addEventListener('univer-local-import-snapshot', handleLocalImportEvent);
 });
 
 onBeforeUnmount(() => {
-  document.removeEventListener('univer-local-import-snapshot', handleLocalImportEvent);
   if (typeof univerInstance.univer?.dispose === 'function') {
     univerInstance.univer?.dispose();
   }
@@ -261,7 +271,11 @@ onBeforeUnmount(() => {
       :loading="true"
       class="univer_sheet-skeleton"
     />
-    <div ref="container" class="univer_sheet-editor" />
+    <div
+      ref="container"
+      class="univer_sheet-editor"
+      @univer-local-import-snapshot="handleLocalImportEvent"
+    />
   </div>
 </template>
 

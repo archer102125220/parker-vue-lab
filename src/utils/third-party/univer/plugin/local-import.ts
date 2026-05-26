@@ -4,7 +4,8 @@ import {
   IMenuManagerService,
   MenuItemType,
   RibbonStartGroup,
-  IMessageService
+  IMessageService,
+  ILayoutService
 } from '@univerjs/ui';
 import { MessageType } from '@univerjs/design';
 import {
@@ -35,6 +36,7 @@ export class LocalImportButtonPlugin extends Plugin {
       id: buttonId,
       handler: async (accessor: IAccessor) => {
         const messageService = accessor.get(IMessageService);
+        const layoutService = accessor.get(ILayoutService);
         // We use FUniver to access the import APIs easily
         const univerAPI = FUniver.newAPI(accessor.get(Injector));
         
@@ -77,12 +79,17 @@ export class LocalImportButtonPlugin extends Plugin {
             }
             
             if (snapshot) {
-              // 發送一個自定義事件，讓 Vue 元件重新渲染編輯器
-              document.dispatchEvent(
-                new CustomEvent('univer-local-import-snapshot', {
-                  detail: { snapshot, type: fileType, unitId }
-                })
-              );
+              // 發送一個自定義事件，優先發送到容器元素讓 Vue 可以透過 @ 監聽
+              const event = new CustomEvent('univer-local-import-snapshot', {
+                detail: { snapshot, type: fileType, unitId },
+                bubbles: true
+              });
+              
+              if (layoutService.rootContainerElement) {
+                layoutService.rootContainerElement.dispatchEvent(event);
+              } else {
+                document.dispatchEvent(event);
+              }
               
               messageService.show({
                 type: MessageType.Success,

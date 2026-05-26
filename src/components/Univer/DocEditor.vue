@@ -246,17 +246,24 @@ const handleLocalImportEvent = (e: Event) => {
     if (detail.unitId && currentUnitId && detail.unitId !== currentUnitId) {
       return; // 忽略不是由當前編輯器觸發的事件
     }
-    handleUniverDoc(detail.snapshot);
+    if (univerInstance.univerAPI) {
+      try {
+        // 先建立新的文件，讓 Univer UI 自動切換過去
+        currentDoc.value = univerInstance.univerAPI.createUniverDoc(detail.snapshot);
+        
+        // 註：不呼叫 disposeUnit()，避免 Univer 底層狀態殘留導致的 RxJS 錯誤。
+      } catch (err) {
+        console.error('Failed to replace document:', err);
+      }
+    }
   }
 };
 
 onMounted(() => {
   handleUniverDoc();
-  document.addEventListener('univer-local-import-snapshot', handleLocalImportEvent);
 });
 
 onBeforeUnmount(() => {
-  document.removeEventListener('univer-local-import-snapshot', handleLocalImportEvent);
   disposableList.forEach((item) => {
     try {
       item.dispose?.();
@@ -280,7 +287,12 @@ onBeforeUnmount(() => {
 <template>
   <div class="univer_docxs">
     <SkeletonLoader v-if="loading" :loading="true" class="univer_docxs-skeleton" />
-    <div ref="container" class="univer_docxs-editor" @keydown="handleKeyDown" />
+    <div
+      ref="container"
+      class="univer_docxs-editor"
+      @keydown="handleKeyDown"
+      @univer-local-import-snapshot="handleLocalImportEvent"
+    />
   </div>
 </template>
 
