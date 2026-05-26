@@ -280,12 +280,9 @@ const handleLocalImportEvent = (e: Event) => {
     }
     if (univerInstance.univerAPI) {
       try {
-        // 先建立新的文件，讓 Univer UI 自動切換過去
-        currentDoc.value = univerInstance.univerAPI.createUniverDoc(
-          detail.snapshot
-        );
-
-        // 註：不呼叫 disposeUnit()，避免 Univer 底層狀態殘留導致的 RxJS 錯誤。
+        // Univer Doc 由於官方設計限制，並不支援像 Sheet 一樣動態建立並切換文件 (會導致 UI 無法正確渲染或拋錯)，
+        // 因此我們在此處收到匯入的 snapshot 後，直接透過重新初始化整個 Univer 實例來載入新檔案。
+        handleUniverDoc(detail.snapshot);
       } catch (err) {
         console.error('Failed to replace document:', err);
       }
