@@ -144,7 +144,7 @@ const univerInstance = reactive<univerInstanceRef>({
   LocaleType: null
 });
 
-async function handleUniverSheet(overrideSnapshot?: any) {
+async function handleUniverSheet(overrideSnapshot?: Partial<IWorkbookData>) {
   loading.value = true;
   try {
     if (container.value instanceof HTMLElement === false) return;

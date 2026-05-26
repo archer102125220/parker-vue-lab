@@ -140,7 +140,7 @@ const univerInstance = reactive<univerInstanceRef>({
   LocaleType: null
 });
 
-async function handleUniverDoc(overrideSnapshot?: any) {
+async function handleUniverDoc(overrideSnapshot?: Partial<IDocumentData>) {
   loading.value = true;
   try {
     if (container.value instanceof HTMLElement === false) return;

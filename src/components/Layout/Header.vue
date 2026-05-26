@@ -13,7 +13,7 @@ const props = defineProps({
 });
 
 const animation = computed(() => {
-  return (window as any)['___IS_VUE_INITED__'] !== true;
+  return window.___IS_VUE_INITED__ !== true;
 });
 
 const imgTransition = computed(() => {
@@ -28,7 +28,7 @@ function handleGoBack() {
 }
 
 onMounted(() => {
-  (window as any)['___IS_VUE_INITED__'] = true;
+  window.___IS_VUE_INITED__ = true;
 });
 </script>
 

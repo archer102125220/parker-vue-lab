@@ -314,7 +314,7 @@ export async function createDocInstance(
     });
 
     // 過濾掉官方的匯出按鈕 UI Plugin，這樣在非共編狀態下就不會顯示官方按鈕
-    advancedPreset.plugins = advancedPreset.plugins.filter((plugin: any) => {
+    advancedPreset.plugins = advancedPreset.plugins.filter((plugin: unknown[] | unknown) => {
       const pluginClass = Array.isArray(plugin) ? plugin[0] : plugin;
       return pluginClass !== UniverDocsExchangeClientPlugin;
     });

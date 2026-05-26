@@ -126,7 +126,7 @@ export class LocalExportButtonPlugin extends Plugin {
 
           // 定義後端 API 路徑
           const UNIVERSER_HOST =
-            (import.meta as any).env.VITE_UNIVERSER_DOCKER_HOST ||
+            import.meta.env.VITE_UNIVERSER_DOCKER_HOST ||
             'http://localhost:8000';
           const API_PREFIX = this._config?.apiPrefix || `${UNIVERSER_HOST}/universer-api`;
 

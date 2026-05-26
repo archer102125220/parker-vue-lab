@@ -2,14 +2,14 @@
 import { computed, onMounted } from 'vue';
 
 const animation = computed(() => {
-  return (window as any)['___IS_VUE_INITED__'] !== true;
+  return window.___IS_VUE_INITED__ !== true;
 });
 const copyright = computed(() => {
   return `${new Date().getFullYear()} Parker Chen 的Vue實驗室. All rights reserved.`;
 });
 
 onMounted(() => {
-  (window as any)['___IS_VUE_INITED__'] = true;
+  window.___IS_VUE_INITED__ = true;
 });
 </script>
 

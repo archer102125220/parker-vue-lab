@@ -85,7 +85,7 @@ export class LocalImportButtonPlugin extends Plugin {
               content: '正在匯入文件，請稍候...'
             });
 
-            let snapshot: any = null;
+            let snapshot: unknown = null;
             let fileType = '';
             let unitId = '';
 
@@ -117,11 +117,12 @@ export class LocalImportButtonPlugin extends Plugin {
                 content: '匯入成功！'
               });
             }
-          } catch (err: any) {
+          } catch (err: unknown) {
             console.error(err);
+            const errorMessage = err instanceof Error ? err.message : String(err);
             messageService.show({
               type: MessageType.Error,
-              content: '匯入失敗：' + (err.message || '未知錯誤')
+              content: '匯入失敗：' + errorMessage
             });
           }
         };
