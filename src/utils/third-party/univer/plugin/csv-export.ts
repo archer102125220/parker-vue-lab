@@ -17,6 +17,8 @@ import {
   UniverInstanceType
 } from '@univerjs/presets';
 
+import Vue3IconCSVExport from '@src/components/Icon/CSVExport.tsx';
+
 /**
  * 匯出 CSV 按鈕外掛
  * 這個外掛會讀取目前 Univer 工作表中的資料，並觸發 CSV 檔案下載。
@@ -55,7 +57,9 @@ export class ExportCSVButtonPlugin extends Plugin {
    */
   override onStarting() {
     // 1. 註冊我們想在選單中使用的圖示
-    // this.componentManager.register('ExportIcon', ExportIcon);
+    this.componentManager.register('Vue3IconCSVExport', Vue3IconCSVExport, {
+      framework: 'vue3'
+    });
 
     const buttonId = 'export-csv-button';
 
@@ -135,7 +139,7 @@ export class ExportCSVButtonPlugin extends Plugin {
       id: buttonId,
       title: 'Export CSV',
       tooltip: 'Export CSV',
-      icon: 'ExportIcon', // 這必須和我們在 componentManager 註冊的名稱相符
+      icon: 'Vue3IconCSVExport', // 這必須和我們在 componentManager 註冊的名稱相符
       type: MenuItemType.BUTTON,
       // hidden$ 是一個 Observable，用來動態決定何時該隱藏按鈕。
       // 這裡，如果目前聚焦的文件不是試算表 (例如我們切換到了文件 (Doc))，就會隱藏按鈕。

@@ -32,6 +32,8 @@ import {
 } from '@univerjs/presets';
 import { handleSelectCSVFile } from '@src/utils/helpers/select-csv-file';
 
+import Vue3IconCSV from '@src/components/Icon/CSV.tsx';
+
 /**
  * 匯入 CSV 按鈕外掛程式
  * 一個簡單的外掛程式範例，展示如何撰寫外掛程式。
@@ -64,7 +66,9 @@ export class ImportCSVButtonPlugin extends Plugin {
 
   override onStarting() {
     // 註冊圖示元件
-    // this.componentManager.register('FolderIcon', FolderIcon);
+    this.componentManager.register('Vue3IconCSV', Vue3IconCSV, {
+      framework: 'vue3'
+    });
 
     const buttonId = 'import-csv-button';
 
@@ -181,7 +185,7 @@ export class ImportCSVButtonPlugin extends Plugin {
       id: buttonId,
       title: 'Import CSV',
       tooltip: 'Import CSV',
-      icon: 'FolderIcon', // 圖示名稱
+      icon: 'Vue3IconCSV', // 圖示名稱
       type: MenuItemType.BUTTON,
       hidden$: new Observable<boolean>((subscriber) => {
         const univerInstanceService = this._injector.get(

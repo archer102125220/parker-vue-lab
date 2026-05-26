@@ -294,11 +294,14 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="univer_sheet">
-    <SkeletonLoader
-      v-if="loading"
-      :loading="true"
-      class="univer_sheet-skeleton"
-    />
+    <div v-if="loading" class="univer_sheet-skeleton_wrap">
+      <slot name="loading" :loading="loading">
+        <SkeletonLoader
+          :loading="true"
+          class="univer_sheet-skeleton_wrap-skeleton"
+        />
+      </slot>
+    </div>
     <div
       ref="container"
       class="univer_sheet-editor"
@@ -312,13 +315,18 @@ onBeforeUnmount(() => {
   position: relative;
   height: 100%;
 
-  &-skeleton {
+  &-skeleton_wrap {
     position: absolute;
     top: 0;
     right: 0;
     bottom: 0;
     left: 0;
     z-index: 2;
+
+    &-skeleton {
+      width: 100%;
+      height: 100%;
+    }
   }
 
   &-editor {
