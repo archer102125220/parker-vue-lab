@@ -64,11 +64,14 @@ export class LocalImportButtonPlugin extends Plugin {
 
             let snapshot: any = null;
             let fileType = '';
+            let unitId = '';
 
             if (extension === 'docx') {
+              unitId = univerAPI.getActiveDocument()?.getId() || '';
               snapshot = await univerAPI.importDOCXToSnapshotAsync(file);
               fileType = 'doc';
             } else if (extension === 'xlsx') {
+              unitId = univerAPI.getActiveWorkbook()?.getId() || '';
               snapshot = await univerAPI.importXLSXToSnapshotAsync(file);
               fileType = 'sheet';
             }
@@ -77,7 +80,7 @@ export class LocalImportButtonPlugin extends Plugin {
               // 發送一個自定義事件，讓 Vue 元件重新渲染編輯器
               document.dispatchEvent(
                 new CustomEvent('univer-local-import-snapshot', {
-                  detail: { snapshot, type: fileType }
+                  detail: { snapshot, type: fileType, unitId }
                 })
               );
               

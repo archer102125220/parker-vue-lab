@@ -240,8 +240,13 @@ watch(
 
 const handleLocalImportEvent = (e: Event) => {
   const customEvent = e as CustomEvent;
-  if (customEvent.detail && customEvent.detail.snapshot && customEvent.detail.type === 'doc') {
-    handleUniverDoc(customEvent.detail.snapshot);
+  const detail = customEvent.detail;
+  if (detail && detail.snapshot && detail.type === 'doc') {
+    const currentUnitId = univerInstance.univerAPI?.getActiveDocument()?.getId();
+    if (detail.unitId && currentUnitId && detail.unitId !== currentUnitId) {
+      return; // 忽略不是由當前編輯器觸發的事件
+    }
+    handleUniverDoc(detail.snapshot);
   }
 };
 
