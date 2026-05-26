@@ -134,9 +134,19 @@ const univerInstance = reactive<univerInstanceRef>({
   LocaleType: null
 });
 
-async function handleUniverDoc() {
+async function handleUniverDoc(overrideSnapshot?: any) {
+  loading.value = true;
   try {
     if (container.value instanceof HTMLElement === false) return;
+
+    // 清除舊的 univer 實例 (如果有的話)
+    if (univerInstance.univer) {
+      univerInstance.univer.dispose();
+      univerInstance.univerAPI = null;
+      if (container.value) {
+        container.value.innerHTML = ''; // 清空容器
+      }
+    }
 
     const { univer, univerAPI, LocaleType } = await createDocInstance(
       container.value,
@@ -180,7 +190,9 @@ async function handleUniverDoc() {
     //     emits('univerChangeEnd', event);
     //   })
     // );
-    if (props.openFile) {
+    if (overrideSnapshot) {
+      currentDoc.value = univerAPI.createUniverDoc(overrideSnapshot as Partial<IDocumentData>);
+    } else if (props.openFile) {
       const snapshot = await univerAPI.importDOCXToSnapshotAsync(props.openFile);
 
       currentDoc.value = univerAPI.createUniverDoc(snapshot as Partial<IDocumentData>);
@@ -226,11 +238,20 @@ watch(
   }
 );
 
+const handleLocalImportEvent = (e: Event) => {
+  const customEvent = e as CustomEvent;
+  if (customEvent.detail && customEvent.detail.snapshot) {
+    handleUniverDoc(customEvent.detail.snapshot);
+  }
+};
+
 onMounted(() => {
   handleUniverDoc();
+  document.addEventListener('univer-local-import-snapshot', handleLocalImportEvent);
 });
 
 onBeforeUnmount(() => {
+  document.removeEventListener('univer-local-import-snapshot', handleLocalImportEvent);
   disposableList.forEach((item) => {
     try {
       item.dispose?.();

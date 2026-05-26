@@ -1,4 +1,5 @@
 import type { univerInstance } from '@src/utils/third-party/univer/index';
+import { importRegisterVue } from '@src/utils/third-party/univer/plugin/register-vue'
 
 // const UNIVER_SERVER_ENDPOINT =
 //   import.meta.env.VITE_UNIVER_SERVER_ENDPOINT ||
@@ -93,12 +94,14 @@ export async function importDoc() {
 }
 
 export async function importCustomDocPlugin() {
-  const [{ LocalExportButtonPlugin }] = await Promise.all([
-    import('@src/utils/third-party/univer/plugin/local-export')
+  const [{ LocalExportButtonPlugin }, { LocalImportButtonPlugin }] = await Promise.all([
+    import('@src/utils/third-party/univer/plugin/local-export'),
+    import('@src/utils/third-party/univer/plugin/local-import')
   ]);
 
   return {
-    LocalExportButtonPlugin
+    LocalExportButtonPlugin,
+    LocalImportButtonPlugin
   };
 }
 
@@ -183,7 +186,7 @@ export async function createDocInstance(
   // uniscript 好像是 experimental ，並且 CDN 需要額外想辦法處理 monaco-editor ，暫先註解掉
   // const { UniverUniscriptPlugin } = UniverUniscript;
 
-  const { LocalExportButtonPlugin } = await importCustomDocPlugin();
+  const { LocalExportButtonPlugin, LocalImportButtonPlugin } = await importCustomDocPlugin();
 
   const {
     UniverPresetDocsAdvanced,
@@ -204,6 +207,7 @@ export async function createDocInstance(
     ],
     plugins: [
       LocalExportButtonPlugin,
+      LocalImportButtonPlugin,
       UniverDocsQuickInsertUIPlugin
       // [_UniverWatermarkPlugin, {
       //   textWatermarkSettings: {
@@ -300,7 +304,7 @@ export async function createDocInstance(
     );
   }
 
-  const univerInstance = createUniver(univerConfig);
+  const univerInstance = importRegisterVue(createUniver(univerConfig));
 
   // window.univerInstance = univerInstance;
 

@@ -8,6 +8,7 @@ import {
   IMessageService
 } from '@univerjs/ui';
 import { MessageType } from '@univerjs/design';
+// import { DownloadIcon } from '@univerjs/icons';
 import {
   CommandType,
   ICommandService,
@@ -65,6 +66,8 @@ export class LocalExportButtonPlugin extends Plugin {
   }
 
   override onStarting(): void {
+    // this.componentManager.register('DownloadIcon', DownloadIcon);
+
     const buttonId = 'local-export-button';
 
     const command: ICommand = {
@@ -280,7 +283,7 @@ export class LocalExportButtonPlugin extends Plugin {
       id: buttonId,
       title: 'Export File',
       tooltip: 'Export as Local File',
-      icon: 'ExportIcon',
+      icon: 'DownloadIcon',
       type: MenuItemType.BUTTON,
       hidden$: new Observable<boolean>((subscriber) => {
         const univerInstanceService = this._injector.get(
