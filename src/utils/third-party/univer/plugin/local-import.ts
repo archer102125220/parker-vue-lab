@@ -21,9 +21,11 @@ export class LocalImportButtonPlugin extends Plugin {
 
   constructor(
     @Inject(Injector) protected override _injector: Injector,
-    @Inject(IMenuManagerService) private readonly menuManagerService: IMenuManagerService,
+    @Inject(IMenuManagerService)
+    private readonly menuManagerService: IMenuManagerService,
     @Inject(ICommandService) private readonly commandService: ICommandService,
-    @Inject(ComponentManager) private readonly componentManager: ComponentManager
+    @Inject(ComponentManager)
+    private readonly componentManager: ComponentManager
   ) {
     super();
   }
@@ -39,20 +41,20 @@ export class LocalImportButtonPlugin extends Plugin {
         const layoutService = accessor.get(ILayoutService);
         // We use FUniver to access the import APIs easily
         const univerAPI = FUniver.newAPI(accessor.get(Injector));
-        
+
         // 根據當前啟用的編輯器類型動態決定支援的副檔名
-        const isDoc = typeof univerAPI.getActiveDocument === 'function' && !!univerAPI.getActiveDocument();
-        const isSheet =  typeof univerAPI.getActiveWorkbook === 'function' && !!univerAPI.getActiveWorkbook();
+        const isDoc = !!univerAPI.getActiveDocument?.();
+        const isSheet = !!univerAPI.getActiveWorkbook?.();
 
         let acceptExtensions = '.docx,.xlsx';
         let errorMessage = '不支援的檔案格式，請上傳 DOCX 或 XLSX';
 
-        if (isDoc) {
-          acceptExtensions = '.docx';
-          errorMessage = '不支援的檔案格式，請上傳 DOCX 檔案';
-        } else if (isSheet) {
+        if (isSheet) {
           acceptExtensions = '.xlsx';
           errorMessage = '不支援的檔案格式，請上傳 XLSX 檔案';
+        } else if (isDoc) {
+          acceptExtensions = '.docx';
+          errorMessage = '不支援的檔案格式，請上傳 DOCX 檔案';
         }
 
         // 建立一個隱藏的 input 來選擇檔案
@@ -65,11 +67,11 @@ export class LocalImportButtonPlugin extends Plugin {
           if (!file) return;
 
           const extension = file.name.split('.').pop()?.toLowerCase();
-          const isValidExtension = isDoc 
-            ? extension === 'docx' 
-            : isSheet 
-              ? extension === 'xlsx' 
-              : (extension === 'docx' || extension === 'xlsx');
+          const isValidExtension = isSheet
+            ? extension === 'xlsx'
+            : isDoc
+              ? extension === 'docx'
+              : extension === 'docx' || extension === 'xlsx';
 
           if (!isValidExtension) {
             messageService.show({
@@ -98,20 +100,20 @@ export class LocalImportButtonPlugin extends Plugin {
               snapshot = await univerAPI.importXLSXToSnapshotAsync(file);
               fileType = 'sheet';
             }
-            
+
             if (snapshot) {
               // 發送一個自定義事件，優先發送到容器元素讓 Vue 可以透過 @ 監聽
               const event = new CustomEvent('univer-local-import-snapshot', {
                 detail: { snapshot, type: fileType, unitId },
                 bubbles: true
               });
-              
+
               if (layoutService.rootContainerElement) {
                 layoutService.rootContainerElement.dispatchEvent(event);
               } else {
                 document.dispatchEvent(event);
               }
-              
+
               messageService.show({
                 type: MessageType.Success,
                 content: '匯入成功！'
@@ -119,7 +121,8 @@ export class LocalImportButtonPlugin extends Plugin {
             }
           } catch (err: unknown) {
             console.error(err);
-            const errorMessage = err instanceof Error ? err.message : String(err);
+            const errorMessage =
+              err instanceof Error ? err.message : String(err);
             messageService.show({
               type: MessageType.Error,
               content: '匯入失敗：' + errorMessage
