@@ -29,7 +29,7 @@ const props = defineProps({
     type: String,
     default: ''
   },
-  doc: {
+  value: {
     type: Object,
     default: () => ({
       id: 'YBLWUR',
@@ -122,7 +122,7 @@ const props = defineProps({
   }
 });
 const emits = defineEmits([
-  'update:doc',
+  'update:value',
   'change',
   'univerStarting',
   'univerReady',
@@ -223,7 +223,7 @@ async function handleUniverDoc(overrideSnapshot?: any) {
           });
         }
       } else {
-        const snapshot = { ...props.doc };
+        const snapshot = { ...props.value };
         currentDoc.value = univerAPI.createUniverDoc(
           snapshot as unknown as Partial<IDocumentData>
         );
@@ -250,7 +250,7 @@ function handleKeyDown() {
   }
   const saveData = doc.getSnapshot();
 
-  emits('update:doc', saveData);
+  emits('update:value', saveData);
   emits('change', saveData);
 }
 
