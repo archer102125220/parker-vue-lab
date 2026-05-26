@@ -113,6 +113,10 @@ const props = defineProps({
   worksheet: {
     type: Object,
     default: () => ({})
+  },
+  unitId: {
+    type: String,
+    default: ''
   }
 });
 const emits = defineEmits([
@@ -197,7 +201,11 @@ async function handleUniverSheet(overrideSnapshot?: any) {
     if (overrideSnapshot) {
       currentWorkbook.value = univerAPI.createWorkbook(overrideSnapshot);
     } else {
-      currentWorkbook.value = univerAPI.createWorkbook(props.value);
+      const snapshot = { ...props.value };
+      if (props.unitId) {
+        snapshot.id = props.unitId;
+      }
+      currentWorkbook.value = univerAPI.createWorkbook(snapshot);
     }
 
     univerInstance.univer = univer;
@@ -228,15 +236,19 @@ const handleLocalImportEvent = (e: Event) => {
   const customEvent = e as CustomEvent;
   const detail = customEvent.detail;
   if (detail && detail.snapshot && detail.type === 'sheet') {
-    const currentUnitId = univerInstance.univerAPI?.getActiveWorkbook()?.getId();
+    const currentUnitId = univerInstance.univerAPI
+      ?.getActiveWorkbook()
+      ?.getId();
     if (detail.unitId && currentUnitId && detail.unitId !== currentUnitId) {
       return; // 忽略不是由當前編輯器觸發的事件
     }
     if (univerInstance.univerAPI) {
       try {
         // 先建立新的試算表，讓 Univer UI 自動切換過去 (UI 會正常更新)
-        currentWorkbook.value = univerInstance.univerAPI.createWorkbook(detail.snapshot);
-        
+        currentWorkbook.value = univerInstance.univerAPI.createWorkbook(
+          detail.snapshot
+        );
+
         // 註：不呼叫 disposeUnit()，因為 Univer 官方對於動態刪除當前 Unit 的支援有嚴重的 Bug
         // (會導致 SheetsSelectionsService 的 RxJS 報錯)。
         // 既然官方自己的匯入也是另開新分頁，我們在此為了確保 SPA 畫面不崩潰且無報錯，

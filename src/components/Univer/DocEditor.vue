@@ -113,6 +113,10 @@ const props = defineProps({
         }
       ]
     })
+  },
+  unitId: {
+    type: String,
+    default: ''
   }
 });
 const emits = defineEmits([
@@ -191,13 +195,25 @@ async function handleUniverDoc(overrideSnapshot?: any) {
     //   })
     // );
     if (overrideSnapshot) {
-      currentDoc.value = univerAPI.createUniverDoc(overrideSnapshot as Partial<IDocumentData>);
+      currentDoc.value = univerAPI.createUniverDoc(
+        overrideSnapshot as Partial<IDocumentData>
+      );
     } else if (props.openFile) {
-      const snapshot = await univerAPI.importDOCXToSnapshotAsync(props.openFile);
+      const snapshot = await univerAPI.importDOCXToSnapshotAsync(
+        props.openFile
+      );
 
-      currentDoc.value = univerAPI.createUniverDoc(snapshot as Partial<IDocumentData>);
+      currentDoc.value = univerAPI.createUniverDoc(
+        snapshot as Partial<IDocumentData>
+      );
     } else {
-      currentDoc.value = univerAPI.createUniverDoc(props.doc);
+      const snapshot = { ...props.doc };
+      if (props.unitId) {
+        snapshot.id = props.unitId;
+      }
+      currentDoc.value = univerAPI.createUniverDoc(
+        snapshot as Partial<IDocumentData>
+      );
     }
 
     univerInstance.univer = univer;
@@ -242,15 +258,19 @@ const handleLocalImportEvent = (e: Event) => {
   const customEvent = e as CustomEvent;
   const detail = customEvent.detail;
   if (detail && detail.snapshot && detail.type === 'doc') {
-    const currentUnitId = univerInstance.univerAPI?.getActiveDocument()?.getId();
+    const currentUnitId = univerInstance.univerAPI
+      ?.getActiveDocument()
+      ?.getId();
     if (detail.unitId && currentUnitId && detail.unitId !== currentUnitId) {
       return; // 忽略不是由當前編輯器觸發的事件
     }
     if (univerInstance.univerAPI) {
       try {
         // 先建立新的文件，讓 Univer UI 自動切換過去
-        currentDoc.value = univerInstance.univerAPI.createUniverDoc(detail.snapshot);
-        
+        currentDoc.value = univerInstance.univerAPI.createUniverDoc(
+          detail.snapshot
+        );
+
         // 註：不呼叫 disposeUnit()，避免 Univer 底層狀態殘留導致的 RxJS 錯誤。
       } catch (err) {
         console.error('Failed to replace document:', err);
@@ -286,7 +306,11 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="univer_docxs">
-    <SkeletonLoader v-if="loading" :loading="true" class="univer_docxs-skeleton" />
+    <SkeletonLoader
+      v-if="loading"
+      :loading="true"
+      class="univer_docxs-skeleton"
+    />
     <div
       ref="container"
       class="univer_docxs-editor"
