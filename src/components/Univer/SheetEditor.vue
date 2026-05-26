@@ -1,4 +1,8 @@
-<script lang="ts">
+<script lang="ts" setup>
+import { ref, watch, reactive, onMounted, onBeforeUnmount } from 'vue';
+
+import SkeletonLoader from '@src/components/SkeletonLoader.vue';
+
 import {
   createSheetInstance,
   type univerInstanceRef,
@@ -6,12 +10,6 @@ import {
   UniverInstanceType,
   type IWorkbookData
 } from '@src/utils/third-party/univer';
-</script>
-
-<script lang="ts" setup>
-import { ref, watch, reactive, onMounted, onBeforeUnmount } from 'vue';
-
-import SkeletonLoader from '@src/components/SkeletonLoader.vue';
 
 defineOptions({
   inheritAttrs: false
