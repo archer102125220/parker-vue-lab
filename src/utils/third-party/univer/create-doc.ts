@@ -98,17 +98,23 @@ export async function importCustomDocPlugin() {
   const [
     { LocalExportButtonPlugin },
     { LocalImportButtonPlugin },
-    { importRegisterVue }
+    { importRegisterVue },
+    { default: CustomPluginEnUS },
+    { default: CustomPluginZhTW }
   ] = await Promise.all([
     import('@src/utils/third-party/univer/plugin/local-export'),
     import('@src/utils/third-party/univer/plugin/local-import'),
-    import('@src/utils/third-party/univer/plugin/register-vue')
+    import('@src/utils/third-party/univer/plugin/register-vue'),
+    import('@src/utils/third-party/univer/i18n/en-US'),
+    import('@src/utils/third-party/univer/i18n/zh-TW')
   ]);
 
   return {
     LocalExportButtonPlugin,
     LocalImportButtonPlugin,
-    importRegisterVue
+    importRegisterVue,
+    CustomPluginEnUS,
+    CustomPluginZhTW
   };
 }
 
@@ -196,7 +202,9 @@ export async function createDocInstance(
   const {
     LocalExportButtonPlugin,
     LocalImportButtonPlugin,
-    importRegisterVue
+    importRegisterVue,
+    CustomPluginEnUS,
+    CustomPluginZhTW
   } = await importCustomDocPlugin();
 
   const {
@@ -250,7 +258,9 @@ export async function createDocInstance(
         UniverPresetDocsThreadCommentZhTW,
 
         UniverPresetDocsAdvancedZhTW,
-        UniverPresetDocsCollaborationZhTW
+        UniverPresetDocsCollaborationZhTW,
+
+        CustomPluginZhTW
       ),
       [LocaleType.EN_US]: mergeLocales(
         UniverPresetDocsCoreEnUS,
@@ -260,7 +270,9 @@ export async function createDocInstance(
         UniverPresetDocsThreadCommentEnUS,
 
         UniverPresetDocsAdvancedEnUS,
-        UniverPresetDocsCollaborationEnUS
+        UniverPresetDocsCollaborationEnUS,
+
+        CustomPluginEnUS
       )
     };
 
@@ -290,7 +302,9 @@ export async function createDocInstance(
         UniverDocsQuickInsertUIZhTW,
         UniverPresetDocsThreadCommentZhTW,
 
-        UniverPresetDocsAdvancedZhTW
+        UniverPresetDocsAdvancedZhTW,
+
+        CustomPluginZhTW
       ),
       [LocaleType.EN_US]: mergeLocales(
         UniverPresetDocsCoreEnUS,
@@ -299,7 +313,9 @@ export async function createDocInstance(
         UniverDocsQuickInsertUIEnUS,
         UniverPresetDocsThreadCommentEnUS,
 
-        UniverPresetDocsAdvancedEnUS
+        UniverPresetDocsAdvancedEnUS,
+
+        CustomPluginEnUS
       )
     };
 

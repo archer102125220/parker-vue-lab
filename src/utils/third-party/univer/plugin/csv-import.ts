@@ -183,8 +183,8 @@ export class ImportCSVButtonPlugin extends Plugin {
 
     const menuItemFactory = () => ({
       id: buttonId,
-      title: 'Import CSV',
-      tooltip: 'Import CSV',
+      title: 'parker-vue-lab-plugins.csv-import.title',
+      tooltip: 'parker-vue-lab-plugins.csv-import.tooltip',
       icon: 'Vue3IconCSV', // 圖示名稱
       type: MenuItemType.BUTTON,
       hidden$: new Observable<boolean>((subscriber) => {

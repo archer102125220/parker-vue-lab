@@ -178,13 +178,17 @@ export async function importCustomSheetPlugin() {
     { ExportCSVButtonPlugin },
     { LocalExportButtonPlugin },
     { LocalImportButtonPlugin },
-    { importRegisterVue }
+    { importRegisterVue },
+    { default: CustomPluginEnUS },
+    { default: CustomPluginZhTW }
   ] = await Promise.all([
     import('@src/utils/third-party/univer/plugin/csv-import'),
     import('@src/utils/third-party/univer/plugin/csv-export'),
     import('@src/utils/third-party/univer/plugin/local-export'),
     import('@src/utils/third-party/univer/plugin/local-import'),
-    import('@src/utils/third-party/univer/plugin/register-vue')
+    import('@src/utils/third-party/univer/plugin/register-vue'),
+    import('@src/utils/third-party/univer/i18n/en-US'),
+    import('@src/utils/third-party/univer/i18n/zh-TW')
   ]);
 
   return {
@@ -192,7 +196,9 @@ export async function importCustomSheetPlugin() {
     ExportCSVButtonPlugin,
     LocalExportButtonPlugin,
     LocalImportButtonPlugin,
-    importRegisterVue
+    importRegisterVue,
+    CustomPluginEnUS,
+    CustomPluginZhTW
   };
 }
 
@@ -316,7 +322,9 @@ export async function createSheetInstance(
     ExportCSVButtonPlugin,
     LocalExportButtonPlugin,
     LocalImportButtonPlugin,
-    importRegisterVue
+    importRegisterVue,
+    CustomPluginEnUS,
+    CustomPluginZhTW
   } = await importCustomSheetPlugin();
 
   const {
@@ -324,20 +332,24 @@ export async function createSheetInstance(
     UniverPresetSheetsAdvancedZhTW,
     UniverPresetSheetsAdvancedEnUS
   } = await importSheetAdvanced();
-  const { UniverSheetsAdvancedPreset, UniverSheetsExchangeClientPlugin } = UniverPresetSheetsAdvanced;
+  const { UniverSheetsAdvancedPreset, UniverSheetsExchangeClientPlugin } =
+    UniverPresetSheetsAdvanced;
 
   const advancedPreset = UniverSheetsAdvancedPreset({
     license: import.meta.env.VITE_UNIVER_LICENSE,
     useWorker: true,
-    universerEndpoint: import.meta.env.VITE_UNIVERSER_DOCKER_HOST || 'http://localhost:8000'
+    universerEndpoint:
+      import.meta.env.VITE_UNIVERSER_DOCKER_HOST || 'http://localhost:8000'
   });
 
   if (collaboration === false) {
     // 過濾掉官方的匯出按鈕 UI Plugin，這樣在非共編狀態下就不會顯示官方按鈕
-    advancedPreset.plugins = advancedPreset.plugins.filter((p: unknown[] | unknown) => {
-      const pluginClass = Array.isArray(p) ? p[0] : p;
-      return pluginClass !== UniverSheetsExchangeClientPlugin;
-    });
+    advancedPreset.plugins = advancedPreset.plugins.filter(
+      (p: unknown[] | unknown) => {
+        const pluginClass = Array.isArray(p) ? p[0] : p;
+        return pluginClass !== UniverSheetsExchangeClientPlugin;
+      }
+    );
   }
 
   const univerConfig = {
@@ -402,7 +414,9 @@ export async function createSheetInstance(
         UniverSheetsZenEditorZhTW,
 
         UniverPresetSheetsAdvancedZhTW,
-        UniverSheetsCollaborationPresetZhTW
+        UniverSheetsCollaborationPresetZhTW,
+
+        CustomPluginZhTW
       ),
       [LocaleType.EN_US]: mergeLocales(
         UniverPresetSheetsCoreEnUS,
@@ -423,7 +437,9 @@ export async function createSheetInstance(
         UniverSheetsZenEditorEnUS,
 
         UniverPresetSheetsAdvancedEnUS,
-        UniverSheetsCollaborationPresetEnUS
+        UniverSheetsCollaborationPresetEnUS,
+
+        CustomPluginEnUS
       )
     };
 
@@ -456,7 +472,9 @@ export async function createSheetInstance(
         UniverPresetSheetsTableZhTW,
         UniverSheetsZenEditorZhTW,
 
-        UniverPresetSheetsAdvancedZhTW
+        UniverPresetSheetsAdvancedZhTW,
+
+        CustomPluginZhTW
       ),
       [LocaleType.EN_US]: mergeLocales(
         UniverPresetSheetsCoreEnUS,
@@ -476,7 +494,9 @@ export async function createSheetInstance(
         UniverPresetSheetsTableEnUS,
         UniverSheetsZenEditorEnUS,
 
-        UniverPresetSheetsAdvancedEnUS
+        UniverPresetSheetsAdvancedEnUS,
+
+        CustomPluginEnUS
       )
     };
 

@@ -1,6 +1,5 @@
 import type { ICommand, Workbook } from '@univerjs/presets';
 import { Observable } from 'rxjs';
-// import { ExportIcon } from '@univerjs/icons';
 import {
   ComponentManager,
   IMenuManagerService,
@@ -137,8 +136,8 @@ export class ExportCSVButtonPlugin extends Plugin {
     // 3. 定義 UI ribbon 的選單項目配置
     const menuItemFactory = () => ({
       id: buttonId,
-      title: 'Export CSV',
-      tooltip: 'Export CSV',
+      title: 'parker-vue-lab-plugins.csv-export.title',
+      tooltip: 'parker-vue-lab-plugins.csv-export.tooltip',
       icon: 'Vue3IconCSVExport', // 這必須和我們在 componentManager 註冊的名稱相符
       type: MenuItemType.BUTTON,
       // hidden$ 是一個 Observable，用來動態決定何時該隱藏按鈕。
