@@ -16,6 +16,7 @@ export class UniverExchangeLifecyclePlugin extends Plugin {
   static override pluginName = 'exchange-lifecycle-plugin';
 
   constructor(
+    _config: unknown, // Univer 會在第一個參數動態傳入 config 物件
     @Inject(Injector) protected override _injector: Injector,
     @Inject(IExchangeService)
     private readonly exchangeService: IExchangeService,
