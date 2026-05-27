@@ -310,6 +310,8 @@ onBeforeUnmount(() => {
       @univer-local-import-snapshot="handleLocalImportEvent"
       @univer-local-export-started="loading = true"
       @univer-local-export-ended="loading = false"
+      @univer-server-export-started="loading = true"
+      @univer-server-export-ended="loading = false"
       @univer-exchange-started="loading = true"
       @univer-exchange-ended="loading = false"
     />

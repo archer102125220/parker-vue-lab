@@ -8,17 +8,26 @@ export default {
       title: '导入 CSV',
       tooltip: '导入 CSV',
     },
-    'local-export': {
-      title: '导出文件',
-      tooltip: '导出为本地文件',
-      info: '正在导出文件，这可能需要几秒钟的时间，请稍候...',
+    'server-export': {
+      title: '导出文件 (Server)',
+      tooltip: '通过服务器导出为标准文件',
+      info: '正在通过服务器导出文件，这可能需要几秒钟的时间，请稍候...',
       error: {
         snapshot: '未加载 UniverProExchangeClient，无法进行 Snapshot 转换',
         uploadFailed: '上传失败',
         uploadSnapshotFailed: '上传 Snapshot 失败',
         taskFailed: '调用导出任务失败，未获取 taskID',
-        backendTaskFailed: '后端导出任务执行失败: ',
+        backendTaskFailed: '服务器导出任务执行失败: ',
         timeout: '导出任务超时',
+        exportFailed: '导出发生错误：',
+      }
+    },
+    'local-export': {
+      title: '导出 Snapshot',
+      tooltip: '纯前端导出 Snapshot (JSON)',
+      info: '正在导出 Snapshot JSON，请稍候...',
+      error: {
+        snapshot: '未加载 UniverProExchangeClient，无法进行 Snapshot 转换',
         exportFailed: '导出发生错误：',
       }
     },

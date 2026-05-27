@@ -96,14 +96,16 @@ export async function importDoc() {
 
 export async function importCustomDocPlugin() {
   const [
-    { LocalExportButtonPlugin },
+    // { LocalExportButtonPlugin },
+    { ServerExportButtonPlugin },
     { LocalImportButtonPlugin },
     { UniverExchangeLifecyclePlugin },
     { importRegisterVue },
     { default: CustomPluginEnUS },
     { default: CustomPluginZhTW }
   ] = await Promise.all([
-    import('@src/utils/third-party/univer/plugin/local-export'),
+    // import('@src/utils/third-party/univer/plugin/local-export'),
+    import('@src/utils/third-party/univer/plugin/server-export'),
     import('@src/utils/third-party/univer/plugin/local-import'),
     import('@src/utils/third-party/univer/plugin/exchange-lifecycle'),
     import('@src/utils/third-party/univer/plugin/register-vue'),
@@ -112,7 +114,8 @@ export async function importCustomDocPlugin() {
   ]);
 
   return {
-    LocalExportButtonPlugin,
+    // LocalExportButtonPlugin,
+    ServerExportButtonPlugin,
     LocalImportButtonPlugin,
     UniverExchangeLifecyclePlugin,
     importRegisterVue,
@@ -203,7 +206,8 @@ export async function createDocInstance(
   // const { UniverUniscriptPlugin } = UniverUniscript;
 
   const {
-    LocalExportButtonPlugin,
+    // LocalExportButtonPlugin,
+    ServerExportButtonPlugin,
     LocalImportButtonPlugin,
     UniverExchangeLifecyclePlugin,
     importRegisterVue,
@@ -345,7 +349,8 @@ export async function createDocInstance(
 
   const univerInstance = importRegisterVue(createUniver(univerConfig));
   univerInstance.univer.registerPlugins([
-    [LocalExportButtonPlugin],
+    // [LocalExportButtonPlugin],
+    [ServerExportButtonPlugin],
     [LocalImportButtonPlugin],
     [UniverExchangeLifecyclePlugin]
   ]);
