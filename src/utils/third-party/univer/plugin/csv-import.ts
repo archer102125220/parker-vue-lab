@@ -66,7 +66,7 @@ export class ImportCSVButtonPlugin extends Plugin {
 
   override onStarting() {
     // 註冊圖示元件
-    this.componentManager.register('Vue3IconCSVImport', Vue3IconCSVImport, {
+    this.componentManager.register('Vue3CSVImportIcon', Vue3IconCSVImport, {
       framework: 'vue3'
     });
 
@@ -185,7 +185,7 @@ export class ImportCSVButtonPlugin extends Plugin {
       id: buttonId,
       title: 'parker-vue-lab-plugins.csv-import.title',
       tooltip: 'parker-vue-lab-plugins.csv-import.tooltip',
-      icon: 'Vue3IconCSVImport', // 圖示名稱
+      icon: 'Vue3CSVImportIcon', // 圖示名稱
       type: MenuItemType.BUTTON,
       hidden$: new Observable<boolean>((subscriber) => {
         const univerInstanceService = this._injector.get(
@@ -210,7 +210,7 @@ export class ImportCSVButtonPlugin extends Plugin {
     this.menuManagerService.mergeMenu({
       [RibbonStartGroup.OTHERS]: {
         [parentMenuId]: {
-          order: 10, // 顯示順序：放在順序為 10 的「匯入 CSV」後面
+          order: 10,
           menuItemFactory: () => ({
             id: parentMenuId,
             tooltip: 'CSV',

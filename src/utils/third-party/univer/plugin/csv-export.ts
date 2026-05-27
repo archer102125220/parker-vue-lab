@@ -56,7 +56,7 @@ export class ExportCSVButtonPlugin extends Plugin {
    */
   override onStarting() {
     // 1. 註冊我們想在選單中使用的圖示
-    this.componentManager.register('Vue3IconCSVExport', Vue3IconCSVExport, {
+    this.componentManager.register('Vue3CSVExportIcon', Vue3IconCSVExport, {
       framework: 'vue3'
     });
 
@@ -138,7 +138,7 @@ export class ExportCSVButtonPlugin extends Plugin {
       id: buttonId,
       title: 'parker-vue-lab-plugins.csv-export.title',
       tooltip: 'parker-vue-lab-plugins.csv-export.tooltip',
-      icon: 'Vue3IconCSVExport', // 這必須和我們在 componentManager 註冊的名稱相符
+      icon: 'Vue3CSVExportIcon', // 這必須和我們在 componentManager 註冊的名稱相符
       type: MenuItemType.BUTTON,
       // hidden$ 是一個 Observable，用來動態決定何時該隱藏按鈕。
       // 這裡，如果目前聚焦的文件不是試算表 (例如我們切換到了文件 (Doc))，就會隱藏按鈕。
