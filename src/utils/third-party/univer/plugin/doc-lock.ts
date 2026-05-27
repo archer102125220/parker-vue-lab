@@ -54,8 +54,7 @@ function ignoreErrorLog() {
   });
 
   // 3. 原本的 console.error 覆寫 (以防 Univer 內部有去 catch 並且用 console.error 印出來)
-  window.originalConsoleError =
-    window.originalConsoleError || window.console.error;
+  window.originalConsoleError = window.console.error;
 
   window.console.error = function (...args) {
     // 檢查參數中是否包含特定的鎖定阻擋錯誤（字串或 Error 物件）
