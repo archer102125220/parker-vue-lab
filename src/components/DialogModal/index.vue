@@ -33,6 +33,10 @@ const modules: Record<string, () => Promise<unknown>> = {
   ...import.meta.glob('@app/components/DialogModal/*/*.vue')
 };
 
+defineOptions({
+  inheritAttrs: false
+});
+
 // https://cn.vuejs.org/guide/components/v-model#v-model-arguments
 // const modelTrigger = defineModel('trigger', { default: false });
 const modelTrigger = defineModel<boolean>({ default: false });
