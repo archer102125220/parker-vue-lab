@@ -1,10 +1,16 @@
 <script lang="ts" setup>
-import { computed } from 'vue';
+import { computed, watchEffect } from 'vue';
 import { useSystemStore } from '@src/store/system';
+import { useI18n } from 'vue-i18n';
 import DialogModal from '@src/components/DialogModal/index.vue';
 
 const systemStore = useSystemStore();
 const dialogSettings = computed(() => systemStore.dialog || {});
+
+const { locale } = useI18n();
+watchEffect(() => {
+  document.documentElement.lang = locale.value;
+});
 </script>
 
 <template>

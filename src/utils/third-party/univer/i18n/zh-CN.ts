@@ -42,6 +42,23 @@ export default {
         unsupportedDoc: '不支持的文件格式，请上传 DOCX 文件',
         importFailed: '导入失败：',
       }
+    },
+    'doc-lock': {
+      title: '锁定选区',
+      tooltip: '锁定选区',
+      unlockTitle: '解除锁定选区',
+      unlockTooltip: '解除锁定选区',
+      error: {
+        selectFirst: '请先选择要锁定的文字范围',
+        selectFirstUnlock: '请先选择要解除锁定的文字范围',
+        emptySelection: '选区不能为空',
+        lockedBlocked: '此区域已锁定，无法编辑',
+      },
+      success: {
+        locked: '已标记锁定范围：',
+        unlocked: '已解除锁定范围：',
+        noLockedRange: '选区内没有锁定的区块',
+      }
     }
   }
 };

@@ -42,6 +42,23 @@ export default {
         unsupportedDoc: 'Unsupported file format, please upload DOCX file',
         importFailed: 'Import failed: ',
       }
+    },
+    'doc-lock': {
+      title: 'Lock Selection',
+      tooltip: 'Lock Selection',
+      unlockTitle: 'Unlock Selection',
+      unlockTooltip: 'Unlock Selection',
+      error: {
+        selectFirst: 'Please select a text range to lock first',
+        selectFirstUnlock: 'Please select a text range to unlock first',
+        emptySelection: 'Selection cannot be empty',
+        lockedBlocked: 'This area is locked and cannot be edited',
+      },
+      success: {
+        locked: 'Marked range as locked: ',
+        unlocked: 'Unlocked range: ',
+        noLockedRange: 'No locked blocks in the selection',
+      }
     }
   }
 };

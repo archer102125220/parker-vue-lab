@@ -42,6 +42,23 @@ export default {
         unsupportedDoc: '不支援的檔案格式，請上傳 DOCX 檔案',
         importFailed: '匯入失敗：',
       }
+    },
+    'doc-lock': {
+      title: '鎖定選取範圍',
+      tooltip: '鎖定選取範圍',
+      unlockTitle: '解除鎖定選取範圍',
+      unlockTooltip: '解除鎖定選取範圍',
+      error: {
+        selectFirst: '請先選擇要鎖定的文字範圍',
+        selectFirstUnlock: '請先選擇要解除鎖定的文字範圍',
+        emptySelection: '選取範圍不能為空',
+        lockedBlocked: '此區域已鎖定，無法編輯',
+      },
+      success: {
+        locked: '已標記鎖定範圍：',
+        unlocked: '已解除鎖定範圍：',
+        noLockedRange: '選取範圍內沒有鎖定的區塊',
+      }
     }
   }
 };

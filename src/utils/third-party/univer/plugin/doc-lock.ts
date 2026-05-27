@@ -8,6 +8,7 @@ import {
   CommandType,
   CustomRangeType,
   generateRandomId,
+  LocaleService,
   type ICommand,
   type IAccessor,
   type DocumentDataModel,
@@ -153,6 +154,7 @@ export class DocLockPlugin extends Plugin {
         );
         const messageService = accessor.get(IMessageService);
         const commandService = accessor.get(ICommandService);
+        const localeService = accessor.get(LocaleService);
 
         const doc = univerInstanceService.getFocusedUnit();
         if (!doc || doc.type !== UniverInstanceType.UNIVER_DOC) {
@@ -163,7 +165,7 @@ export class DocLockPlugin extends Plugin {
         if (!activeTextRange) {
           messageService.show({
             type: MessageType.Warning,
-            content: '請先選擇要鎖定的文字範圍'
+            content: localeService.t('parker-vue-lab-plugins.doc-lock.error.selectFirst')
           });
           return false;
         }
@@ -172,7 +174,7 @@ export class DocLockPlugin extends Plugin {
         if (startOffset === endOffset) {
           messageService.show({
             type: MessageType.Warning,
-            content: '選取範圍不能為空'
+            content: localeService.t('parker-vue-lab-plugins.doc-lock.error.emptySelection')
           });
           return false;
         }
@@ -215,7 +217,7 @@ export class DocLockPlugin extends Plugin {
           }
           messageService.show({
             type: MessageType.Success,
-            content: `已標記範圍 ${startOffset} - ${endOffset} 為鎖定狀態`
+            content: `${localeService.t('parker-vue-lab-plugins.doc-lock.success.locked')}${startOffset} - ${endOffset}`
           });
           console.log(
             '[DocLockPlugin] Range locked:',
@@ -243,6 +245,7 @@ export class DocLockPlugin extends Plugin {
         );
         const messageService = accessor.get(IMessageService);
         const commandService = accessor.get(ICommandService);
+        const localeService = accessor.get(LocaleService);
 
         const doc = univerInstanceService.getFocusedUnit();
         if (!doc || doc.type !== UniverInstanceType.UNIVER_DOC) {
@@ -253,7 +256,7 @@ export class DocLockPlugin extends Plugin {
         if (!activeTextRange) {
           messageService.show({
             type: MessageType.Warning,
-            content: '請先選擇要解除鎖定的文字範圍'
+            content: localeService.t('parker-vue-lab-plugins.doc-lock.error.selectFirstUnlock')
           });
           return false;
         }
@@ -262,7 +265,7 @@ export class DocLockPlugin extends Plugin {
         if (uStart === uEnd || uStart === undefined || uEnd === undefined) {
           messageService.show({
             type: MessageType.Warning,
-            content: '選取範圍不能為空'
+            content: localeService.t('parker-vue-lab-plugins.doc-lock.error.emptySelection')
           });
           return false;
         }
@@ -366,13 +369,13 @@ export class DocLockPlugin extends Plugin {
         if (unlockedCount > 0) {
           messageService.show({
             type: MessageType.Success,
-            content: `已解除範圍 ${uStart} - ${uEnd} 的鎖定`
+            content: `${localeService.t('parker-vue-lab-plugins.doc-lock.success.unlocked')}${uStart} - ${uEnd}`
           });
           return true;
         } else {
           messageService.show({
             type: MessageType.Info,
-            content: `選取範圍內沒有鎖定的區塊`
+            content: localeService.t('parker-vue-lab-plugins.doc-lock.success.noLockedRange')
           });
           return false;
         }
@@ -383,8 +386,8 @@ export class DocLockPlugin extends Plugin {
 
     const menuItemFactory = () => ({
       id: commandId,
-      title: '鎖定選取範圍',
-      tooltip: '鎖定選取範圍',
+      title: 'parker-vue-lab-plugins.doc-lock.title',
+      tooltip: 'parker-vue-lab-plugins.doc-lock.tooltip',
       icon: 'Vue3LockIcon',
       type: MenuItemType.BUTTON,
       hidden$: new Observable<boolean>((subscriber) => {
@@ -407,8 +410,8 @@ export class DocLockPlugin extends Plugin {
 
     const unlockMenuItemFactory = () => ({
       id: unlockCommandId,
-      title: '解除鎖定選取範圍',
-      tooltip: '解除鎖定選取範圍',
+      title: 'parker-vue-lab-plugins.doc-lock.unlockTitle',
+      tooltip: 'parker-vue-lab-plugins.doc-lock.unlockTooltip',
       icon: 'Vue3UnlockedIcon',
       type: MenuItemType.BUTTON,
       hidden$: new Observable<boolean>((subscriber) => {
@@ -555,9 +558,10 @@ export class DocLockPlugin extends Plugin {
 
             if (isBlocked) {
               const messageService = this._injector.get(IMessageService);
+              const localeService = this._injector.get(LocaleService);
               messageService.show({
                 type: MessageType.Error,
-                content: '此區域已鎖定，無法編輯'
+                content: localeService.t('parker-vue-lab-plugins.doc-lock.error.lockedBlocked')
               });
               throw new Error(DOC_LOCK_ERROR_MESSAGE);
             }
