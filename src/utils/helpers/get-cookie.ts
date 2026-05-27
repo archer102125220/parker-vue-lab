@@ -1,4 +1,4 @@
-export function getCookie(cname: string, cookie: string) {
+export function getCookie(cname: string, cookie: string): string {
   const name = cname + '=';
   const decodedCookie = decodeURIComponent(cookie);
   const ca = decodedCookie.split(';');
@@ -13,7 +13,9 @@ export function getCookie(cname: string, cookie: string) {
   }
   return '';
 }
-export function getJsonCookie(cookieString: string) {
+export function getJsonCookie<T = Record<string, unknown>>(
+  cookieString: string
+): T {
   const cookie: Record<string, unknown> = {};
   const decodedCookie = decodeURIComponent(cookieString);
   const ca = decodedCookie.split(';');
@@ -31,10 +33,10 @@ export function getJsonCookie(cookieString: string) {
 
     cookie[key] = value ?? null;
   }
-  return cookie;
+  return cookie as T;
 }
 
-export function asciiToText(text: string) {
+export function asciiToText(text: string): string {
   const strings = text.split('\\');
   const result = strings.reduce((result, string, index) => {
     let t = string;

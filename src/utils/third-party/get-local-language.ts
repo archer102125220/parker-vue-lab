@@ -1,7 +1,7 @@
 import { defaultLang } from '@src/i18n';
 import { getCookie } from '@src/utils/helpers/get-cookie';
 
-export function getLocalLanguage(defaultLanguag = defaultLang) {
+export function getLocalLanguage(defaultLanguag = defaultLang): string {
   if (typeof window?.localStorage === 'object') {
     const usedLang = window.localStorage.getItem('usedLang');
     if (typeof usedLang === 'string' && usedLang !== '') {
