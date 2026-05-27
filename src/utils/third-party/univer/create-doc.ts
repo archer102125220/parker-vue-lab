@@ -357,7 +357,7 @@ export async function createDocInstance(
     [ServerExportButtonPlugin],
     [LocalImportButtonPlugin],
     [UniverExchangeLifecyclePlugin],
-    [DocLockPlugin]
+    [DocLockPlugin, { noStyle: false }]
   ]);
 
   // window.univerInstance = univerInstance;
