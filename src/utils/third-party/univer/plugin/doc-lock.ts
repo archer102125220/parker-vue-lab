@@ -76,6 +76,10 @@ function ignoreErrorLog() {
   window.__UNIVER__DOC_LOCKED_ERROR_FILTERED__ = true;
 }
 
+export interface IDocLockPluginConfig {
+  noStyle?: boolean;
+}
+
 /**
  * 實驗性文件區域鎖定外掛
  * 1. 取得當前選取範圍
@@ -85,9 +89,10 @@ function ignoreErrorLog() {
 export class DocLockPlugin extends Plugin {
   static override pluginName = 'doc-lock-plugin';
   private isPluginModifyingLock = false;
+  private _config: IDocLockPluginConfig;
 
   constructor(
-    _config: unknown,
+    config: Partial<IDocLockPluginConfig> | undefined,
     @Inject(Injector) protected override _injector: Injector,
     @Inject(IMenuManagerService)
     private readonly menuManagerService: IMenuManagerService,
@@ -96,6 +101,7 @@ export class DocLockPlugin extends Plugin {
     private readonly componentManager: ComponentManager
   ) {
     super();
+    this._config = config || {};
 
     // 修正 Univer 編輯器在鎖定範圍時發出的錯誤訊息
     ignoreErrorLog();
@@ -183,10 +189,16 @@ export class DocLockPlugin extends Plugin {
         }
         const selections = [selection];
 
+        const noStyle =
+          typeof this._config.noStyle === 'boolean'
+            ? this._config.noStyle
+            : true;
         const customRangeMutation = addCustomRangeBySelectionFactory(accessor, {
           unitId: doc.getUnitId(),
           rangeId,
-          rangeType: CustomRangeType.CUSTOM,
+          rangeType: noStyle
+            ? (8888 as CustomRangeType)
+            : CustomRangeType.CUSTOM,
           properties: { locked: true },
           selections
         });
@@ -305,7 +317,7 @@ export class DocLockPlugin extends Plugin {
                   {
                     unitId: doc.getUnitId(),
                     rangeId: newRangeIdLeft,
-                    rangeType: CustomRangeType.CUSTOM,
+                    rangeType: lr.rangeType,
                     properties: { locked: true },
                     selections: selectionsLeft
                   }
@@ -334,7 +346,7 @@ export class DocLockPlugin extends Plugin {
                   {
                     unitId: doc.getUnitId(),
                     rangeId: newRangeIdRight,
-                    rangeType: CustomRangeType.CUSTOM,
+                    rangeType: lr.rangeType,
                     properties: { locked: true },
                     selections: selectionsRight
                   }
