@@ -17,6 +17,20 @@ const unitId = computed(() => route.query.unit as string | undefined);
 <template>
   <DefaultLayout>
     <div class="univer_doc_page">
+      <div class="univer_doc_page-remark">
+        <p>💡 <b>鎖定狀態匯出說明：</b></p>
+        <ul>
+          <li>
+            <b>Local Export (JSON Snapshot)：</b>
+            可以保留鎖定狀態。自訂區域屬性會記錄於 Snapshot 中，重新載入 JSON
+            後依然生效。
+          </li>
+          <li>
+            <b>Server Export (DOCX/XLSX)：</b> 無法保留鎖定狀態。標準 Office
+            格式不支援 Univer 自訂的區域鎖定機制，匯出的實體檔案將不含編輯限制。
+          </li>
+        </ul>
+      </div>
       <div class="univer_doc_page-tools">
         <label for="role_select">當前測試身份：</label>
         <select
@@ -40,7 +54,27 @@ const unitId = computed(() => route.query.unit as string | undefined);
 
 <style lang="scss" scoped>
 .univer_doc_page {
-  height: calc(90vh - 50px);
+  height: 90vh;
+
+  &-remark {
+    padding: 12px 16px;
+    background-color: #fff3cd;
+    color: #856404;
+    border-bottom: 1px solid #ffeeba;
+    font-size: 14px;
+    line-height: 1.5;
+    border-radius: 10px;
+    margin-bottom: 16px;
+
+    p {
+      margin: 0 0 4px 0;
+    }
+
+    ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+  }
 
   &-tools {
     padding: 10px 16px;

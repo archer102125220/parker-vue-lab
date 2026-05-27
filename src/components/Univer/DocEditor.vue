@@ -26,10 +26,6 @@ const props = defineProps({
       return 'zhTW';
     }
   },
-  openFile: {
-    type: String,
-    default: ''
-  },
   value: {
     type: Object,
     default: () => ({
@@ -120,6 +116,10 @@ const props = defineProps({
   unitId: {
     type: String,
     default: ''
+  },
+  collaboration: {
+    type: Boolean,
+    default: false
   }
 });
 const emits = defineEmits([
@@ -158,7 +158,7 @@ async function handleUniverDoc(overrideSnapshot?: Partial<IDocumentData>) {
     const { univer, univerAPI, LocaleType } = await createDocInstance(
       container.value,
       props.locale,
-      false // 強制關閉協作功能
+      props.collaboration
     );
 
     // 只有出現在 univerAPI.Event 中的事件能被觸發
@@ -268,6 +268,12 @@ watch(
     }
   }
 );
+watch(
+  () => props.collaboration,
+  () => {
+    handleUniverDoc();
+  }
+);
 
 const isRebuilding = ref(false);
 
@@ -353,7 +359,7 @@ onBeforeUnmount(() => {
       @univer-exchange-started="loading = true"
       @univer-exchange-ended="loading = false"
     />
-    
+
     <LockPermissionDialog />
   </div>
 </template>

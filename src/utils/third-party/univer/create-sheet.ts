@@ -176,7 +176,7 @@ export async function importCustomSheetPlugin() {
   const [
     { ImportCSVButtonPlugin },
     { ExportCSVButtonPlugin },
-    // { LocalExportButtonPlugin },
+    { LocalExportButtonPlugin },
     { ServerExportButtonPlugin },
     { LocalImportButtonPlugin },
     { UniverExchangeLifecyclePlugin },
@@ -186,7 +186,7 @@ export async function importCustomSheetPlugin() {
   ] = await Promise.all([
     import('@src/utils/third-party/univer/plugin/csv-import'),
     import('@src/utils/third-party/univer/plugin/csv-export'),
-    // import('@src/utils/third-party/univer/plugin/local-export'),
+    import('@src/utils/third-party/univer/plugin/local-export'),
     import('@src/utils/third-party/univer/plugin/server-export'),
     import('@src/utils/third-party/univer/plugin/local-import'),
     import('@src/utils/third-party/univer/plugin/exchange-lifecycle'),
@@ -198,7 +198,7 @@ export async function importCustomSheetPlugin() {
   return {
     ImportCSVButtonPlugin,
     ExportCSVButtonPlugin,
-    // LocalExportButtonPlugin,
+    LocalExportButtonPlugin,
     ServerExportButtonPlugin,
     LocalImportButtonPlugin,
     UniverExchangeLifecyclePlugin,
@@ -263,7 +263,8 @@ export async function importSheetLiveShare() {
 export async function createSheetInstance(
   container: HTMLElement,
   locale: string = '',
-  collaboration: boolean = false
+  collaboration: boolean = false,
+  liveShare: boolean = false
 ): Promise<univerInstance> {
   const {
     UniverPresets,
@@ -338,7 +339,7 @@ export async function createSheetInstance(
   const {
     ImportCSVButtonPlugin,
     ExportCSVButtonPlugin,
-    // LocalExportButtonPlugin,
+    LocalExportButtonPlugin,
     ServerExportButtonPlugin,
     LocalImportButtonPlugin,
     UniverExchangeLifecyclePlugin,
@@ -531,11 +532,18 @@ export async function createSheetInstance(
   univerInstance.univer.registerPlugins([
     [ImportCSVButtonPlugin],
     [ExportCSVButtonPlugin],
-    // [LocalExportButtonPlugin],
+    [LocalExportButtonPlugin],
     [ServerExportButtonPlugin],
     [LocalImportButtonPlugin],
     [UniverExchangeLifecyclePlugin]
   ]);
+
+  if (collaboration === true && liveShare === true) {
+    const { UniverProLiveShare } = await importSheetLiveShare();
+    const { UniverLiveSharePlugin } = UniverProLiveShare;
+
+    univerInstance.univer.registerPlugin(UniverLiveSharePlugin);
+  }
 
   // window.univerInstance = univerInstance;
 

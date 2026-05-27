@@ -118,6 +118,14 @@ const props = defineProps({
   unitId: {
     type: String,
     default: ''
+  },
+  collaboration: {
+    type: Boolean,
+    default: false
+  },
+  liveShare: {
+    type: Boolean,
+    default: false
   }
 });
 const emits = defineEmits([
@@ -160,7 +168,8 @@ async function handleUniverSheet(overrideSnapshot?: Partial<IWorkbookData>) {
     const { univer, univerAPI, LocaleType } = await createSheetInstance(
       container.value,
       props.locale,
-      false
+      props.collaboration,
+      props.liveShare
     );
 
     disposableList.push(
@@ -245,6 +254,12 @@ watch(
       if (typeof locale !== 'string') return;
       univerInstance.univer?.setLocale(locale);
     }
+  }
+);
+watch(
+  () => [props.collaboration, props.liveShare],
+  () => {
+    handleUniverSheet();
   }
 );
 

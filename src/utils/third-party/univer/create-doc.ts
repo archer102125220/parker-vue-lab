@@ -96,7 +96,7 @@ export async function importDoc() {
 
 export async function importCustomDocPlugin() {
   const [
-    // { LocalExportButtonPlugin },
+    { LocalExportButtonPlugin },
     { ServerExportButtonPlugin },
     { LocalImportButtonPlugin },
     { UniverExchangeLifecyclePlugin },
@@ -105,7 +105,7 @@ export async function importCustomDocPlugin() {
     { default: CustomPluginEnUS },
     { default: CustomPluginZhTW }
   ] = await Promise.all([
-    // import('@src/utils/third-party/univer/plugin/local-export'),
+    import('@src/utils/third-party/univer/plugin/local-export'),
     import('@src/utils/third-party/univer/plugin/server-export'),
     import('@src/utils/third-party/univer/plugin/local-import'),
     import('@src/utils/third-party/univer/plugin/exchange-lifecycle'),
@@ -116,7 +116,7 @@ export async function importCustomDocPlugin() {
   ]);
 
   return {
-    // LocalExportButtonPlugin,
+    LocalExportButtonPlugin,
     ServerExportButtonPlugin,
     LocalImportButtonPlugin,
     UniverExchangeLifecyclePlugin,
@@ -209,7 +209,7 @@ export async function createDocInstance(
   // const { UniverUniscriptPlugin } = UniverUniscript;
 
   const {
-    // LocalExportButtonPlugin,
+    LocalExportButtonPlugin,
     ServerExportButtonPlugin,
     LocalImportButtonPlugin,
     UniverExchangeLifecyclePlugin,
@@ -238,8 +238,6 @@ export async function createDocInstance(
       UniverDocsThreadCommentPreset()
     ],
     plugins: [
-      // LocalExportButtonPlugin,
-      // LocalImportButtonPlugin,
       UniverDocsQuickInsertUIPlugin
       // [_UniverWatermarkPlugin, {
       //   textWatermarkSettings: {
@@ -353,7 +351,7 @@ export async function createDocInstance(
 
   const univerInstance = importRegisterVue(createUniver(univerConfig));
   univerInstance.univer.registerPlugins([
-    // [LocalExportButtonPlugin],
+    [LocalExportButtonPlugin],
     [ServerExportButtonPlugin],
     [LocalImportButtonPlugin],
     [UniverExchangeLifecyclePlugin],
