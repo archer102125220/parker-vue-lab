@@ -305,7 +305,13 @@ onBeforeUnmount(() => {
     <div
       ref="container"
       class="univer_sheet-editor"
+      @univer-local-import-started="loading = true"
+      @univer-local-import-ended="loading = false"
       @univer-local-import-snapshot="handleLocalImportEvent"
+      @univer-local-export-started="loading = true"
+      @univer-local-export-ended="loading = false"
+      @univer-exchange-started="loading = true"
+      @univer-exchange-ended="loading = false"
     />
   </div>
 </template>
@@ -321,7 +327,7 @@ onBeforeUnmount(() => {
     right: 0;
     bottom: 0;
     left: 0;
-    z-index: 2;
+    z-index: 11; // 最小要設為 11 才蓋得掉 univer 的所有 UI
 
     &-skeleton {
       width: 100%;

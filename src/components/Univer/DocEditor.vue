@@ -268,7 +268,9 @@ watch(
   }
 );
 
-const handleLocalImportEvent = (e: Event) => {
+const isRebuilding = ref(false);
+
+const handleLocalImportEvent = async (e: Event) => {
   const customEvent = e as CustomEvent;
   const detail = customEvent.detail;
   if (detail && detail.snapshot && detail.type === 'doc') {
@@ -279,14 +281,25 @@ const handleLocalImportEvent = (e: Event) => {
       return; // 忽略不是由當前編輯器觸發的事件
     }
     if (univerInstance.univerAPI) {
+      isRebuilding.value = true;
+
       try {
         // Univer Doc 由於官方設計限制，並不支援像 Sheet 一樣動態建立並切換文件 (會導致 UI 無法正確渲染或拋錯)，
         // 因此我們在此處收到匯入的 snapshot 後，直接透過重新初始化整個 Univer 實例來載入新檔案。
-        handleUniverDoc(detail.snapshot);
+        await handleUniverDoc(detail.snapshot);
       } catch (err) {
         console.error('Failed to replace document:', err);
       }
+
+      isRebuilding.value = false;
+      loading.value = false;
     }
+  }
+};
+
+const handleLocalImportEnded = () => {
+  if (!isRebuilding.value) {
+    loading.value = false;
   }
 };
 
@@ -316,7 +329,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="univer_docxs">
+  <div class="univer_doc">
     <div v-if="loading" class="univer_doc-skeleton_wrap">
       <slot name="loading" :loading="loading">
         <SkeletonLoader
@@ -327,15 +340,21 @@ onBeforeUnmount(() => {
     </div>
     <div
       ref="container"
-      class="univer_docxs-editor"
+      class="univer_doc-editor"
       @keydown="handleKeyDown"
+      @univer-local-import-started="loading = true"
+      @univer-local-import-ended="handleLocalImportEnded"
       @univer-local-import-snapshot="handleLocalImportEvent"
+      @univer-local-export-started="loading = true"
+      @univer-local-export-ended="loading = false"
+      @univer-exchange-started="loading = true"
+      @univer-exchange-ended="loading = false"
     />
   </div>
 </template>
 
 <style lang="scss" scoped>
-.univer_docxs {
+.univer_doc {
   position: relative;
   height: 100%;
 
@@ -345,7 +364,7 @@ onBeforeUnmount(() => {
     right: 0;
     bottom: 0;
     left: 0;
-    z-index: 2;
+    z-index: 11; // 最小要設為 11 才蓋得掉 univer 的所有 UI
 
     &-skeleton {
       width: 100%;

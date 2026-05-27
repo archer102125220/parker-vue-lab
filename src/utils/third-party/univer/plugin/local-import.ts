@@ -65,6 +65,18 @@ export class LocalImportButtonPlugin extends Plugin {
           );
         }
 
+        // 放在 input.onchange 會跳 localeService 的相關 error
+        // 初步判斷跟整個編輯器掛載卸載有關，因此提早取出語系包內容
+        const loadingContent = localeService.t(
+          'parker-vue-lab-plugins.local-import.info'
+        );
+        const successContent = localeService.t(
+          'parker-vue-lab-plugins.local-import.success'
+        );
+        const failedContent = localeService.t(
+          'parker-vue-lab-plugins.local-import.importFailed'
+        );
+
         // 建立一個隱藏的 input 來選擇檔案
         const input = document.createElement('input');
         input.type = 'file';
@@ -92,10 +104,17 @@ export class LocalImportButtonPlugin extends Plugin {
           try {
             messageService.show({
               type: MessageType.Info,
-              content: localeService.t(
-                'parker-vue-lab-plugins.local-import.info'
-              )
+              content: loadingContent
             });
+
+            const startEvent = new CustomEvent('univer-local-import-started', {
+              bubbles: true
+            });
+            if (layoutService.rootContainerElement) {
+              layoutService.rootContainerElement.dispatchEvent(startEvent);
+            } else {
+              document.dispatchEvent(startEvent);
+            }
 
             let snapshot: unknown = null;
             let fileType = '';
@@ -126,9 +145,7 @@ export class LocalImportButtonPlugin extends Plugin {
 
               messageService.show({
                 type: MessageType.Success,
-                content: localeService.t(
-                  'parker-vue-lab-plugins.local-import.success'
-                )
+                content: successContent
               });
             }
           } catch (err: unknown) {
@@ -137,11 +154,17 @@ export class LocalImportButtonPlugin extends Plugin {
               err instanceof Error ? err.message : String(err);
             messageService.show({
               type: MessageType.Error,
-              content:
-                localeService.t(
-                  'parker-vue-lab-plugins.local-import.error.importFailed'
-                ) + errorMessage
+              content: failedContent + errorMessage
             });
+          } finally {
+            const endEvent = new CustomEvent('univer-local-import-ended', {
+              bubbles: true
+            });
+            if (layoutService.rootContainerElement) {
+              layoutService.rootContainerElement.dispatchEvent(endEvent);
+            } else {
+              document.dispatchEvent(endEvent);
+            }
           }
         };
         input.click();

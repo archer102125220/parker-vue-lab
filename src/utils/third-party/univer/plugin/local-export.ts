@@ -5,7 +5,8 @@ import {
   IMenuManagerService,
   MenuItemType,
   RibbonStartGroup,
-  IMessageService
+  IMessageService,
+  ILayoutService
 } from '@univerjs/ui';
 import { MessageType } from '@univerjs/design';
 import {
@@ -35,7 +36,7 @@ export interface ILocalExportPluginConfig {
    * 自訂後端 API 請求的前綴路徑。
    * 若未提供，將預設使用 `VITE_UNIVERSER_DOCKER_HOST` 環境變數加上 `/universer-api`，
    * 或是 `http://localhost:8000/universer-api`。
-   * 
+   *
    * @example
    * 'https://api.example.com/universer-api'
    */
@@ -45,7 +46,7 @@ export interface ILocalExportPluginConfig {
 /**
  * 本地文件匯出外掛 (支援 Word / Excel)
  * 專門處理「非協同模式」下，前端建立的本地檔案如何正確匯出為 DOCX / XLSX
- * 
+ *
  * @example
  * ```typescript
  * univer.registerPlugin(LocalExportButtonPlugin, {
@@ -57,7 +58,9 @@ export class LocalExportButtonPlugin extends Plugin {
   static override pluginName = 'local-export-plugin';
 
   constructor(
-    private readonly _config: Partial<ILocalExportPluginConfig> | undefined = {},
+    private readonly _config:
+      | Partial<ILocalExportPluginConfig>
+      | undefined = {},
     @Inject(Injector) protected override _injector: Injector,
     @Inject(IMenuManagerService)
     private readonly menuManagerService: IMenuManagerService,
@@ -83,6 +86,7 @@ export class LocalExportButtonPlugin extends Plugin {
         const univerInstanceService = accessor.get(IUniverInstanceService);
         const messageService = accessor.get(IMessageService);
         const localeService = accessor.get(LocaleService);
+        const layoutService = accessor.get(ILayoutService);
         const doc = univerInstanceService.getFocusedUnit();
         if (typeof doc !== 'object' || doc === null) return false;
         const focusedUnitId = doc.getUnitId();
@@ -106,6 +110,15 @@ export class LocalExportButtonPlugin extends Plugin {
             content: localeService.t('parker-vue-lab-plugins.local-export.info')
           });
 
+          const startEvent = new CustomEvent('univer-local-export-started', {
+            bubbles: true
+          });
+          if (layoutService.rootContainerElement) {
+            layoutService.rootContainerElement.dispatchEvent(startEvent);
+          } else {
+            document.dispatchEvent(startEvent);
+          }
+
           // 1. 取得完整的文件 Snapshot JSON
           const snapshot = doc.getSnapshot();
           let exportJson;
@@ -120,7 +133,9 @@ export class LocalExportButtonPlugin extends Plugin {
             );
           } else {
             throw new Error(
-              localeService.t('parker-vue-lab-plugins.local-export.error.snapshot')
+              localeService.t(
+                'parker-vue-lab-plugins.local-export.error.snapshot'
+              )
             );
           }
 
@@ -130,7 +145,8 @@ export class LocalExportButtonPlugin extends Plugin {
           const UNIVERSER_HOST =
             import.meta.env.VITE_UNIVERSER_DOCKER_HOST ||
             'http://localhost:8000';
-          const API_PREFIX = this._config?.apiPrefix || `${UNIVERSER_HOST}/universer-api`;
+          const API_PREFIX =
+            this._config?.apiPrefix || `${UNIVERSER_HOST}/universer-api`;
 
           // 2. 上傳快照到 Universer 取得 FileId (jsonID)
           const blob = new Blob([snapshotStr], { type: 'application/json' });
@@ -146,7 +162,9 @@ export class LocalExportButtonPlugin extends Plugin {
 
           if (uploadRes.ok === false) {
             const errText = await uploadRes.text();
-            throw new Error(`${localeService.t('parker-vue-lab-plugins.local-export.error.uploadFailed')} (${uploadRes.status}): ${errText}`);
+            throw new Error(
+              `${localeService.t('parker-vue-lab-plugins.local-export.error.uploadFailed')} (${uploadRes.status}): ${errText}`
+            );
           }
           const uploadData = (await uploadRes.json()) as { FileId?: string };
 
@@ -156,7 +174,11 @@ export class LocalExportButtonPlugin extends Plugin {
             typeof uploadData.FileId !== 'string' ||
             uploadData.FileId === ''
           ) {
-            throw new Error(localeService.t('parker-vue-lab-plugins.local-export.error.uploadSnapshotFailed'));
+            throw new Error(
+              localeService.t(
+                'parker-vue-lab-plugins.local-export.error.uploadSnapshotFailed'
+              )
+            );
           }
           const fileId = uploadData.FileId;
 
@@ -175,7 +197,11 @@ export class LocalExportButtonPlugin extends Plugin {
 
           const taskID = exportData.taskID;
           if (typeof taskID !== 'string' || taskID === '') {
-            throw new Error(localeService.t('parker-vue-lab-plugins.local-export.error.taskFailed'));
+            throw new Error(
+              localeService.t(
+                'parker-vue-lab-plugins.local-export.error.taskFailed'
+              )
+            );
           }
 
           // 4. Polling (輪詢) 檢查任務狀態
@@ -217,7 +243,9 @@ export class LocalExportButtonPlugin extends Plugin {
               );
               throw new Error(
                 taskData.error?.message ||
-                  localeService.t('parker-vue-lab-plugins.local-export.error.backendTaskFailed') + JSON.stringify(taskData)
+                  localeService.t(
+                    'parker-vue-lab-plugins.local-export.error.backendTaskFailed'
+                  ) + JSON.stringify(taskData)
               );
             }
 
@@ -225,7 +253,11 @@ export class LocalExportButtonPlugin extends Plugin {
           }
 
           if (!isSuccess || finalTaskData === null) {
-            throw new Error(localeService.t('parker-vue-lab-plugins.local-export.error.timeout'));
+            throw new Error(
+              localeService.t(
+                'parker-vue-lab-plugins.local-export.error.timeout'
+              )
+            );
           }
 
           // 5. 下載檔案
@@ -279,9 +311,21 @@ export class LocalExportButtonPlugin extends Plugin {
           const errorMessage = err instanceof Error ? err.message : String(err);
           messageService.show({
             type: MessageType.Error,
-            content: localeService.t('parker-vue-lab-plugins.local-export.error.exportFailed') + errorMessage
+            content:
+              localeService.t(
+                'parker-vue-lab-plugins.local-export.error.exportFailed'
+              ) + errorMessage
           });
           return false;
+        } finally {
+          const endEvent = new CustomEvent('univer-local-export-ended', {
+            bubbles: true
+          });
+          if (layoutService.rootContainerElement) {
+            layoutService.rootContainerElement.dispatchEvent(endEvent);
+          } else {
+            document.dispatchEvent(endEvent);
+          }
         }
       }
     };

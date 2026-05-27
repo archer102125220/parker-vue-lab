@@ -178,6 +178,7 @@ export async function importCustomSheetPlugin() {
     { ExportCSVButtonPlugin },
     { LocalExportButtonPlugin },
     { LocalImportButtonPlugin },
+    { UniverExchangeLifecyclePlugin },
     { importRegisterVue },
     { default: CustomPluginEnUS },
     { default: CustomPluginZhTW }
@@ -186,6 +187,7 @@ export async function importCustomSheetPlugin() {
     import('@src/utils/third-party/univer/plugin/csv-export'),
     import('@src/utils/third-party/univer/plugin/local-export'),
     import('@src/utils/third-party/univer/plugin/local-import'),
+    import('@src/utils/third-party/univer/plugin/exchange-lifecycle'),
     import('@src/utils/third-party/univer/plugin/register-vue'),
     import('@src/utils/third-party/univer/i18n/en-US'),
     import('@src/utils/third-party/univer/i18n/zh-TW')
@@ -196,6 +198,7 @@ export async function importCustomSheetPlugin() {
     ExportCSVButtonPlugin,
     LocalExportButtonPlugin,
     LocalImportButtonPlugin,
+    UniverExchangeLifecyclePlugin,
     importRegisterVue,
     CustomPluginEnUS,
     CustomPluginZhTW
@@ -322,6 +325,7 @@ export async function createSheetInstance(
     ExportCSVButtonPlugin,
     LocalExportButtonPlugin,
     LocalImportButtonPlugin,
+    UniverExchangeLifecyclePlugin,
     importRegisterVue,
     CustomPluginEnUS,
     CustomPluginZhTW
@@ -510,7 +514,8 @@ export async function createSheetInstance(
     [ImportCSVButtonPlugin],
     [ExportCSVButtonPlugin],
     [LocalExportButtonPlugin],
-    [LocalImportButtonPlugin]
+    [LocalImportButtonPlugin],
+    [UniverExchangeLifecyclePlugin]
   ]);
 
   // window.univerInstance = univerInstance;
