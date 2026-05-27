@@ -27,10 +27,11 @@ import {
   nextTick,
   type Component
 } from 'vue';
+import { type BrowserInfo } from '@src/store/system';
 
 const modules: Record<string, () => Promise<unknown>> = {
-  ...import.meta.glob('@app/components/DialogModal/*.vue'),
-  ...import.meta.glob('@app/components/DialogModal/*/*.vue')
+  ...import.meta.glob('@src/components/DialogModal/*.vue'),
+  ...import.meta.glob('@src/components/DialogModal/*/*.vue')
 };
 
 defineOptions({
@@ -42,13 +43,13 @@ defineOptions({
 const modelTrigger = defineModel<boolean>({ default: false });
 
 interface DialogProps {
-  width?: string | null;
+  width?: string | number | null;
   content?: string | null;
   bgColor?: string;
   radius?: string;
   contentClass?: string | string[] | Record<string, boolean> | null;
   contentProps?: Record<string, unknown> | null;
-  broswerInfo?: Record<string, unknown> | null;
+  broswerInfo?: BrowserInfo | null;
   dialogProps?: Record<string, unknown> | null;
 }
 
@@ -65,7 +66,7 @@ const props = withDefaults(defineProps<DialogProps>(), {
 
 interface HandleTriggerPayload {
   trigger?: boolean;
-  width?: string | null;
+  width?: string | number | null;
   bgColor?: string;
   radius?: string;
   content?: string | null;

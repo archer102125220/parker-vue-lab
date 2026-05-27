@@ -1,3 +1,4 @@
+import { Observable } from 'rxjs';
 import { Inject, Injector } from '@wendellhu/redi';
 import {
   Plugin,
@@ -24,10 +25,9 @@ import { MessageType } from '@univerjs/design';
 import {
   DocSelectionManagerService,
   addCustomRangeBySelectionFactory,
-  deleteCustomRangeFactory
+  deleteCustomRangeFactory,
+  type IRichTextEditingMutationParams
 } from '@univerjs/docs';
-import type { IRichTextEditingMutationParams } from '@univerjs/docs';
-import { Observable } from 'rxjs';
 
 import Vue3LockIcon from '@/src/components/Icon/Lock.vue';
 import Vue3UnlockedIcon from '@/src/components/Icon/Unlocked.vue';
