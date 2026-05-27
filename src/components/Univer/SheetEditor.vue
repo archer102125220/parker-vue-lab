@@ -160,7 +160,7 @@ async function handleUniverSheet(overrideSnapshot?: Partial<IWorkbookData>) {
     const { univer, univerAPI, LocaleType } = await createSheetInstance(
       container.value,
       props.locale,
-      false // 強制關閉協作功能
+      false
     );
 
     disposableList.push(

@@ -2,6 +2,7 @@
 import { ref, reactive, onMounted, onBeforeUnmount, watch } from 'vue';
 
 import SkeletonLoader from '@src/components/SkeletonLoader.vue';
+import LockPermissionDialog from './LockPermissionDialog.vue';
 
 import {
   createDocInstance,
@@ -352,6 +353,8 @@ onBeforeUnmount(() => {
       @univer-exchange-started="loading = true"
       @univer-exchange-ended="loading = false"
     />
+    
+    <LockPermissionDialog />
   </div>
 </template>
 

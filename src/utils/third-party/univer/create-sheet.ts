@@ -248,6 +248,18 @@ export async function importSheetCollaboration() {
   };
 }
 
+export async function importSheetLiveShare() {
+  const [UniverProLiveShare] = await Promise.all([
+    import('@univerjs-pro/live-share'),
+    import('@univerjs-pro/live-share/facade'),
+    import('@univerjs-pro/live-share/lib/index.css')
+  ]);
+
+  return {
+    UniverProLiveShare
+  };
+}
+
 export async function createSheetInstance(
   container: HTMLElement,
   locale: string = '',
@@ -455,6 +467,8 @@ export async function createSheetInstance(
 
     univerConfig.presets.push(
       UniverSheetsDrawingPreset({ collaboration: true }),
+      // TODO: 官方文件範例就是這樣寫，但 TS 報錯，有空再研究
+      // @ts-ignore
       UniverSheetsCollaborationPreset({
         // universerEndpoint: UNIVER_SERVER_ENDPOINT
         universerEndpoint: UNIVERSER_DOCKER_HOST

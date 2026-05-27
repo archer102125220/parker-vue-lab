@@ -32,6 +32,7 @@ import {
 
 import Vue3LockIcon from '@/src/components/Icon/Lock.vue';
 import Vue3UnlockedIcon from '@/src/components/Icon/Unlocked.vue';
+import { useUniverStore } from '@src/store/univer';
 
 const DOC_LOCK_ERROR_MESSAGE = 'Edit blocked: Range is locked.';
 
@@ -179,6 +180,12 @@ export class DocLockPlugin extends Plugin {
           return false;
         }
 
+        const store = useUniverStore();
+        const permissionParams = await store.requestLockPermissions();
+        if (!permissionParams) {
+          return false; // 使用者取消鎖定
+        }
+
         // 使用 CustomRangeFactory 建立自訂範圍
         const rangeId = generateRandomId();
         const selection: ITextRangeParam = {
@@ -201,7 +208,7 @@ export class DocLockPlugin extends Plugin {
           rangeType: noStyle
             ? (8888 as CustomRangeType)
             : CustomRangeType.CUSTOM,
-          properties: { locked: true },
+          properties: { locked: true, allowedRoles: permissionParams.allowedRoles },
           selections
         });
 
@@ -273,9 +280,10 @@ export class DocLockPlugin extends Plugin {
         const documentDataModel = doc as unknown as DocumentDataModel;
         const customRanges = documentDataModel.getCustomRanges?.() || [];
         const lockedRanges = customRanges.filter(
-          (r: ICustomRange<{ locked?: boolean }>) => r.properties?.locked
+          (r: ICustomRange<{ locked?: boolean; allowedRoles?: string[] }>) => r.properties?.locked
         );
 
+        const store = useUniverStore();
         let unlockedCount = 0;
 
         for (const lr of lockedRanges) {
@@ -286,11 +294,21 @@ export class DocLockPlugin extends Plugin {
           const overlapEnd = Math.min(uEnd, lEnd);
 
           if (overlapStart < overlapEnd) {
+            // 解鎖前先檢查是否有權限
+            const allowedRoles = lr.properties?.allowedRoles;
+            if (Array.isArray(allowedRoles) && allowedRoles.length > 0 && !allowedRoles.includes(store.currentUserRole)) {
+              messageService.show({
+                type: MessageType.Error,
+                content: localeService.t('parker-vue-lab-plugins.doc-lock.error.lockedBlocked') // 或者提供專門的拒絕解鎖訊息
+              });
+              return false; // 阻擋解鎖
+            }
+
             unlockedCount++;
 
             this.isPluginModifyingLock = true;
             try {
-              // Delete the original locked range
+              // 刪除原本的鎖定範圍
               const deleteMutation = deleteCustomRangeFactory(accessor, {
                 unitId: doc.getUnitId(),
                 rangeId: lr.rangeId
@@ -303,7 +321,7 @@ export class DocLockPlugin extends Plugin {
                 );
               }
 
-              // Create a new locked range for the left side (if any)
+              // 若左側還有剩餘的範圍，建立新的鎖定區塊
               if (lStart < uStart) {
                 const newRangeIdLeft = generateRandomId();
                 const selectionLeft: ITextRangeParam = {
@@ -321,7 +339,7 @@ export class DocLockPlugin extends Plugin {
                     unitId: doc.getUnitId(),
                     rangeId: newRangeIdLeft,
                     rangeType: lr.rangeType,
-                    properties: { locked: true },
+                    properties: { ...lr.properties },
                     selections: selectionsLeft
                   }
                 );
@@ -332,7 +350,7 @@ export class DocLockPlugin extends Plugin {
                   );
               }
 
-              // Create a new locked range for the right side (if any)
+              // 若右側還有剩餘的範圍，建立新的鎖定區塊
               if (lEnd > uEnd) {
                 const newRangeIdRight = generateRandomId();
                 const selectionRight: ITextRangeParam = {
@@ -350,7 +368,7 @@ export class DocLockPlugin extends Plugin {
                     unitId: doc.getUnitId(),
                     rangeId: newRangeIdRight,
                     rangeType: lr.rangeType,
-                    properties: { locked: true },
+                    properties: { ...lr.properties },
                     selections: selectionsRight
                   }
                 );
@@ -461,10 +479,11 @@ export class DocLockPlugin extends Plugin {
           const documentDataModel = doc as unknown as DocumentDataModel;
           const customRanges = documentDataModel.getCustomRanges?.() || [];
           const lockedRanges = customRanges.filter(
-            (r: ICustomRange<{ locked?: boolean }>) => r.properties?.locked
+            (r: ICustomRange<{ locked?: boolean; allowedRoles?: string[] }>) => r.properties?.locked
           );
 
           if (lockedRanges.length > 0) {
+            const store = useUniverStore();
             // 從 ot-json1 的 JSONOp 中遞迴尋找 TextX 操作陣列
             const findTextXActions = (obj: unknown): unknown[] | null => {
               if (Array.isArray(obj)) {
@@ -519,6 +538,10 @@ export class DocLockPlugin extends Plugin {
                       Math.min(editEnd, lEnd) - Math.max(editStart, lStart)
                     );
                     if (overlap > 0) {
+                      const allowedRoles = lockedRange.properties?.allowedRoles;
+                      if (Array.isArray(allowedRoles) && allowedRoles.includes(store.currentUserRole)) {
+                        continue; // 允許編輯
+                      }
                       isBlocked = true;
                       break;
                     }
@@ -531,6 +554,10 @@ export class DocLockPlugin extends Plugin {
                   const lStart = lockedRange.startIndex;
                   const lEnd = lockedRange.endIndex + 1;
                   if (editOffset > lStart && editOffset < lEnd) {
+                    const allowedRoles = lockedRange.properties?.allowedRoles;
+                    if (Array.isArray(allowedRoles) && allowedRoles.includes(store.currentUserRole)) {
+                      continue; // 允許編輯
+                    }
                     isBlocked = true;
                     break;
                   }
@@ -546,6 +573,10 @@ export class DocLockPlugin extends Plugin {
                     Math.min(editEnd, lEnd) - Math.max(editStart, lStart)
                   );
                   if (overlap > 0) {
+                    const allowedRoles = lockedRange.properties?.allowedRoles;
+                    if (Array.isArray(allowedRoles) && allowedRoles.includes(store.currentUserRole)) {
+                      continue; // 允許編輯
+                    }
                     isBlocked = true;
                     break;
                   }

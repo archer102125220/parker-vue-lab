@@ -1844,31 +1844,31 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@syncfusion/ej2-calendars@npm:~33.2.6, @syncfusion/ej2-calendars@npm:~33.2.7":
-  version: 33.2.7
-  resolution: "@syncfusion/ej2-calendars@npm:33.2.7"
+"@syncfusion/ej2-calendars@npm:~33.2.8":
+  version: 33.2.8
+  resolution: "@syncfusion/ej2-calendars@npm:33.2.8"
   dependencies:
     "@syncfusion/ej2-base": "npm:~33.2.3"
     "@syncfusion/ej2-buttons": "npm:~33.2.5"
     "@syncfusion/ej2-inputs": "npm:~33.2.5"
     "@syncfusion/ej2-lists": "npm:~33.2.3"
     "@syncfusion/ej2-popups": "npm:~33.2.7"
-  checksum: 10c0/d71b5c536187f17111f25546c8ff383a0d4363507ccb85d0b871a194cca0175682f4c3b6e3080fe5e06a3511b96336b4a4cf7f023afaf965d8f4034abcb22f81
+  checksum: 10c0/329aafd6ac361535f994547d89d4a945d0da589316d6d4ccab7544be6cae44807cdf0dba431b5840dbcbf03f293615ff8d52bb7b5bb395a08219a8321255a1b6
   languageName: node
   linkType: hard
 
 "@syncfusion/ej2-charts@npm:~33.2.3, @syncfusion/ej2-charts@npm:~33.2.6":
-  version: 33.2.6
-  resolution: "@syncfusion/ej2-charts@npm:33.2.6"
+  version: 33.2.8
+  resolution: "@syncfusion/ej2-charts@npm:33.2.8"
   dependencies:
     "@syncfusion/ej2-base": "npm:~33.2.3"
-    "@syncfusion/ej2-calendars": "npm:~33.2.6"
+    "@syncfusion/ej2-calendars": "npm:~33.2.8"
     "@syncfusion/ej2-data": "npm:~33.2.5"
     "@syncfusion/ej2-excel-export": "npm:~33.2.3"
-    "@syncfusion/ej2-navigations": "npm:~33.2.6"
+    "@syncfusion/ej2-navigations": "npm:~33.2.8"
     "@syncfusion/ej2-pdf-export": "npm:~33.2.4"
     "@syncfusion/ej2-svg-base": "npm:~33.2.3"
-  checksum: 10c0/6f8c42d95f4c52376e43d55617caa87265748c15c58191847e66b6a8fd77d4f92a91619952628b3a13ee29271e039a7557bc9887d85abacccd2c6988ddb26e2b
+  checksum: 10c0/a5c6f742ecaa3de48e52ec48704eedf4503791c8891f80ebbe852cf1b37ea29753d3cea5de9eeff63252090eeae397603f055553d63c025e6faac9e299de06a1
   languageName: node
   linkType: hard
 
@@ -1890,38 +1890,38 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@syncfusion/ej2-documenteditor@npm:33.2.7":
-  version: 33.2.7
-  resolution: "@syncfusion/ej2-documenteditor@npm:33.2.7"
+"@syncfusion/ej2-documenteditor@npm:33.2.8":
+  version: 33.2.8
+  resolution: "@syncfusion/ej2-documenteditor@npm:33.2.8"
   dependencies:
     "@syncfusion/ej2-base": "npm:~33.2.3"
     "@syncfusion/ej2-buttons": "npm:~33.2.5"
-    "@syncfusion/ej2-calendars": "npm:~33.2.7"
+    "@syncfusion/ej2-calendars": "npm:~33.2.8"
     "@syncfusion/ej2-compression": "npm:~33.2.3"
-    "@syncfusion/ej2-dropdowns": "npm:~33.2.7"
+    "@syncfusion/ej2-dropdowns": "npm:~33.2.8"
     "@syncfusion/ej2-file-utils": "npm:~33.2.3"
     "@syncfusion/ej2-inputs": "npm:~33.2.5"
-    "@syncfusion/ej2-navigations": "npm:~33.2.7"
+    "@syncfusion/ej2-navigations": "npm:~33.2.8"
     "@syncfusion/ej2-office-chart": "npm:~33.2.3"
     "@syncfusion/ej2-popups": "npm:~33.2.7"
     "@syncfusion/ej2-ribbon": "npm:~33.2.5"
     "@syncfusion/ej2-splitbuttons": "npm:~33.2.6"
-  checksum: 10c0/d5fbcc50e706579d9109467fd5049975717a835ac07648411103eb8a1ba0d62bdc85ce6df3d1d80db23f86d79796d446f2fc4b35568691e89b387a61bce12023
+  checksum: 10c0/1daa6554c11240ec7b20f6f228c5d3084e36423a155ea37564b28598e0cb8b85fde759fb6e415f950f7f2ebd581db38f79ffd3ce0c42ad35c5876d9a97e3f426
   languageName: node
   linkType: hard
 
-"@syncfusion/ej2-dropdowns@npm:~33.2.5, @syncfusion/ej2-dropdowns@npm:~33.2.7":
-  version: 33.2.7
-  resolution: "@syncfusion/ej2-dropdowns@npm:33.2.7"
+"@syncfusion/ej2-dropdowns@npm:~33.2.5, @syncfusion/ej2-dropdowns@npm:~33.2.7, @syncfusion/ej2-dropdowns@npm:~33.2.8":
+  version: 33.2.8
+  resolution: "@syncfusion/ej2-dropdowns@npm:33.2.8"
   dependencies:
     "@syncfusion/ej2-base": "npm:~33.2.3"
     "@syncfusion/ej2-data": "npm:~33.2.5"
     "@syncfusion/ej2-inputs": "npm:~33.2.5"
     "@syncfusion/ej2-lists": "npm:~33.2.3"
-    "@syncfusion/ej2-navigations": "npm:~33.2.7"
+    "@syncfusion/ej2-navigations": "npm:~33.2.8"
     "@syncfusion/ej2-notifications": "npm:~33.2.7"
     "@syncfusion/ej2-popups": "npm:~33.2.7"
-  checksum: 10c0/2d7f2ed13dfb08d144169ce178773d05e1c7fc0b045ae307bd0ddd7547fde8849289d5f9a3321097fbf2806ab56c80d2edef1eced8f80ddd33dcf84787d6123e
+  checksum: 10c0/acc7d5ceda737bf3fb1897089788748c6c9148b052a7a413de7941e3343cf6d0f13b8880ad5bb96d16a28dba276042b0bbd32693c6a602b82842c884d06f516b
   languageName: node
   linkType: hard
 
@@ -1943,25 +1943,25 @@ __metadata:
   linkType: hard
 
 "@syncfusion/ej2-grids@npm:~33.2.7":
-  version: 33.2.7
-  resolution: "@syncfusion/ej2-grids@npm:33.2.7"
+  version: 33.2.8
+  resolution: "@syncfusion/ej2-grids@npm:33.2.8"
   dependencies:
     "@syncfusion/ej2-base": "npm:~33.2.3"
     "@syncfusion/ej2-buttons": "npm:~33.2.5"
-    "@syncfusion/ej2-calendars": "npm:~33.2.7"
+    "@syncfusion/ej2-calendars": "npm:~33.2.8"
     "@syncfusion/ej2-compression": "npm:~33.2.3"
     "@syncfusion/ej2-data": "npm:~33.2.5"
-    "@syncfusion/ej2-dropdowns": "npm:~33.2.7"
+    "@syncfusion/ej2-dropdowns": "npm:~33.2.8"
     "@syncfusion/ej2-excel-export": "npm:~33.2.3"
     "@syncfusion/ej2-file-utils": "npm:~33.2.3"
     "@syncfusion/ej2-inputs": "npm:~33.2.5"
     "@syncfusion/ej2-lists": "npm:~33.2.3"
-    "@syncfusion/ej2-navigations": "npm:~33.2.7"
+    "@syncfusion/ej2-navigations": "npm:~33.2.8"
     "@syncfusion/ej2-notifications": "npm:~33.2.7"
     "@syncfusion/ej2-pdf-export": "npm:~33.2.4"
     "@syncfusion/ej2-popups": "npm:~33.2.7"
     "@syncfusion/ej2-splitbuttons": "npm:~33.2.6"
-  checksum: 10c0/c138ed2e9da0a0160640ab965af8e66af7df93899229b3ed23c0cd1db331d455d8aca8cecffc3253939ae4ec79e003a6ea9021028199e4e150e196499a60ec4c
+  checksum: 10c0/67f55073c3a1eef0eac7c73155d963ab7f4f62d0292d06d9b660b35ff007230dea989256e7bb8621965f34a48b849880e662da73d9616e7c311a23b9e3f64924
   languageName: node
   linkType: hard
 
@@ -1996,9 +1996,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@syncfusion/ej2-navigations@npm:~33.2.4, @syncfusion/ej2-navigations@npm:~33.2.6, @syncfusion/ej2-navigations@npm:~33.2.7":
-  version: 33.2.7
-  resolution: "@syncfusion/ej2-navigations@npm:33.2.7"
+"@syncfusion/ej2-navigations@npm:~33.2.4, @syncfusion/ej2-navigations@npm:~33.2.7, @syncfusion/ej2-navigations@npm:~33.2.8":
+  version: 33.2.8
+  resolution: "@syncfusion/ej2-navigations@npm:33.2.8"
   dependencies:
     "@syncfusion/ej2-base": "npm:~33.2.3"
     "@syncfusion/ej2-buttons": "npm:~33.2.5"
@@ -2006,7 +2006,7 @@ __metadata:
     "@syncfusion/ej2-inputs": "npm:~33.2.5"
     "@syncfusion/ej2-lists": "npm:~33.2.3"
     "@syncfusion/ej2-popups": "npm:~33.2.7"
-  checksum: 10c0/b9f8ab0f9668e3840db7794051c9aa1ed848c831d82acfa1de6d658785042bfd2a7ccc76f1f1563bf2dd8d3b9e3af60a6398d981212ff19bffefe5efd8949881
+  checksum: 10c0/a8948812d1ef782f2a02d43d4e18cd686b9a20c4d5be902040200415dded4c0e74d103abf16c28770145544995330eed537a8138155f280127104bc27b87837c
   languageName: node
   linkType: hard
 
@@ -2106,13 +2106,13 @@ __metadata:
   linkType: hard
 
 "@syncfusion/ej2-vue-documenteditor@npm:^33.2.7":
-  version: 33.2.7
-  resolution: "@syncfusion/ej2-vue-documenteditor@npm:33.2.7"
+  version: 33.2.8
+  resolution: "@syncfusion/ej2-vue-documenteditor@npm:33.2.8"
   dependencies:
     "@syncfusion/ej2-base": "npm:~33.2.3"
-    "@syncfusion/ej2-documenteditor": "npm:33.2.7"
+    "@syncfusion/ej2-documenteditor": "npm:33.2.8"
     "@syncfusion/ej2-vue-base": "npm:~33.2.3"
-  checksum: 10c0/9b602eca208e1bd8fa105d1b5e522989075556d78a28c5aa7acc95af04528cd39dfeb180b861b03bd0cf51d5d38012dfaa1952bc2794e15063295ae9d8fe164f
+  checksum: 10c0/fdb6fd47ed174837053e8bbb37e8cb66ad2e9ba9bc850adcf08809c6d50bc58ecefb8dcfa7bab167f067582cd9b846b326cab694ada71f86de096aa1cba2e7e3
   languageName: node
   linkType: hard
 
@@ -3010,6 +3010,25 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@univerjs-pro/live-share@npm:^0.22.0":
+  version: 0.22.1
+  resolution: "@univerjs-pro/live-share@npm:0.22.1"
+  dependencies:
+    "@univerjs-pro/collaboration": "npm:0.22.1"
+    "@univerjs-pro/collaboration-client": "npm:0.22.1"
+    "@univerjs/core": "npm:0.22.1"
+    "@univerjs/design": "npm:0.22.1"
+    "@univerjs/icons": "npm:^1.1.1"
+    "@univerjs/sheets": "npm:0.22.1"
+    "@univerjs/sheets-ui": "npm:0.22.1"
+    "@univerjs/ui": "npm:0.22.1"
+  peerDependencies:
+    react: ^16.9.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc
+    rxjs: ">=7.0.0"
+  checksum: 10c0/3c6d2437de69706b2f97f6ac2e911420213a499dd4150b02a5a124905d330dd69c463f2d13de308d0f7db641a4a662e4330523f19805f2b2d46c71e12e3380f4
+  languageName: node
+  linkType: hard
+
 "@univerjs-pro/print@npm:0.22.1":
   version: 0.22.1
   resolution: "@univerjs-pro/print@npm:0.22.1"
@@ -3649,7 +3668,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@univerjs/preset-sheets-collaboration@npm:0.22.1":
+"@univerjs/preset-sheets-collaboration@npm:0.22.1, @univerjs/preset-sheets-collaboration@npm:^0.22.0":
   version: 0.22.1
   resolution: "@univerjs/preset-sheets-collaboration@npm:0.22.1"
   dependencies:
@@ -5399,9 +5418,9 @@ __metadata:
   linkType: hard
 
 "electron-to-chromium@npm:^1.5.328":
-  version: 1.5.361
-  resolution: "electron-to-chromium@npm:1.5.361"
-  checksum: 10c0/5e6e9c0c12ab82366eddf575c8b9114d5af710abad3b592141c56cfa0169471f3633dcc793420c303fad68dff21c8fb724b43cde7e66be947983fa3d6d5a7359
+  version: 1.5.362
+  resolution: "electron-to-chromium@npm:1.5.362"
+  checksum: 10c0/a4193c8ede79c1fae3524797e3a752090192b4a913c158906524ab9f710ea07c4c5a2def508faff8573957aa1f701de39565112d92c8f7c8399fb9a0ade53b48
   languageName: node
   linkType: hard
 
@@ -6647,6 +6666,7 @@ __metadata:
     "@types/react": "npm:^19"
     "@types/react-dom": "npm:^19"
     "@univerjs-pro/collaboration-client": "npm:^0.22.1"
+    "@univerjs-pro/live-share": "npm:^0.22.0"
     "@univerjs/docs-quick-insert-ui": "npm:^0.22.1"
     "@univerjs/preset-docs-advanced": "npm:^0.22.1"
     "@univerjs/preset-docs-core": "npm:^0.22.1"
@@ -6654,6 +6674,7 @@ __metadata:
     "@univerjs/preset-docs-hyper-link": "npm:^0.22.1"
     "@univerjs/preset-docs-thread-comment": "npm:^0.22.1"
     "@univerjs/preset-sheets-advanced": "npm:^0.22.1"
+    "@univerjs/preset-sheets-collaboration": "npm:^0.22.0"
     "@univerjs/preset-sheets-conditional-formatting": "npm:^0.22.1"
     "@univerjs/preset-sheets-core": "npm:^0.22.1"
     "@univerjs/preset-sheets-data-validation": "npm:^0.22.1"
