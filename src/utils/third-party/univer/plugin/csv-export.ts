@@ -1,11 +1,4 @@
-import type { ICommand, Workbook } from '@univerjs/presets';
 import { Observable } from 'rxjs';
-import {
-  ComponentManager,
-  IMenuManagerService,
-  MenuItemType,
-  RibbonStartGroup
-} from '@univerjs/preset-sheets-core';
 import {
   CommandType,
   ICommandService,
@@ -13,8 +6,16 @@ import {
   Injector,
   IUniverInstanceService,
   Plugin,
-  UniverInstanceType
+  UniverInstanceType,
+  type ICommand,
+  type Workbook
 } from '@univerjs/presets';
+import {
+  ComponentManager,
+  IMenuManagerService,
+  MenuItemType,
+  RibbonStartGroup
+} from '@univerjs/preset-sheets-core';
 
 import Vue3IconCSVExport from '@src/components/Icon/CSVExport.tsx';
 

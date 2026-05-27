@@ -1,6 +1,18 @@
 import { Observable } from 'rxjs';
 import { Inject, Injector, type IAccessor } from '@wendellhu/redi';
 import {
+  CommandType,
+  ICommandService,
+  IUniverInstanceService,
+  Plugin,
+  UniverInstanceType,
+  LocaleService,
+  type ICommand,
+  type IDocumentData,
+  type IWorkbookData
+} from '@univerjs/core';
+import { MessageType } from '@univerjs/design';
+import {
   ComponentManager,
   IMenuManagerService,
   MenuItemType,
@@ -8,18 +20,6 @@ import {
   IMessageService,
   ILayoutService
 } from '@univerjs/ui';
-import { MessageType } from '@univerjs/design';
-import {
-  CommandType,
-  ICommandService,
-  IUniverInstanceService,
-  Plugin,
-  UniverInstanceType,
-  type ICommand,
-  type IDocumentData,
-  type IWorkbookData,
-  LocaleService
-} from '@univerjs/core';
 import {
   transformDocumentDataToSnapshotJson,
   transformWorkbookDataToSnapshotJson

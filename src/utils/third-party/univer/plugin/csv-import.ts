@@ -1,23 +1,5 @@
-import type {
-  ISetRangeValuesMutationParams,
-  ISetWorksheetColumnCountMutationParams,
-  ISetWorksheetRowCountMutationParams
-} from '@univerjs/preset-sheets-core';
-import type { ICommand, IMutationInfo, Workbook } from '@univerjs/presets';
 import { Observable } from 'rxjs';
 // import { FolderIcon } from '@univerjs/icons';
-import {
-  ComponentManager,
-  IMenuManagerService,
-  MenuItemType,
-  RibbonStartGroup,
-  SetRangeValuesMutation,
-  SetRangeValuesUndoMutationFactory,
-  SetWorksheetColumnCountMutation,
-  SetWorksheetColumnCountUndoMutationFactory,
-  SetWorksheetRowCountMutation,
-  SetWorksheetRowCountUndoMutationFactory
-} from '@univerjs/preset-sheets-core';
 import {
   CommandType,
   covertCellValues,
@@ -28,11 +10,30 @@ import {
   IUniverInstanceService,
   Plugin,
   sequenceExecute,
-  UniverInstanceType
+  UniverInstanceType,
+  type ICommand,
+  type IMutationInfo,
+  type Workbook
 } from '@univerjs/presets';
-import { handleSelectCSVFile } from '@src/utils/helpers/select-csv-file';
+import {
+  ComponentManager,
+  IMenuManagerService,
+  MenuItemType,
+  RibbonStartGroup,
+  SetRangeValuesMutation,
+  SetRangeValuesUndoMutationFactory,
+  SetWorksheetColumnCountMutation,
+  SetWorksheetColumnCountUndoMutationFactory,
+  SetWorksheetRowCountMutation,
+  SetWorksheetRowCountUndoMutationFactory,
+  type ISetRangeValuesMutationParams,
+  type ISetWorksheetColumnCountMutationParams,
+  type ISetWorksheetRowCountMutationParams
+} from '@univerjs/preset-sheets-core';
 
-import Vue3IconCSVImport from '@/src/components/Icon/CSVImport';
+import Vue3IconCSVImport from '@src/components/Icon/CSVImport';
+
+import { handleSelectCSVFile } from '@src/utils/helpers/select-csv-file';
 
 /**
  * 匯入 CSV 按鈕外掛程式

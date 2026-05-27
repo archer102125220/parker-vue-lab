@@ -1,5 +1,14 @@
 import { Inject, Injector, type IAccessor } from '@wendellhu/redi';
 import {
+  CommandType,
+  ICommandService,
+  Plugin,
+  LocaleService,
+  type ICommand
+} from '@univerjs/core';
+import { FUniver } from '@univerjs/core/facade';
+import { MessageType } from '@univerjs/design';
+import {
   ComponentManager,
   IMenuManagerService,
   MenuItemType,
@@ -7,15 +16,6 @@ import {
   IMessageService,
   ILayoutService
 } from '@univerjs/ui';
-import { MessageType } from '@univerjs/design';
-import {
-  CommandType,
-  ICommandService,
-  Plugin,
-  type ICommand,
-  LocaleService
-} from '@univerjs/core';
-import { FUniver } from '@univerjs/core/facade';
 
 export class LocalImportButtonPlugin extends Plugin {
   static override pluginName = 'local-import-plugin';

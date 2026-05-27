@@ -1,7 +1,7 @@
-import { Plugin } from '@univerjs/core';
 import { Inject, Injector } from '@wendellhu/redi';
-import { IExchangeService } from '@univerjs-pro/exchange-client';
+import { Plugin } from '@univerjs/core';
 import { ILayoutService } from '@univerjs/ui';
+import { IExchangeService } from '@univerjs-pro/exchange-client';
 
 // 官方 @univerjs-pro/exchange-client 並未將 RequestState export 至入口點
 // 為了程式碼的可讀性，我們在此處自行定義對應的 Enum 避免使用魔法數字 (magic numbers)
