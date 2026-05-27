@@ -58,6 +58,27 @@ export class DocLockPlugin extends Plugin {
       framework: 'vue3'
     });
 
+    // --- Univer Bug Fix: Patch DocSelectionManagerService to prevent preset-docs-hyper-link crash ---
+    // The hyper-link plugin reads `activeRanges[0].segmentId` directly on hover, 
+    // which crashes if `getTextRanges()` returns an empty array.
+    const docSelectionManagerService = this._injector.get(DocSelectionManagerService);
+    if (docSelectionManagerService) {
+      const originalGetTextRanges = docSelectionManagerService.getTextRanges.bind(docSelectionManagerService);
+      docSelectionManagerService.getTextRanges = () => {
+        const ranges = originalGetTextRanges();
+        if (Array.isArray(ranges) && ranges.length === 0) {
+          // Return a Proxy that acts as an empty array but returns an empty object for index 0 to avoid undefined crash
+          return new Proxy(ranges, {
+            get(target, prop) {
+              if (prop === '0') return {};
+              return Reflect.get(target, prop);
+            }
+          }) as unknown as typeof ranges;
+        }
+        return ranges;
+      };
+    }
+
     const commandId = 'doc.command.lock-selection';
 
     const lockCommand: ICommand = {
