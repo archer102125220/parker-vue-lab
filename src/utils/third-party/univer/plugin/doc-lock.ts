@@ -36,6 +36,7 @@ import Vue3UnlockedIcon from '@/src/components/Icon/Unlocked.vue';
  */
 export class DocLockPlugin extends Plugin {
   static override pluginName = 'doc-lock-plugin';
+  private isPluginModifyingLock = false;
 
   constructor(
     _config: unknown,
@@ -110,7 +111,12 @@ export class DocLockPlugin extends Plugin {
         });
 
         if (customRangeMutation) {
-          commandService.syncExecuteCommand(customRangeMutation.id, customRangeMutation.params);
+          this.isPluginModifyingLock = true;
+          try {
+            commandService.syncExecuteCommand(customRangeMutation.id, customRangeMutation.params);
+          } finally {
+            this.isPluginModifyingLock = false;
+          }
           messageService.show({
             type: MessageType.Success,
             content: `已標記範圍 ${startOffset} - ${endOffset} 為鎖定狀態`
@@ -168,50 +174,55 @@ export class DocLockPlugin extends Plugin {
           if (overlapStart < overlapEnd) {
             unlockedCount++;
 
-            // Delete the original locked range
-            const deleteMutation = deleteCustomRangeFactory(accessor, {
-              unitId: doc.getUnitId(),
-              rangeId: lr.rangeId
-            });
-
-            if (deleteMutation) {
-              commandService.syncExecuteCommand(deleteMutation.id, deleteMutation.params);
-            }
-
-            // Create a new locked range for the left side (if any)
-            if (lStart < uStart) {
-              const newRangeIdLeft = generateRandomId();
-              const selectionLeft: ITextRangeParam = { startOffset: lStart, endOffset: uStart, collapsed: false };
-              if (activeTextRange.segmentId) {
-                selectionLeft.segmentId = activeTextRange.segmentId;
-              }
-              const selectionsLeft = [selectionLeft];
-              const leftMutation = addCustomRangeBySelectionFactory(accessor, {
+            this.isPluginModifyingLock = true;
+            try {
+              // Delete the original locked range
+              const deleteMutation = deleteCustomRangeFactory(accessor, {
                 unitId: doc.getUnitId(),
-                rangeId: newRangeIdLeft,
-                rangeType: CustomRangeType.CUSTOM,
-                properties: { locked: true },
-                selections: selectionsLeft
+                rangeId: lr.rangeId
               });
-              if (leftMutation) commandService.syncExecuteCommand(leftMutation.id, leftMutation.params);
-            }
 
-            // Create a new locked range for the right side (if any)
-            if (lEnd > uEnd) {
-              const newRangeIdRight = generateRandomId();
-              const selectionRight: ITextRangeParam = { startOffset: uEnd, endOffset: lEnd, collapsed: false };
-              if (activeTextRange.segmentId) {
-                selectionRight.segmentId = activeTextRange.segmentId;
+              if (deleteMutation) {
+                commandService.syncExecuteCommand(deleteMutation.id, deleteMutation.params);
               }
-              const selectionsRight = [selectionRight];
-              const rightMutation = addCustomRangeBySelectionFactory(accessor, {
-                unitId: doc.getUnitId(),
-                rangeId: newRangeIdRight,
-                rangeType: CustomRangeType.CUSTOM,
-                properties: { locked: true },
-                selections: selectionsRight
-              });
-              if (rightMutation) commandService.syncExecuteCommand(rightMutation.id, rightMutation.params);
+
+              // Create a new locked range for the left side (if any)
+              if (lStart < uStart) {
+                const newRangeIdLeft = generateRandomId();
+                const selectionLeft: ITextRangeParam = { startOffset: lStart, endOffset: uStart, collapsed: false };
+                if (activeTextRange.segmentId) {
+                  selectionLeft.segmentId = activeTextRange.segmentId;
+                }
+                const selectionsLeft = [selectionLeft];
+                const leftMutation = addCustomRangeBySelectionFactory(accessor, {
+                  unitId: doc.getUnitId(),
+                  rangeId: newRangeIdLeft,
+                  rangeType: CustomRangeType.CUSTOM,
+                  properties: { locked: true },
+                  selections: selectionsLeft
+                });
+                if (leftMutation) commandService.syncExecuteCommand(leftMutation.id, leftMutation.params);
+              }
+
+              // Create a new locked range for the right side (if any)
+              if (lEnd > uEnd) {
+                const newRangeIdRight = generateRandomId();
+                const selectionRight: ITextRangeParam = { startOffset: uEnd, endOffset: lEnd, collapsed: false };
+                if (activeTextRange.segmentId) {
+                  selectionRight.segmentId = activeTextRange.segmentId;
+                }
+                const selectionsRight = [selectionRight];
+                const rightMutation = addCustomRangeBySelectionFactory(accessor, {
+                  unitId: doc.getUnitId(),
+                  rangeId: newRangeIdRight,
+                  rangeType: CustomRangeType.CUSTOM,
+                  properties: { locked: true },
+                  selections: selectionsRight
+                });
+                if (rightMutation) commandService.syncExecuteCommand(rightMutation.id, rightMutation.params);
+              }
+            } finally {
+              this.isPluginModifyingLock = false;
             }
           }
         }
@@ -291,6 +302,8 @@ export class DocLockPlugin extends Plugin {
 
     // 攔截核心編輯 Mutation
     this.commandService.beforeCommandExecuted((commandInfo) => {
+      if (this.isPluginModifyingLock) return;
+
       if (commandInfo.id === 'doc.mutation.rich-text-editing') {
         const params = commandInfo.params as IRichTextEditingMutationParams;
         const univerInstanceService = this._injector.get(IUniverInstanceService);
