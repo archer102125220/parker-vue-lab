@@ -21,12 +21,61 @@ import {
   IMessageService
 } from '@univerjs/ui';
 import { MessageType } from '@univerjs/design';
-import { DocSelectionManagerService, addCustomRangeBySelectionFactory, deleteCustomRangeFactory } from '@univerjs/docs';
+import {
+  DocSelectionManagerService,
+  addCustomRangeBySelectionFactory,
+  deleteCustomRangeFactory
+} from '@univerjs/docs';
 import type { IRichTextEditingMutationParams } from '@univerjs/docs';
 import { Observable } from 'rxjs';
 
 import Vue3LockIcon from '@/src/components/Icon/Lock.vue';
 import Vue3UnlockedIcon from '@/src/components/Icon/Unlocked.vue';
+
+const DOC_LOCK_ERROR_MESSAGE = 'Edit blocked: Range is locked.';
+
+function ignoreErrorLog() {
+  if (typeof window === 'undefined') return;
+  if (window.__UNIVER__DOC_LOCKED_ERROR_FILTERED__ === true) return;
+
+  // 1. 攔截未捕獲的例外錯誤 (Uncaught Exception)
+  // 如果 throw new Error 沒有被 try-catch 抓住，它會觸發 window 的 error 事件
+  window.addEventListener('error', (event) => {
+    if (event.error?.message?.includes(DOC_LOCK_ERROR_MESSAGE)) {
+      event.preventDefault(); // 阻止瀏覽器在 Console 印出這個錯誤
+    }
+  });
+
+  // 2. 攔截未處理的 Promise 拒絕 (Unhandled Promise Rejection)
+  window.addEventListener('unhandledrejection', (event) => {
+    if (event.reason?.message?.includes(DOC_LOCK_ERROR_MESSAGE)) {
+      event.preventDefault(); // 阻止瀏覽器在 Console 印出這個錯誤
+    }
+  });
+
+  // 3. 原本的 console.error 覆寫 (以防 Univer 內部有去 catch 並且用 console.error 印出來)
+  window.originalConsoleError =
+    window.originalConsoleError || window.console.error;
+
+  window.console.error = function (...args) {
+    // 檢查參數中是否包含特定的鎖定阻擋錯誤（字串或 Error 物件）
+    const isLockedError = args.some(
+      (arg) =>
+        (typeof arg === 'string' && arg.includes(DOC_LOCK_ERROR_MESSAGE)) ||
+        (arg instanceof Error && arg.message.includes(DOC_LOCK_ERROR_MESSAGE))
+    );
+
+    if (isLockedError) {
+      // 攔截到預期的鎖定阻擋錯誤，直接 return 吃掉，保持 console 乾淨
+      return;
+    }
+
+    // 如果不是我們要攔截的錯誤，就照常印出
+    window.originalConsoleError!.apply(console, args);
+  };
+
+  window.__UNIVER__DOC_LOCKED_ERROR_FILTERED__ = true;
+}
 
 /**
  * 實驗性文件區域鎖定外掛
@@ -48,6 +97,9 @@ export class DocLockPlugin extends Plugin {
     private readonly componentManager: ComponentManager
   ) {
     super();
+
+    // 修正 Univer 編輯器在鎖定範圍時發出的錯誤訊息
+    ignoreErrorLog();
   }
 
   override onStarting(): void {
@@ -59,11 +111,16 @@ export class DocLockPlugin extends Plugin {
     });
 
     // --- Univer Bug Fix: Patch DocSelectionManagerService to prevent preset-docs-hyper-link crash ---
-    // The hyper-link plugin reads `activeRanges[0].segmentId` directly on hover, 
+    // The hyper-link plugin reads `activeRanges[0].segmentId` directly on hover,
     // which crashes if `getTextRanges()` returns an empty array.
-    const docSelectionManagerService = this._injector.get(DocSelectionManagerService);
+    const docSelectionManagerService = this._injector.get(
+      DocSelectionManagerService
+    );
     if (docSelectionManagerService) {
-      const originalGetTextRanges = docSelectionManagerService.getTextRanges.bind(docSelectionManagerService);
+      const originalGetTextRanges =
+        docSelectionManagerService.getTextRanges.bind(
+          docSelectionManagerService
+        );
       docSelectionManagerService.getTextRanges = () => {
         const ranges = originalGetTextRanges();
         if (Array.isArray(ranges) && ranges.length === 0) {
@@ -115,9 +172,13 @@ export class DocLockPlugin extends Plugin {
           return false;
         }
 
-          // 使用 CustomRangeFactory 建立自訂範圍
+        // 使用 CustomRangeFactory 建立自訂範圍
         const rangeId = generateRandomId();
-        const selection: ITextRangeParam = { startOffset, endOffset, collapsed: false };
+        const selection: ITextRangeParam = {
+          startOffset,
+          endOffset,
+          collapsed: false
+        };
         if (activeTextRange.segmentId) {
           selection.segmentId = activeTextRange.segmentId;
         }
@@ -134,7 +195,10 @@ export class DocLockPlugin extends Plugin {
         if (customRangeMutation) {
           this.isPluginModifyingLock = true;
           try {
-            commandService.syncExecuteCommand(customRangeMutation.id, customRangeMutation.params);
+            commandService.syncExecuteCommand(
+              customRangeMutation.id,
+              customRangeMutation.params
+            );
           } finally {
             this.isPluginModifyingLock = false;
           }
@@ -142,7 +206,12 @@ export class DocLockPlugin extends Plugin {
             type: MessageType.Success,
             content: `已標記範圍 ${startOffset} - ${endOffset} 為鎖定狀態`
           });
-          console.log('[DocLockPlugin] Range locked:', startOffset, endOffset, customRangeMutation);
+          console.log(
+            '[DocLockPlugin] Range locked:',
+            startOffset,
+            endOffset,
+            customRangeMutation
+          );
           return true;
         }
 
@@ -158,7 +227,9 @@ export class DocLockPlugin extends Plugin {
       id: unlockCommandId,
       handler: async (accessor: IAccessor) => {
         const univerInstanceService = accessor.get(IUniverInstanceService);
-        const docSelectionManagerService = accessor.get(DocSelectionManagerService);
+        const docSelectionManagerService = accessor.get(
+          DocSelectionManagerService
+        );
         const messageService = accessor.get(IMessageService);
         const commandService = accessor.get(ICommandService);
 
@@ -169,19 +240,27 @@ export class DocLockPlugin extends Plugin {
 
         const activeTextRange = docSelectionManagerService.getActiveTextRange();
         if (!activeTextRange) {
-          messageService.show({ type: MessageType.Warning, content: '請先選擇要解除鎖定的文字範圍' });
+          messageService.show({
+            type: MessageType.Warning,
+            content: '請先選擇要解除鎖定的文字範圍'
+          });
           return false;
         }
 
         const { startOffset: uStart, endOffset: uEnd } = activeTextRange;
         if (uStart === uEnd || uStart === undefined || uEnd === undefined) {
-          messageService.show({ type: MessageType.Warning, content: '選取範圍不能為空' });
+          messageService.show({
+            type: MessageType.Warning,
+            content: '選取範圍不能為空'
+          });
           return false;
         }
 
         const documentDataModel = doc as unknown as DocumentDataModel;
         const customRanges = documentDataModel.getCustomRanges?.() || [];
-        const lockedRanges = customRanges.filter((r: ICustomRange<{ locked?: boolean }>) => r.properties?.locked);
+        const lockedRanges = customRanges.filter(
+          (r: ICustomRange<{ locked?: boolean }>) => r.properties?.locked
+        );
 
         let unlockedCount = 0;
 
@@ -204,43 +283,68 @@ export class DocLockPlugin extends Plugin {
               });
 
               if (deleteMutation) {
-                commandService.syncExecuteCommand(deleteMutation.id, deleteMutation.params);
+                commandService.syncExecuteCommand(
+                  deleteMutation.id,
+                  deleteMutation.params
+                );
               }
 
               // Create a new locked range for the left side (if any)
               if (lStart < uStart) {
                 const newRangeIdLeft = generateRandomId();
-                const selectionLeft: ITextRangeParam = { startOffset: lStart, endOffset: uStart, collapsed: false };
+                const selectionLeft: ITextRangeParam = {
+                  startOffset: lStart,
+                  endOffset: uStart,
+                  collapsed: false
+                };
                 if (activeTextRange.segmentId) {
                   selectionLeft.segmentId = activeTextRange.segmentId;
                 }
                 const selectionsLeft = [selectionLeft];
-                const leftMutation = addCustomRangeBySelectionFactory(accessor, {
-                  unitId: doc.getUnitId(),
-                  rangeId: newRangeIdLeft,
-                  rangeType: CustomRangeType.CUSTOM,
-                  properties: { locked: true },
-                  selections: selectionsLeft
-                });
-                if (leftMutation) commandService.syncExecuteCommand(leftMutation.id, leftMutation.params);
+                const leftMutation = addCustomRangeBySelectionFactory(
+                  accessor,
+                  {
+                    unitId: doc.getUnitId(),
+                    rangeId: newRangeIdLeft,
+                    rangeType: CustomRangeType.CUSTOM,
+                    properties: { locked: true },
+                    selections: selectionsLeft
+                  }
+                );
+                if (leftMutation)
+                  commandService.syncExecuteCommand(
+                    leftMutation.id,
+                    leftMutation.params
+                  );
               }
 
               // Create a new locked range for the right side (if any)
               if (lEnd > uEnd) {
                 const newRangeIdRight = generateRandomId();
-                const selectionRight: ITextRangeParam = { startOffset: uEnd, endOffset: lEnd, collapsed: false };
+                const selectionRight: ITextRangeParam = {
+                  startOffset: uEnd,
+                  endOffset: lEnd,
+                  collapsed: false
+                };
                 if (activeTextRange.segmentId) {
                   selectionRight.segmentId = activeTextRange.segmentId;
                 }
                 const selectionsRight = [selectionRight];
-                const rightMutation = addCustomRangeBySelectionFactory(accessor, {
-                  unitId: doc.getUnitId(),
-                  rangeId: newRangeIdRight,
-                  rangeType: CustomRangeType.CUSTOM,
-                  properties: { locked: true },
-                  selections: selectionsRight
-                });
-                if (rightMutation) commandService.syncExecuteCommand(rightMutation.id, rightMutation.params);
+                const rightMutation = addCustomRangeBySelectionFactory(
+                  accessor,
+                  {
+                    unitId: doc.getUnitId(),
+                    rangeId: newRangeIdRight,
+                    rangeType: CustomRangeType.CUSTOM,
+                    properties: { locked: true },
+                    selections: selectionsRight
+                  }
+                );
+                if (rightMutation)
+                  commandService.syncExecuteCommand(
+                    rightMutation.id,
+                    rightMutation.params
+                  );
               }
             } finally {
               this.isPluginModifyingLock = false;
@@ -249,10 +353,16 @@ export class DocLockPlugin extends Plugin {
         }
 
         if (unlockedCount > 0) {
-          messageService.show({ type: MessageType.Success, content: `已解除範圍 ${uStart} - ${uEnd} 的鎖定` });
+          messageService.show({
+            type: MessageType.Success,
+            content: `已解除範圍 ${uStart} - ${uEnd} 的鎖定`
+          });
           return true;
         } else {
-          messageService.show({ type: MessageType.Info, content: `選取範圍內沒有鎖定的區塊` });
+          messageService.show({
+            type: MessageType.Info,
+            content: `選取範圍內沒有鎖定的區塊`
+          });
           return false;
         }
       }
@@ -327,14 +437,18 @@ export class DocLockPlugin extends Plugin {
 
       if (commandInfo.id === 'doc.mutation.rich-text-editing') {
         const params = commandInfo.params as IRichTextEditingMutationParams;
-        const univerInstanceService = this._injector.get(IUniverInstanceService);
+        const univerInstanceService = this._injector.get(
+          IUniverInstanceService
+        );
         const doc = univerInstanceService.getUnit(params.unitId);
-        
+
         if (doc && doc.type === UniverInstanceType.UNIVER_DOC) {
           // 取得文件中所有的 custom ranges
           const documentDataModel = doc as unknown as DocumentDataModel;
           const customRanges = documentDataModel.getCustomRanges?.() || [];
-          const lockedRanges = customRanges.filter((r: ICustomRange<{ locked?: boolean }>) => r.properties?.locked);
+          const lockedRanges = customRanges.filter(
+            (r: ICustomRange<{ locked?: boolean }>) => r.properties?.locked
+          );
 
           if (lockedRanges.length > 0) {
             // 從 ot-json1 的 JSONOp 中遞迴尋找 TextX 操作陣列
@@ -374,7 +488,11 @@ export class DocLockPlugin extends Plugin {
             let isBlocked = false;
 
             for (const actionUnsafe of textXActions) {
-              const action = actionUnsafe as { t: string; len?: number; body?: unknown };
+              const action = actionUnsafe as {
+                t: string;
+                len?: number;
+                body?: unknown;
+              };
               if (action.t === 'r') {
                 if (action.body) {
                   const editStart = currentOffset;
@@ -382,14 +500,17 @@ export class DocLockPlugin extends Plugin {
                   for (const lockedRange of lockedRanges) {
                     const lStart = lockedRange.startIndex;
                     const lEnd = lockedRange.endIndex + 1;
-                    const overlap = Math.max(0, Math.min(editEnd, lEnd) - Math.max(editStart, lStart));
+                    const overlap = Math.max(
+                      0,
+                      Math.min(editEnd, lEnd) - Math.max(editStart, lStart)
+                    );
                     if (overlap > 0) {
                       isBlocked = true;
                       break;
                     }
                   }
                 }
-                currentOffset += (action.len ?? 0);
+                currentOffset += action.len ?? 0;
               } else if (action.t === 'i') {
                 const editOffset = currentOffset;
                 for (const lockedRange of lockedRanges) {
@@ -406,13 +527,16 @@ export class DocLockPlugin extends Plugin {
                 for (const lockedRange of lockedRanges) {
                   const lStart = lockedRange.startIndex;
                   const lEnd = lockedRange.endIndex + 1;
-                  const overlap = Math.max(0, Math.min(editEnd, lEnd) - Math.max(editStart, lStart));
+                  const overlap = Math.max(
+                    0,
+                    Math.min(editEnd, lEnd) - Math.max(editStart, lStart)
+                  );
                   if (overlap > 0) {
                     isBlocked = true;
                     break;
                   }
                 }
-                currentOffset += (action.len ?? 0);
+                currentOffset += action.len ?? 0;
               }
 
               if (isBlocked) break;
@@ -424,7 +548,7 @@ export class DocLockPlugin extends Plugin {
                 type: MessageType.Error,
                 content: '此區域已鎖定，無法編輯'
               });
-              throw new Error('Edit blocked: Range is locked.');
+              throw new Error(DOC_LOCK_ERROR_MESSAGE);
             }
           }
         }
