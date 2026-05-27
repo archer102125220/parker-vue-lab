@@ -34,6 +34,8 @@ export default {
     'local-import': {
       title: 'Local Import',
       tooltip: 'Import DOCX/XLSX (Local)',
+      tooltipDoc: 'Import DOCX (Local)',
+      tooltipSheet: 'Import XLSX (Local)',
       info: 'Importing document, please wait...',
       success: 'Import successful!',
       error: {

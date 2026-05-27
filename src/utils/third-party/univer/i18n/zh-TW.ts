@@ -34,6 +34,8 @@ export default {
     'local-import': {
       title: '本地匯入',
       tooltip: '匯入 DOCX/XLSX (本地)',
+      tooltipDoc: '匯入 DOCX (本地)',
+      tooltipSheet: '匯入 XLSX (本地)',
       info: '正在匯入文件，請稍候...',
       success: '匯入成功！',
       error: {
