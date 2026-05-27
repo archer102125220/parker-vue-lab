@@ -2,14 +2,14 @@ export default {
   'parker-vue-lab-plugins': {
     'csv-export': {
       title: '导出 CSV',
-      tooltip: '导出 CSV',
+      tooltip: '导出 CSV'
     },
     'csv-import': {
       title: '导入 CSV',
-      tooltip: '导入 CSV',
+      tooltip: '导入 CSV'
     },
     'server-export': {
-      title: '导出文件 (Server)',
+      title: '通过服务器导出为标准文件',
       tooltip: '通过服务器导出为标准文件',
       info: '正在通过服务器导出文件，这可能需要几秒钟的时间，请稍候...',
       error: {
@@ -19,7 +19,7 @@ export default {
         taskFailed: '调用导出任务失败，未获取 taskID',
         backendTaskFailed: '服务器导出任务执行失败: ',
         timeout: '导出任务超时',
-        exportFailed: '导出发生错误：',
+        exportFailed: '导出发生错误：'
       }
     },
     'local-export': {
@@ -28,7 +28,7 @@ export default {
       info: '正在导出 Snapshot JSON，请稍候...',
       error: {
         snapshot: '未加载 UniverProExchangeClient，无法进行 Snapshot 转换',
-        exportFailed: '导出发生错误：',
+        exportFailed: '导出发生错误：'
       }
     },
     'local-import': {
@@ -42,7 +42,7 @@ export default {
         unsupportedAll: '不支持的文件格式，请上传 DOCX 或 XLSX',
         unsupportedSheet: '不支持的文件格式，请上传 XLSX 文件',
         unsupportedDoc: '不支持的文件格式，请上传 DOCX 文件',
-        importFailed: '导入失败：',
+        importFailed: '导入失败：'
       }
     },
     'doc-lock': {
@@ -54,13 +54,16 @@ export default {
         selectFirst: '请先选择要锁定的文字范围',
         selectFirstUnlock: '请先选择要解除锁定的文字范围',
         emptySelection: '选区不能为空',
-        lockedBlocked: '此区域已锁定，无法编辑',
+        lockedBlocked: '此区域已锁定，无法编辑'
       },
       success: {
         locked: '已标记锁定范围：',
         unlocked: '已解除锁定范围：',
-        noLockedRange: '选区内没有锁定的区块',
+        noLockedRange: '选区内没有锁定的区块'
       }
+    },
+    'import-export-menu': {
+      tooltip: '导入与导出选项'
     }
   }
 };

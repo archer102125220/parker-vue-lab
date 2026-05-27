@@ -105,7 +105,9 @@ export class ServerExportButtonPlugin extends Plugin {
         try {
           messageService.show({
             type: MessageType.Info,
-            content: localeService.t('parker-vue-lab-plugins.server-export.info')
+            content: localeService.t(
+              'parker-vue-lab-plugins.server-export.info'
+            )
           });
 
           const startEvent = new CustomEvent('univer-server-export-started', {
@@ -354,11 +356,22 @@ export class ServerExportButtonPlugin extends Plugin {
       })
     });
 
+    const parentMenuId = 'parker-vue-lab-plugins.import-export-menu';
+
     this.menuManagerService.mergeMenu({
       [RibbonStartGroup.OTHERS]: {
-        [buttonId]: {
-          order: 21,
-          menuItemFactory
+        [parentMenuId]: {
+          order: 19,
+          menuItemFactory: () => ({
+            id: parentMenuId,
+            tooltip: 'parker-vue-lab-plugins.import-export-menu.tooltip',
+            icon: 'Vue3FolderIcon',
+            type: MenuItemType.SUBITEMS
+          }),
+          [buttonId]: {
+            order: 3,
+            menuItemFactory
+          }
         }
       }
     });

@@ -61,10 +61,10 @@ export class LocalExportButtonPlugin extends Plugin {
         const messageService = accessor.get(IMessageService);
         const localeService = accessor.get(LocaleService);
         const layoutService = accessor.get(ILayoutService);
-        
+
         const doc = univerInstanceService.getFocusedUnit();
         if (typeof doc !== 'object' || doc === null) return false;
-        
+
         const focusedUnitId = doc.getUnitId();
         if (typeof focusedUnitId !== 'string' || focusedUnitId === '') {
           return false;
@@ -122,7 +122,7 @@ export class LocalExportButtonPlugin extends Plugin {
           link.target = '_blank';
           link.download = `snapshot_${isDoc ? 'doc' : 'sheet'}.json`;
           link.style.display = 'none';
-          
+
           document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);
@@ -180,11 +180,22 @@ export class LocalExportButtonPlugin extends Plugin {
       })
     });
 
+    const parentMenuId = 'parker-vue-lab-plugins.import-export-menu';
+
     this.menuManagerService.mergeMenu({
       [RibbonStartGroup.OTHERS]: {
-        [buttonId]: {
-          order: 20,
-          menuItemFactory
+        [parentMenuId]: {
+          order: 19,
+          menuItemFactory: () => ({
+            id: parentMenuId,
+            tooltip: 'parker-vue-lab-plugins.import-export-menu.tooltip',
+            icon: 'Vue3FolderIcon',
+            type: MenuItemType.SUBITEMS
+          }),
+          [buttonId]: {
+            order: 2,
+            menuItemFactory
+          }
         }
       }
     });

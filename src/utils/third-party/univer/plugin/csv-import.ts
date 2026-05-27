@@ -32,7 +32,7 @@ import {
 } from '@univerjs/presets';
 import { handleSelectCSVFile } from '@src/utils/helpers/select-csv-file';
 
-import Vue3IconCSV from '@src/components/Icon/CSV.tsx';
+import Vue3IconCSVImport from '@/src/components/Icon/CSVImport';
 
 /**
  * 匯入 CSV 按鈕外掛程式
@@ -66,7 +66,7 @@ export class ImportCSVButtonPlugin extends Plugin {
 
   override onStarting() {
     // 註冊圖示元件
-    this.componentManager.register('Vue3IconCSV', Vue3IconCSV, {
+    this.componentManager.register('Vue3IconCSVImport', Vue3IconCSVImport, {
       framework: 'vue3'
     });
 
@@ -185,7 +185,7 @@ export class ImportCSVButtonPlugin extends Plugin {
       id: buttonId,
       title: 'parker-vue-lab-plugins.csv-import.title',
       tooltip: 'parker-vue-lab-plugins.csv-import.tooltip',
-      icon: 'Vue3IconCSV', // 圖示名稱
+      icon: 'Vue3IconCSVImport', // 圖示名稱
       type: MenuItemType.BUTTON,
       hidden$: new Observable<boolean>((subscriber) => {
         const univerInstanceService = this._injector.get(
@@ -204,11 +204,23 @@ export class ImportCSVButtonPlugin extends Plugin {
         return () => subscription.unsubscribe();
       })
     });
+
+    const parentMenuId = 'parker-vue-lab-plugins.csv-import-export-menu';
+
     this.menuManagerService.mergeMenu({
       [RibbonStartGroup.OTHERS]: {
-        [buttonId]: {
-          order: 10,
-          menuItemFactory
+        [parentMenuId]: {
+          order: 10, // 顯示順序：放在順序為 10 的「匯入 CSV」後面
+          menuItemFactory: () => ({
+            id: parentMenuId,
+            tooltip: 'CSV',
+            icon: 'Vue3CSVIcon',
+            type: MenuItemType.SUBITEMS
+          }),
+          [buttonId]: {
+            order: 1,
+            menuItemFactory
+          }
         }
       }
     });

@@ -160,13 +160,24 @@ export class ExportCSVButtonPlugin extends Plugin {
       })
     });
 
+    const parentMenuId = 'parker-vue-lab-plugins.csv-import-export-menu';
+
     // 4. 將選單項目加到 ribbon 選單結構中
     // RibbonStartGroup.OTHERS 通常位於工具列的最右側。
     this.menuManagerService.mergeMenu({
       [RibbonStartGroup.OTHERS]: {
-        [buttonId]: {
-          order: 11, // 顯示順序：放在順序為 10 的「匯入 CSV」後面
-          menuItemFactory
+        [parentMenuId]: {
+          order: 10, // 顯示順序：放在順序為 9 的「開啟快速面板」後面
+          menuItemFactory: () => ({
+            id: parentMenuId,
+            tooltip: 'CSV',
+            icon: 'Vue3CSVIcon',
+            type: MenuItemType.SUBITEMS
+          }),
+          [buttonId]: {
+            order: 2,
+            menuItemFactory
+          }
         }
       }
     });
