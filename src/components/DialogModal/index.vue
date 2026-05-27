@@ -134,13 +134,13 @@ const computedTrigger = computed(
 
 watch(
   () => props.content,
-  async (newValue) => {
+  async (newContent) => {
     const contentName =
-      typeof newValue === 'string' && newValue.includes('.vue') === false
-        ? `${newValue}.vue`
-        : newValue;
+      typeof newContent === 'string' && newContent.includes('.vue') === false
+        ? `${newContent}.vue`
+        : newContent;
 
-    if (typeof newValue === 'string' && newValue !== '') {
+    if (typeof newContent === 'string' && newContent !== '') {
       const importFn = modules[
         `/components/DialogModal/${contentName}`
       ] as unknown as () => Promise<Component>;
