@@ -40,6 +40,7 @@ import {
 } from '@univerjs/sheets';
 import { INTERCEPTOR_POINT, SheetInterceptorService } from '@univerjs/sheets';
 
+import Vue3LockedRoundIcon from '@/src/components/Icon/LockedRound.vue';
 import Vue3LockIcon from '@/src/components/Icon/Lock.vue';
 import Vue3UnlockedIcon from '@/src/components/Icon/Unlocked.vue';
 import { useUniverStore } from '@src/store/univer';
@@ -168,6 +169,15 @@ export class SheetLockPlugin extends Plugin {
         framework: 'vue3'
       });
     } catch {}
+    try {
+      this.componentManager.register(
+        'Vue3LockedRoundIcon',
+        Vue3LockedRoundIcon,
+        {
+          framework: 'vue3'
+        }
+      );
+    } catch {}
 
     const commandId = 'sheet.command.lock-selection';
 
@@ -228,15 +238,14 @@ export class SheetLockPlugin extends Plugin {
           }
         }
 
-        accessor.get(ICommandService).syncExecuteCommand(
-          SetRangeValuesMutation.id,
-          {
+        accessor
+          .get(ICommandService)
+          .syncExecuteCommand(SetRangeValuesMutation.id, {
             unitId,
             subUnitId,
             cellValue,
             triggerByPlugin: true
-          }
-        );
+          });
 
         messageService.show({
           type: MessageType.Success,
@@ -301,7 +310,10 @@ export class SheetLockPlugin extends Plugin {
             const intersectColStart = Math.max(startColumn, l.startColumn);
             const intersectColEnd = Math.min(endColumn, l.endColumn);
 
-            if (intersectRowStart <= intersectRowEnd && intersectColStart <= intersectColEnd) {
+            if (
+              intersectRowStart <= intersectRowEnd &&
+              intersectColStart <= intersectColEnd
+            ) {
               if (
                 Array.isArray(lock.allowedRoles) &&
                 lock.allowedRoles.length > 0 &&
@@ -377,15 +389,14 @@ export class SheetLockPlugin extends Plugin {
         }
 
         if (unlockedCount > 0) {
-          accessor.get(ICommandService).syncExecuteCommand(
-            SetRangeValuesMutation.id,
-            {
+          accessor
+            .get(ICommandService)
+            .syncExecuteCommand(SetRangeValuesMutation.id, {
               unitId,
               subUnitId,
               cellValue,
               triggerByPlugin: true
-            }
-          );
+            });
           messageService.show({
             type: MessageType.Success,
             content: localeService.t(
@@ -486,15 +497,14 @@ export class SheetLockPlugin extends Plugin {
         }
 
         if (unlockedCount > 0) {
-          accessor.get(ICommandService).syncExecuteCommand(
-            SetRangeValuesMutation.id,
-            {
+          accessor
+            .get(ICommandService)
+            .syncExecuteCommand(SetRangeValuesMutation.id, {
               unitId,
               subUnitId,
               cellValue,
               triggerByPlugin: true
-            }
-          );
+            });
           messageService.show({
             type: MessageType.Success,
             content: localeService.t(
@@ -588,19 +598,30 @@ export class SheetLockPlugin extends Plugin {
       })
     });
 
+    const parentMenuId = 'parker-vue-lab-plugins.sheet-lock-menu';
+
     this.menuManagerService.mergeMenu({
       [RibbonStartGroup.OTHERS]: {
-        [commandId]: {
+        [parentMenuId]: {
           order: 25,
-          menuItemFactory
-        },
-        [unlockCommandId]: {
-          order: 26,
-          menuItemFactory: unlockMenuItemFactory
-        },
-        [unlockCommandEntireId]: {
-          order: 27,
-          menuItemFactory: unlockMenuItemEntireFactory
+          menuItemFactory: () => ({
+            id: parentMenuId,
+            tooltip: 'parker-vue-lab-plugins.sheet-lock-menu.tooltip',
+            icon: 'Vue3LockedRoundIcon',
+            type: MenuItemType.SUBITEMS
+          }),
+          [commandId]: {
+            order: 1,
+            menuItemFactory
+          },
+          [unlockCommandId]: {
+            order: 2,
+            menuItemFactory: unlockMenuItemFactory
+          },
+          [unlockCommandEntireId]: {
+            order: 3,
+            menuItemFactory: unlockMenuItemEntireFactory
+          }
         }
       }
     });
@@ -747,11 +768,13 @@ export class SheetLockPlugin extends Plugin {
       }
 
       if (commandInfo.id === SetRangeValuesMutation.id) {
-        type ISetRangeValuesMutationParamsWithTrigger = ISetRangeValuesMutationParams & { triggerByPlugin?: boolean };
-        const params = commandInfo.params as ISetRangeValuesMutationParamsWithTrigger;
-        
+        type ISetRangeValuesMutationParamsWithTrigger =
+          ISetRangeValuesMutationParams & { triggerByPlugin?: boolean };
+        const params =
+          commandInfo.params as ISetRangeValuesMutationParamsWithTrigger;
+
         if (params.triggerByPlugin) return;
-        
+
         const unitLocks =
           this.lockedRanges[params.unitId]?.[params.subUnitId] || [];
         if (unitLocks.length === 0) return;

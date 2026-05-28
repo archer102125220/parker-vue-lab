@@ -30,6 +30,7 @@ import {
   type IRichTextEditingMutationParams
 } from '@univerjs/docs';
 
+import Vue3LockedRoundIcon from '@/src/components/Icon/LockedRound.vue';
 import Vue3LockIcon from '@/src/components/Icon/Lock.vue';
 import Vue3UnlockedIcon from '@/src/components/Icon/Unlocked.vue';
 import { useUniverStore } from '@src/store/univer';
@@ -119,6 +120,15 @@ export class DocLockPlugin extends Plugin {
       this.componentManager.register('Vue3UnlockedIcon', Vue3UnlockedIcon, {
         framework: 'vue3'
       });
+    } catch {}
+    try {
+      this.componentManager.register(
+        'Vue3LockedRoundIcon',
+        Vue3LockedRoundIcon,
+        {
+          framework: 'vue3'
+        }
+      );
     } catch {}
 
     // --- Univer Bug Fix: Patch DocSelectionManagerService to prevent preset-docs-hyper-link crash ---
@@ -474,15 +484,26 @@ export class DocLockPlugin extends Plugin {
       })
     });
 
+    const parentMenuId = 'parker-vue-lab-plugins.doc-lock-menu';
+
     this.menuManagerService.mergeMenu({
       [RibbonStartGroup.OTHERS]: {
-        [commandId]: {
+        [parentMenuId]: {
           order: 25,
-          menuItemFactory
-        },
-        [unlockCommandId]: {
-          order: 26,
-          menuItemFactory: unlockMenuItemFactory
+          menuItemFactory: () => ({
+            id: parentMenuId,
+            tooltip: 'parker-vue-lab-plugins.doc-lock-menu.tooltip',
+            icon: 'Vue3LockedRoundIcon',
+            type: MenuItemType.SUBITEMS
+          }),
+          [commandId]: {
+            order: 25,
+            menuItemFactory
+          },
+          [unlockCommandId]: {
+            order: 26,
+            menuItemFactory: unlockMenuItemFactory
+          }
         }
       }
     });

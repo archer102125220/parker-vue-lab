@@ -23,7 +23,7 @@ export default {
       }
     },
     'local-export': {
-      title: '导出 Snapshot',
+      title: '导出 Snapshot (JSON)',
       tooltip: '纯前端导出 Snapshot (JSON)',
       info: '正在导出 Snapshot JSON，请稍候...',
       error: {
@@ -63,9 +63,11 @@ export default {
       }
     },
     'sheet-lock': {
-      title: '锁定选区 (Sheet)',
+      // title: '锁定选区 (Sheet)',
+      title: '锁定选区',
       tooltip: '锁定选区',
-      unlockTitle: '解除锁定选区 (Sheet)',
+      // unlockTitle: '解除锁定选区 (Sheet)',
+      unlockTitle: '解除锁定选区',
       unlockTooltip: '解除锁定选区',
       unlockEntireTitle: '解除锁定选区 (整块)',
       unlockEntireTooltip: '解除与选区重叠的整块锁定区',
@@ -83,6 +85,12 @@ export default {
     },
     'import-export-menu': {
       tooltip: '导入与导出选项'
+    },
+    'doc-lock-menu': {
+      tooltip: '文档锁定选项'
+    },
+    'sheet-lock-menu': {
+      tooltip: '表格锁定选项'
     }
   }
 };
