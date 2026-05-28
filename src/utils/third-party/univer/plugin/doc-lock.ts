@@ -256,7 +256,35 @@ export class DocLockPlugin extends Plugin {
       return false;
     }
 
+    const lockedRangeList = this._getLockedRangeList(doc);
     const store = useUniverStore();
+
+    // 檢查準備鎖定的範圍，是否與其他帳號的鎖定範圍重疊
+    for (const lockedRange of lockedRangeList) {
+      const lockedStart = lockedRange.startIndex;
+      const lockedEnd = lockedRange.endIndex + 1;
+
+      const overlapStart = Math.max(startOffset, lockedStart);
+      const overlapEnd = Math.min(endOffset, lockedEnd);
+
+      if (overlapStart < overlapEnd) {
+        const allowedRoleList = lockedRange.properties?.allowedRoleList;
+        if (
+          Array.isArray(allowedRoleList) &&
+          allowedRoleList.length > 0 &&
+          !allowedRoleList.includes(store.currentUserRole)
+        ) {
+          messageService.show({
+            type: MessageType.Error,
+            content: localeService.t(
+              'parker-vue-lab-plugins.doc-lock.error.lockedBlocked'
+            )
+          });
+          return false;
+        }
+      }
+    }
+
     const permissionParams = await store.requestLockPermissions();
     if (!permissionParams) return false; // 使用者取消鎖定
 

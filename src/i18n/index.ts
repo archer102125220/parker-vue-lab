@@ -8,7 +8,7 @@ import {
 
 import en from '@src/locales/en.json';
 import zhTw from '@src/locales/zh-tw.json';
-import { merge } from 'lodash';
+import _merge from 'lodash/merge';
 
 // Import Univer specific locales
 import univerCustomEnUS from '@src/utils/third-party/univer/i18n/en-US';
@@ -22,8 +22,8 @@ export const locales = [
 ];
 
 export const messages = {
-  en: merge({}, en, univerCustomEnUS),
-  zh: merge({}, zhTw, univerCustomZhTw)
+  en: _merge({}, en, univerCustomEnUS),
+  zh: _merge({}, zhTw, univerCustomZhTw)
 };
 
 export const i18n = createI18n({
