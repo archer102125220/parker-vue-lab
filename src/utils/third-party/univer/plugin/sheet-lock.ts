@@ -12,7 +12,10 @@ import {
   DOCS_NORMAL_EDITOR_UNIT_ID_KEY,
   type ICommand,
   type IAccessor,
-  type Workbook
+  type Workbook,
+  type IObjectMatrixPrimitiveType,
+  type Nullable,
+  type ICellData
 } from '@univerjs/core';
 import { MessageType } from '@univerjs/design';
 import {
@@ -35,6 +38,7 @@ import {
   type IRemoveRowsMutationParams,
   type IRemoveColMutationParams
 } from '@univerjs/sheets';
+import { INTERCEPTOR_POINT, SheetInterceptorService } from '@univerjs/sheets';
 
 import Vue3LockIcon from '@/src/components/Icon/Lock.vue';
 import Vue3UnlockedIcon from '@/src/components/Icon/Unlocked.vue';
@@ -74,7 +78,9 @@ function ignoreErrorLog() {
   window.__UNIVER__SHEET_LOCKED_ERROR_FILTERED__ = true;
 }
 
-export interface ISheetLockPluginConfig {}
+export interface ISheetLockPluginConfig {
+  noStyle?: boolean;
+}
 
 export interface ILockedRangeInfo {
   range: {
@@ -105,6 +111,50 @@ export class SheetLockPlugin extends Plugin {
     super();
     this._config = config || {};
     ignoreErrorLog();
+  }
+
+  override onReady(): void {
+    const sheetInterceptorService = this._injector.get(SheetInterceptorService);
+
+    this.disposeWithMe(
+      sheetInterceptorService.intercept(INTERCEPTOR_POINT.CELL_CONTENT, {
+        priority: 100,
+        handler: (cell, location, next) => {
+          const noStyle =
+            typeof this._config.noStyle === 'boolean'
+              ? this._config.noStyle
+              : true;
+
+          if (noStyle) {
+            return next(cell);
+          }
+
+          const { unitId, subUnitId, row, col } = location;
+          const unitLocks = this.lockedRanges[unitId]?.[subUnitId] || [];
+
+          for (const lock of unitLocks) {
+            const { startRow, endRow, startColumn, endColumn } = lock.range;
+            if (
+              row >= startRow &&
+              row <= endRow &&
+              col >= startColumn &&
+              col <= endColumn
+            ) {
+              const newCell = {
+                ...cell,
+                s: {
+                  ...(typeof cell?.s === 'object' ? cell.s : {}),
+                  bg: { rgb: '#f3f4f6' }
+                }
+              };
+              return next(newCell);
+            }
+          }
+
+          return next(cell);
+        }
+      })
+    );
   }
 
   override onStarting(): void {
@@ -162,12 +212,31 @@ export class SheetLockPlugin extends Plugin {
           this.lockedRanges[unitId][subUnitId] = [];
         }
 
+        const cellValue: IObjectMatrixPrimitiveType<Nullable<ICellData>> = {};
+
         for (const sel of selections) {
           this.lockedRanges[unitId][subUnitId].push({
             range: { ...sel.range },
             allowedRoles: permissionParams.allowedRoles
           });
+
+          for (let r = sel.range.startRow; r <= sel.range.endRow; r++) {
+            if (!cellValue[r]) cellValue[r] = {};
+            for (let c = sel.range.startColumn; c <= sel.range.endColumn; c++) {
+              cellValue[r]![c] = {};
+            }
+          }
         }
+
+        accessor.get(ICommandService).syncExecuteCommand(
+          SetRangeValuesMutation.id,
+          {
+            unitId,
+            subUnitId,
+            cellValue,
+            triggerByPlugin: true
+          }
+        );
 
         messageService.show({
           type: MessageType.Success,
@@ -217,6 +286,8 @@ export class SheetLockPlugin extends Plugin {
 
         let unlockedCount = 0;
 
+        const cellValue: IObjectMatrixPrimitiveType<Nullable<ICellData>> = {};
+
         for (const sel of selections) {
           const { startRow, endRow, startColumn, endColumn } = sel.range;
 
@@ -248,11 +319,27 @@ export class SheetLockPlugin extends Plugin {
 
               unitLocks.splice(i, 1);
               unlockedCount++;
+
+              for (let r = Math.max(startRow, l.startRow); r <= Math.min(endRow, l.endRow); r++) {
+                if (!cellValue[r]) cellValue[r] = {};
+                for (let c = Math.max(startColumn, l.startColumn); c <= Math.min(endColumn, l.endColumn); c++) {
+                  cellValue[r]![c] = {};
+                }
+              }
             }
           }
         }
 
         if (unlockedCount > 0) {
+          accessor.get(ICommandService).syncExecuteCommand(
+            SetRangeValuesMutation.id,
+            {
+              unitId,
+              subUnitId,
+              cellValue,
+              triggerByPlugin: true
+            }
+          );
           messageService.show({
             type: MessageType.Success,
             content: localeService.t(
@@ -350,10 +437,9 @@ export class SheetLockPlugin extends Plugin {
           const univerInstanceService = this._injector.get(
             IUniverInstanceService
           );
-          const workbook =
-            univerInstanceService.getCurrentUnitOfType<Workbook>(
-              UniverInstanceType.UNIVER_SHEET
-            );
+          const workbook = univerInstanceService.getCurrentUnitOfType<Workbook>(
+            UniverInstanceType.UNIVER_SHEET
+          );
           if (workbook) {
             const unitId = workbook.getUnitId();
             const subUnitId = workbook.getActiveSheet()?.getSheetId();
@@ -478,7 +564,11 @@ export class SheetLockPlugin extends Plugin {
       }
 
       if (commandInfo.id === SetRangeValuesMutation.id) {
-        const params = commandInfo.params as ISetRangeValuesMutationParams;
+        type ISetRangeValuesMutationParamsWithTrigger = ISetRangeValuesMutationParams & { triggerByPlugin?: boolean };
+        const params = commandInfo.params as ISetRangeValuesMutationParamsWithTrigger;
+        
+        if (params.triggerByPlugin) return;
+        
         const unitLocks =
           this.lockedRanges[params.unitId]?.[params.subUnitId] || [];
         if (unitLocks.length === 0) return;

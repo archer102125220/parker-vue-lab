@@ -540,7 +540,7 @@ export async function createSheetInstance(
     [ServerExportButtonPlugin],
     [LocalImportButtonPlugin],
     [UniverExchangeLifecyclePlugin],
-    [SheetLockPlugin]
+    [SheetLockPlugin, { noStyle: false }]
   ]);
 
   if (collaboration === true && liveShare === true) {
