@@ -18,6 +18,13 @@ export function loadScript(
     script.src = src;
     script.setAttribute('async', 'false'); // Guarantee execution order for interdependent UMD scripts
 
+    // 檢查是否為絕對路徑 (http/https 開頭) 且 不是當下網域
+    const isCrossOrigin =
+      (/^https?:\/\//.test(src) || /^http?:\/\//.test(src)) &&
+      !src.includes(window.location.hostname);
+    if (isCrossOrigin) {
+      script.setAttribute('crossorigin', 'anonymous');
+    }
 
     Object.keys(attributes).forEach((key) => {
       script.setAttribute(key, attributes[key] as string);

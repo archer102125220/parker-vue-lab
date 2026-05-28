@@ -52,38 +52,6 @@ const COMMAND_ID_UNLOCK = 'sheet.command.unlock-selection';
 const COMMAND_ID_UNLOCK_ENTIRE = 'sheet.command.unlock-selection-entire';
 const MENU_ID_PARENT = 'parker-vue-lab-plugins.sheet-lock-menu';
 
-// Filter error message from console
-function ignoreErrorLog() {
-  if (typeof window === 'undefined') return;
-  if (window.__UNIVER__SHEET_LOCKED_ERROR_FILTERED__ === true) return;
-
-  window.addEventListener('error', (event) => {
-    if (event.error?.message?.includes(SHEET_LOCK_ERROR_MESSAGE)) {
-      event.preventDefault();
-    }
-  });
-
-  window.addEventListener('unhandledrejection', (event) => {
-    if (event.reason?.message?.includes(SHEET_LOCK_ERROR_MESSAGE)) {
-      event.preventDefault();
-    }
-  });
-
-  const originalConsoleError = window.console.error;
-  window.originalConsoleError = originalConsoleError;
-  window.console.error = function (...args) {
-    const isLockedError = args.some(
-      (arg) =>
-        (typeof arg === 'string' && arg.includes(SHEET_LOCK_ERROR_MESSAGE)) ||
-        (arg instanceof Error && arg.message.includes(SHEET_LOCK_ERROR_MESSAGE))
-    );
-    if (isLockedError) return;
-    window.originalConsoleError?.apply(console, args);
-  };
-
-  window.__UNIVER__SHEET_LOCKED_ERROR_FILTERED__ = true;
-}
-
 export interface ISheetLockPluginConfig {
   noStyle?: boolean;
 }
@@ -117,7 +85,44 @@ export class SheetLockPlugin extends Plugin {
   ) {
     super();
     this._config = config || {};
-    ignoreErrorLog();
+
+    // 修正 Univer 編輯器在鎖定範圍時發出的錯誤訊息
+    this.ignoreErrorLog();
+  }
+
+  // Filter error message from console
+  private ignoreErrorLog() {
+    if (typeof window === 'undefined') return;
+    if (window.__UNIVER__SHEET_LOCKED_ERROR_FILTERED__ === true) return;
+
+    window.addEventListener('error', (event) => {
+      console.log({ event });
+      if (event.error?.message?.includes(SHEET_LOCK_ERROR_MESSAGE)) {
+        event.preventDefault();
+      }
+    });
+
+    window.addEventListener('unhandledrejection', (event) => {
+      console.log({ unhandledrejectionEvent: event });
+      if (event.reason?.message?.includes(SHEET_LOCK_ERROR_MESSAGE)) {
+        event.preventDefault();
+      }
+    });
+
+    const originalConsoleError = window.console.error;
+    window.originalConsoleError = originalConsoleError;
+    window.console.error = function (...args) {
+      const isLockedError = args.some(
+        (arg) =>
+          (typeof arg === 'string' && arg.includes(SHEET_LOCK_ERROR_MESSAGE)) ||
+          (arg instanceof Error &&
+            arg.message.includes(SHEET_LOCK_ERROR_MESSAGE))
+      );
+      if (isLockedError) return;
+      window.originalConsoleError?.apply(console, args);
+    };
+
+    window.__UNIVER__SHEET_LOCKED_ERROR_FILTERED__ = true;
   }
 
   override onReady(): void {

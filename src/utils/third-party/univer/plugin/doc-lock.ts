@@ -40,48 +40,6 @@ const COMMAND_ID_LOCK = 'doc.command.lock-selection';
 const COMMAND_ID_UNLOCK = 'doc.command.unlock-selection';
 const MENU_ID_PARENT = 'parker-vue-lab-plugins.doc-lock-menu';
 
-function ignoreErrorLog() {
-  if (typeof window === 'undefined') return;
-  if (window.__UNIVER__DOC_LOCKED_ERROR_FILTERED__ === true) return;
-
-  // 1. 攔截未捕獲的例外錯誤 (Uncaught Exception)
-  // 如果 throw new Error 沒有被 try-catch 抓住，它會觸發 window 的 error 事件
-  window.addEventListener('error', (event) => {
-    if (event.error?.message?.includes(DOC_LOCK_ERROR_MESSAGE)) {
-      event.preventDefault(); // 阻止瀏覽器在 Console 印出這個錯誤
-    }
-  });
-
-  // 2. 攔截未處理的 Promise 拒絕 (Unhandled Promise Rejection)
-  window.addEventListener('unhandledrejection', (event) => {
-    if (event.reason?.message?.includes(DOC_LOCK_ERROR_MESSAGE)) {
-      event.preventDefault(); // 阻止瀏覽器在 Console 印出這個錯誤
-    }
-  });
-
-  // 3. 原本的 console.error 覆寫 (以防 Univer 內部有去 catch 並且用 console.error 印出來)
-  window.originalConsoleError = window.console.error;
-
-  window.console.error = function (...argList) {
-    // 檢查參數中是否包含特定的鎖定阻擋錯誤（字串或 Error 物件）
-    const isLockedError = argList.some(
-      (arg) =>
-        (typeof arg === 'string' && arg.includes(DOC_LOCK_ERROR_MESSAGE)) ||
-        (arg instanceof Error && arg.message.includes(DOC_LOCK_ERROR_MESSAGE))
-    );
-
-    if (isLockedError) {
-      // 攔截到預期的鎖定阻擋錯誤，直接 return 吃掉，保持 console 乾淨
-      return;
-    }
-
-    // 如果不是我們要攔截的錯誤，就照常印出
-    window.originalConsoleError!.apply(console, argList);
-  };
-
-  window.__UNIVER__DOC_LOCKED_ERROR_FILTERED__ = true;
-}
-
 export interface IDocLockPluginConfig {
   noStyle?: boolean;
 }
@@ -110,7 +68,49 @@ export class DocLockPlugin extends Plugin {
     this._config = config || {};
 
     // 修正 Univer 編輯器在鎖定範圍時發出的錯誤訊息
-    ignoreErrorLog();
+    this.ignoreErrorLog();
+  }
+
+  private ignoreErrorLog() {
+    if (typeof window === 'undefined') return;
+    if (window.__UNIVER__DOC_LOCKED_ERROR_FILTERED__ === true) return;
+
+    // 1. 攔截未捕獲的例外錯誤 (Uncaught Exception)
+    // 如果 throw new Error 沒有被 try-catch 抓住，它會觸發 window 的 error 事件
+    window.addEventListener('error', (event) => {
+      if (event.error?.message?.includes(DOC_LOCK_ERROR_MESSAGE)) {
+        event.preventDefault(); // 阻止瀏覽器在 Console 印出這個錯誤
+      }
+    });
+
+    // 2. 攔截未處理的 Promise 拒絕 (Unhandled Promise Rejection)
+    window.addEventListener('unhandledrejection', (event) => {
+      if (event.reason?.message?.includes(DOC_LOCK_ERROR_MESSAGE)) {
+        event.preventDefault(); // 阻止瀏覽器在 Console 印出這個錯誤
+      }
+    });
+
+    // 3. 原本的 console.error 覆寫 (以防 Univer 內部有去 catch 並且用 console.error 印出來)
+    window.originalConsoleError = window.console.error;
+
+    window.console.error = function (...argList) {
+      // 檢查參數中是否包含特定的鎖定阻擋錯誤（字串或 Error 物件）
+      const isLockedError = argList.some(
+        (arg) =>
+          (typeof arg === 'string' && arg.includes(DOC_LOCK_ERROR_MESSAGE)) ||
+          (arg instanceof Error && arg.message.includes(DOC_LOCK_ERROR_MESSAGE))
+      );
+
+      if (isLockedError) {
+        // 攔截到預期的鎖定阻擋錯誤，直接 return 吃掉，保持 console 乾淨
+        return;
+      }
+
+      // 如果不是我們要攔截的錯誤，就照常印出
+      window.originalConsoleError!.apply(console, argList);
+    };
+
+    window.__UNIVER__DOC_LOCKED_ERROR_FILTERED__ = true;
   }
 
   override onStarting(): void {
@@ -174,7 +174,10 @@ export class DocLockPlugin extends Plugin {
   }
 
   private _checkEditPermission(
-    lockedRangeList: ICustomRange<{ locked?: boolean; allowedRoleList?: string[] }>[],
+    lockedRangeList: ICustomRange<{
+      locked?: boolean;
+      allowedRoleList?: string[];
+    }>[],
     editStart: number,
     editEnd: number,
     currentUserRole: string,
@@ -189,8 +192,10 @@ export class DocLockPlugin extends Plugin {
         isOverlapping = editStart > lockedStart && editStart < lockedEnd;
       } else {
         isOverlapping =
-          Math.max(0, Math.min(editEnd, lockedEnd) - Math.max(editStart, lockedStart)) >
-          0;
+          Math.max(
+            0,
+            Math.min(editEnd, lockedEnd) - Math.max(editStart, lockedStart)
+          ) > 0;
       }
 
       if (isOverlapping) {
@@ -359,7 +364,11 @@ export class DocLockPlugin extends Plugin {
     }
 
     const { startOffset: unlockStart, endOffset: unlockEnd } = activeTextRange;
-    if (unlockStart === unlockEnd || unlockStart === undefined || unlockEnd === undefined) {
+    if (
+      unlockStart === unlockEnd ||
+      unlockStart === undefined ||
+      unlockEnd === undefined
+    ) {
       messageService.show({
         type: MessageType.Warning,
         content: localeService.t(
@@ -559,7 +568,9 @@ export class DocLockPlugin extends Plugin {
 
           if (lockedRangeList.length > 0) {
             const store = useUniverStore();
-            const textXActionList = this._extractTextXActionList(params.actions);
+            const textXActionList = this._extractTextXActionList(
+              params.actions
+            );
 
             let currentOffset = 0;
             let isBlocked = false;
