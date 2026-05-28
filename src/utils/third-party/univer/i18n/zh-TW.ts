@@ -67,6 +67,8 @@ export default {
       tooltip: '鎖定選取範圍',
       unlockTitle: '解除鎖定選取範圍 (Sheet)',
       unlockTooltip: '解除鎖定選取範圍',
+      unlockEntireTitle: '解除鎖定選取範圍 (整塊)',
+      unlockEntireTooltip: '解除與選取範圍重疊的整塊鎖定區',
       error: {
         selectFirst: '請先選擇要鎖定的儲存格範圍',
         selectFirstUnlock: '請先選擇要解除鎖定的儲存格範圍',

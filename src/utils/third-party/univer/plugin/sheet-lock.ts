@@ -407,6 +407,115 @@ export class SheetLockPlugin extends Plugin {
 
     this.commandService.registerCommand(unlockCommand);
 
+    const unlockCommandEntireId = 'sheet.command.unlock-selection-entire';
+    const unlockCommandEntire: ICommand = {
+      type: CommandType.OPERATION,
+      id: unlockCommandEntireId,
+      handler: async (accessor: IAccessor) => {
+        const univerInstanceService = accessor.get(IUniverInstanceService);
+        const selectionManagerService = accessor.get(SheetsSelectionsService);
+        const messageService = accessor.get(IMessageService);
+        const localeService = accessor.get(LocaleService);
+
+        const workbook = univerInstanceService.getFocusedUnit();
+        if (!workbook || workbook.type !== UniverInstanceType.UNIVER_SHEET) {
+          return false;
+        }
+
+        const selections = selectionManagerService.getCurrentSelections();
+        if (!selections || selections.length === 0) {
+          messageService.show({
+            type: MessageType.Warning,
+            content: localeService.t(
+              'parker-vue-lab-plugins.sheet-lock.error.selectFirstUnlock'
+            )
+          });
+          return false;
+        }
+
+        const unitId = workbook.getUnitId();
+        const subUnitId = (workbook as Workbook).getActiveSheet()?.getSheetId();
+        if (!subUnitId) return false;
+
+        const store = useUniverStore();
+        const unitLocks = this.lockedRanges[unitId]?.[subUnitId] || [];
+
+        let unlockedCount = 0;
+        const cellValue: IObjectMatrixPrimitiveType<Nullable<ICellData>> = {};
+
+        for (const sel of selections) {
+          const { startRow, endRow, startColumn, endColumn } = sel.range;
+
+          for (let i = unitLocks.length - 1; i >= 0; i--) {
+            const lock = unitLocks[i];
+            if (!lock) continue;
+            const l = lock.range;
+
+            const intersectRow =
+              Math.max(startRow, l.startRow) <= Math.min(endRow, l.endRow);
+            const intersectCol =
+              Math.max(startColumn, l.startColumn) <=
+              Math.min(endColumn, l.endColumn);
+
+            if (intersectRow && intersectCol) {
+              if (
+                Array.isArray(lock.allowedRoles) &&
+                lock.allowedRoles.length > 0 &&
+                !lock.allowedRoles.includes(store.currentUserRole)
+              ) {
+                messageService.show({
+                  type: MessageType.Error,
+                  content: localeService.t(
+                    'parker-vue-lab-plugins.sheet-lock.error.lockedBlocked'
+                  )
+                });
+                return false;
+              }
+
+              unitLocks.splice(i, 1);
+              unlockedCount++;
+
+              for (let r = l.startRow; r <= l.endRow; r++) {
+                if (!cellValue[r]) cellValue[r] = {};
+                for (let c = l.startColumn; c <= l.endColumn; c++) {
+                  cellValue[r]![c] = {};
+                }
+              }
+            }
+          }
+        }
+
+        if (unlockedCount > 0) {
+          accessor.get(ICommandService).syncExecuteCommand(
+            SetRangeValuesMutation.id,
+            {
+              unitId,
+              subUnitId,
+              cellValue,
+              triggerByPlugin: true
+            }
+          );
+          messageService.show({
+            type: MessageType.Success,
+            content: localeService.t(
+              'parker-vue-lab-plugins.sheet-lock.success.unlocked'
+            )
+          });
+          return true;
+        } else {
+          messageService.show({
+            type: MessageType.Info,
+            content: localeService.t(
+              'parker-vue-lab-plugins.sheet-lock.success.noLockedRange'
+            )
+          });
+          return false;
+        }
+      }
+    };
+
+    this.commandService.registerCommand(unlockCommandEntire);
+
     const menuItemFactory = () => ({
       id: commandId,
       title: 'parker-vue-lab-plugins.sheet-lock.title',
@@ -455,6 +564,30 @@ export class SheetLockPlugin extends Plugin {
       })
     });
 
+    const unlockMenuItemEntireFactory = () => ({
+      id: unlockCommandEntireId,
+      title: 'parker-vue-lab-plugins.sheet-lock.unlockEntireTitle',
+      tooltip: 'parker-vue-lab-plugins.sheet-lock.unlockEntireTooltip',
+      icon: 'Vue3UnlockedIcon',
+      type: MenuItemType.BUTTON,
+      hidden$: new Observable<boolean>((subscriber) => {
+        const univerInstanceService = this._injector.get(
+          IUniverInstanceService
+        );
+        const subscription = univerInstanceService.focused$.subscribe(
+          (unitId) => {
+            if (!unitId) {
+              subscriber.next(true);
+              return;
+            }
+            const unit = univerInstanceService.getUnit(unitId);
+            subscriber.next(unit?.type !== UniverInstanceType.UNIVER_SHEET);
+          }
+        );
+        return () => subscription.unsubscribe();
+      })
+    });
+
     this.menuManagerService.mergeMenu({
       [RibbonStartGroup.OTHERS]: {
         [commandId]: {
@@ -464,6 +597,10 @@ export class SheetLockPlugin extends Plugin {
         [unlockCommandId]: {
           order: 26,
           menuItemFactory: unlockMenuItemFactory
+        },
+        [unlockCommandEntireId]: {
+          order: 27,
+          menuItemFactory: unlockMenuItemEntireFactory
         }
       }
     });

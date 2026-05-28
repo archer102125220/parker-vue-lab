@@ -69,6 +69,8 @@ export default {
       tooltip: 'Lock Selection',
       unlockTitle: 'Unlock Selection (Sheet)',
       unlockTooltip: 'Unlock Selection',
+      unlockEntireTitle: 'Unlock Selection (Entire Block)',
+      unlockEntireTooltip: 'Unlock entire locked blocks that intersect with selection',
       error: {
         selectFirst: 'Please select a cell range to lock first',
         selectFirstUnlock: 'Please select a cell range to unlock first',
