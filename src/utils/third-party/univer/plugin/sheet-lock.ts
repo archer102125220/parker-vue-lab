@@ -351,7 +351,7 @@ export class SheetLockPlugin extends Plugin {
             IUniverInstanceService
           );
           const workbook =
-            univerInstanceService.getCurrentUnitForType<Workbook>(
+            univerInstanceService.getCurrentUnitOfType<Workbook>(
               UniverInstanceType.UNIVER_SHEET
             );
           if (workbook) {
