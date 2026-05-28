@@ -181,15 +181,15 @@ export class DocLockPlugin extends Plugin {
     isInsert: boolean = false
   ): boolean {
     for (const lockedRange of lockedRanges) {
-      const lStart = lockedRange.startIndex;
-      const lEnd = lockedRange.endIndex + 1;
+      const lockedStart = lockedRange.startIndex;
+      const lockedEnd = lockedRange.endIndex + 1;
 
       let isOverlapping = false;
       if (isInsert) {
-        isOverlapping = editStart > lStart && editStart < lEnd;
+        isOverlapping = editStart > lockedStart && editStart < lockedEnd;
       } else {
         isOverlapping =
-          Math.max(0, Math.min(editEnd, lEnd) - Math.max(editStart, lStart)) >
+          Math.max(0, Math.min(editEnd, lockedEnd) - Math.max(editStart, lockedStart)) >
           0;
       }
 
@@ -330,8 +330,8 @@ export class DocLockPlugin extends Plugin {
       return false;
     }
 
-    const { startOffset: uStart, endOffset: uEnd } = activeTextRange;
-    if (uStart === uEnd || uStart === undefined || uEnd === undefined) {
+    const { startOffset: unlockStart, endOffset: unlockEnd } = activeTextRange;
+    if (unlockStart === unlockEnd || unlockStart === undefined || unlockEnd === undefined) {
       messageService.show({
         type: MessageType.Warning,
         content: localeService.t(
@@ -345,16 +345,16 @@ export class DocLockPlugin extends Plugin {
     const store = useUniverStore();
     let unlockedCount = 0;
 
-    for (const lr of lockedRanges) {
-      const lStart = lr.startIndex;
-      const lEnd = lr.endIndex + 1; // Convert inclusive index to exclusive offset
+    for (const lockedRange of lockedRanges) {
+      const lockedStart = lockedRange.startIndex;
+      const lockedEnd = lockedRange.endIndex + 1; // Convert inclusive index to exclusive offset
 
-      const overlapStart = Math.max(uStart, lStart);
-      const overlapEnd = Math.min(uEnd, lEnd);
+      const overlapStart = Math.max(unlockStart, lockedStart);
+      const overlapEnd = Math.min(unlockEnd, lockedEnd);
 
       if (overlapStart < overlapEnd) {
         // 解鎖前先檢查是否有權限
-        const allowedRoles = lr.properties?.allowedRoles;
+        const allowedRoles = lockedRange.properties?.allowedRoles;
         if (
           Array.isArray(allowedRoles) &&
           allowedRoles.length > 0 &&
@@ -376,7 +376,7 @@ export class DocLockPlugin extends Plugin {
           // 刪除原本的鎖定範圍
           const deleteMutation = deleteCustomRangeFactory(accessor, {
             unitId: doc.getUnitId(),
-            rangeId: lr.rangeId
+            rangeId: lockedRange.rangeId
           });
 
           if (deleteMutation) {
@@ -387,16 +387,16 @@ export class DocLockPlugin extends Plugin {
           }
 
           // 若左側還有剩餘的範圍，建立新的鎖定區塊
-          if (lStart < uStart) {
+          if (lockedStart < unlockStart) {
             const leftMutation = addCustomRangeBySelectionFactory(accessor, {
               unitId: doc.getUnitId(),
               rangeId: generateRandomId(),
-              rangeType: lr.rangeType,
-              properties: { ...lr.properties },
+              rangeType: lockedRange.rangeType,
+              properties: { ...lockedRange.properties },
               selections: [
                 {
-                  startOffset: lStart,
-                  endOffset: uStart,
+                  startOffset: lockedStart,
+                  endOffset: unlockStart,
                   collapsed: false,
                   ...(activeTextRange.segmentId
                     ? { segmentId: activeTextRange.segmentId }
@@ -412,16 +412,16 @@ export class DocLockPlugin extends Plugin {
           }
 
           // 若右側還有剩餘的範圍，建立新的鎖定區塊
-          if (lEnd > uEnd) {
+          if (lockedEnd > unlockEnd) {
             const rightMutation = addCustomRangeBySelectionFactory(accessor, {
               unitId: doc.getUnitId(),
               rangeId: generateRandomId(),
-              rangeType: lr.rangeType,
-              properties: { ...lr.properties },
+              rangeType: lockedRange.rangeType,
+              properties: { ...lockedRange.properties },
               selections: [
                 {
-                  startOffset: uEnd,
-                  endOffset: lEnd,
+                  startOffset: unlockEnd,
+                  endOffset: lockedEnd,
                   collapsed: false,
                   ...(activeTextRange.segmentId
                     ? { segmentId: activeTextRange.segmentId }
@@ -444,7 +444,7 @@ export class DocLockPlugin extends Plugin {
     if (unlockedCount > 0) {
       messageService.show({
         type: MessageType.Success,
-        content: `${localeService.t('parker-vue-lab-plugins.doc-lock.success.unlocked')}${uStart} - ${uEnd}`
+        content: `${localeService.t('parker-vue-lab-plugins.doc-lock.success.unlocked')}${unlockStart} - ${unlockEnd}`
       });
       return true;
     } else {
