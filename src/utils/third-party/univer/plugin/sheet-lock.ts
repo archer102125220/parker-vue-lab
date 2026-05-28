@@ -93,21 +93,24 @@ export interface ILockedRangeInfo {
   allowedRoles: string[];
 }
 
+const COMMAND_ID_LOCK = 'sheet.command.lock-selection';
+const COMMAND_ID_UNLOCK = 'sheet.command.unlock-selection';
+const COMMAND_ID_UNLOCK_ENTIRE = 'sheet.command.unlock-selection-entire';
+const MENU_ID_PARENT = 'parker-vue-lab-plugins.sheet-lock-menu';
+
 export class SheetLockPlugin extends Plugin {
   static override pluginName = 'sheet-lock-plugin';
   private _config: ISheetLockPluginConfig;
 
   // { unitId: { subUnitId: ILockedRangeInfo[] } }
-  private lockedRanges: Record<string, Record<string, ILockedRangeInfo[]>> = {};
+  private lockedRangeList: Record<string, Record<string, ILockedRangeInfo[]>> = {};
 
   constructor(
     config: Partial<ISheetLockPluginConfig> | undefined,
     @Inject(Injector) protected override _injector: Injector,
-    @Inject(IMenuManagerService)
-    private readonly menuManagerService: IMenuManagerService,
+    @Inject(IMenuManagerService) private readonly menuManagerService: IMenuManagerService,
     @Inject(ICommandService) private readonly commandService: ICommandService,
-    @Inject(ComponentManager)
-    private readonly componentManager: ComponentManager
+    @Inject(ComponentManager) private readonly componentManager: ComponentManager
   ) {
     super();
     this._config = config || {};
@@ -121,26 +124,18 @@ export class SheetLockPlugin extends Plugin {
       sheetInterceptorService.intercept(INTERCEPTOR_POINT.CELL_CONTENT, {
         priority: 100,
         handler: (cell, location, next) => {
-          const noStyle =
-            typeof this._config.noStyle === 'boolean'
-              ? this._config.noStyle
-              : true;
+          const noStyle = typeof this._config.noStyle === 'boolean' ? this._config.noStyle : true;
 
           if (noStyle) {
             return next(cell);
           }
 
           const { unitId, subUnitId, row, col } = location;
-          const unitLocks = this.lockedRanges[unitId]?.[subUnitId] || [];
+          const unitLocks = this.lockedRangeList[unitId]?.[subUnitId] || [];
 
           for (const lock of unitLocks) {
             const { startRow, endRow, startColumn, endColumn } = lock.range;
-            if (
-              row >= startRow &&
-              row <= endRow &&
-              col >= startColumn &&
-              col <= endColumn
-            ) {
+            if (row >= startRow && row <= endRow && col >= startColumn && col <= endColumn) {
               const newCell = {
                 ...cell,
                 s: {
@@ -159,31 +154,34 @@ export class SheetLockPlugin extends Plugin {
   }
 
   override onStarting(): void {
-    try {
-      this.componentManager.register(
-        'Vue3LockedRoundIcon',
-        Vue3LockedRoundIcon,
-        {
-          framework: 'vue3'
-        }
-      );
-    } catch {}
-    try {
-      this.componentManager.register('Vue3LockIcon', Vue3LockIcon, {
-        framework: 'vue3'
-      });
-    } catch {}
-    try {
-      this.componentManager.register('Vue3UnlockedIcon', Vue3UnlockedIcon, {
-        framework: 'vue3'
-      });
-    } catch {}
+    this._registerIcons();
+    this._registerCommands();
+    this._registerMenus();
+    this._registerInterceptors();
+  }
 
-    const commandId = 'sheet.command.lock-selection';
+  private _registerIcons() {
+    try {
+      this.componentManager.register('Vue3LockedRoundIcon', Vue3LockedRoundIcon, { framework: 'vue3' });
+    } catch {}
+    try {
+      this.componentManager.register('Vue3LockIcon', Vue3LockIcon, { framework: 'vue3' });
+    } catch {}
+    try {
+      this.componentManager.register('Vue3UnlockedIcon', Vue3UnlockedIcon, { framework: 'vue3' });
+    } catch {}
+  }
 
-    const lockCommand: ICommand = {
+  private _registerCommands() {
+    this.commandService.registerCommand(this._createLockCommand());
+    this.commandService.registerCommand(this._createUnlockCommand(COMMAND_ID_UNLOCK, false));
+    this.commandService.registerCommand(this._createUnlockCommand(COMMAND_ID_UNLOCK_ENTIRE, true));
+  }
+
+  private _createLockCommand(): ICommand {
+    return {
       type: CommandType.OPERATION,
-      id: commandId,
+      id: COMMAND_ID_LOCK,
       handler: async (accessor: IAccessor) => {
         const univerInstanceService = accessor.get(IUniverInstanceService);
         const selectionManagerService = accessor.get(SheetsSelectionsService);
@@ -199,9 +197,7 @@ export class SheetLockPlugin extends Plugin {
         if (!selections || selections.length === 0) {
           messageService.show({
             type: MessageType.Warning,
-            content: localeService.t(
-              'parker-vue-lab-plugins.sheet-lock.error.selectFirst'
-            )
+            content: localeService.t('parker-vue-lab-plugins.sheet-lock.error.selectFirst')
           });
           return false;
         }
@@ -217,15 +213,15 @@ export class SheetLockPlugin extends Plugin {
 
         if (!subUnitId) return false;
 
-        if (!this.lockedRanges[unitId]) this.lockedRanges[unitId] = {};
-        if (!this.lockedRanges[unitId][subUnitId]) {
-          this.lockedRanges[unitId][subUnitId] = [];
+        if (!this.lockedRangeList[unitId]) this.lockedRangeList[unitId] = {};
+        if (!this.lockedRangeList[unitId][subUnitId]) {
+          this.lockedRangeList[unitId][subUnitId] = [];
         }
 
         const cellValue: IObjectMatrixPrimitiveType<Nullable<ICellData>> = {};
 
         for (const sel of selections) {
-          this.lockedRanges[unitId][subUnitId].push({
+          this.lockedRangeList[unitId][subUnitId].push({
             range: { ...sel.range },
             allowedRoles: permissionParams.allowedRoles
           });
@@ -238,32 +234,27 @@ export class SheetLockPlugin extends Plugin {
           }
         }
 
-        accessor
-          .get(ICommandService)
-          .syncExecuteCommand(SetRangeValuesMutation.id, {
-            unitId,
-            subUnitId,
-            cellValue,
-            triggerByPlugin: true
-          });
+        accessor.get(ICommandService).syncExecuteCommand(SetRangeValuesMutation.id, {
+          unitId,
+          subUnitId,
+          cellValue,
+          triggerByPlugin: true
+        });
 
         messageService.show({
           type: MessageType.Success,
-          content: localeService.t(
-            'parker-vue-lab-plugins.sheet-lock.success.locked'
-          )
+          content: localeService.t('parker-vue-lab-plugins.sheet-lock.success.locked')
         });
 
         return true;
       }
     };
+  }
 
-    this.commandService.registerCommand(lockCommand);
-
-    const unlockCommandId = 'sheet.command.unlock-selection';
-    const unlockCommand: ICommand = {
+  private _createUnlockCommand(commandId: string, entire: boolean): ICommand {
+    return {
       type: CommandType.OPERATION,
-      id: unlockCommandId,
+      id: commandId,
       handler: async (accessor: IAccessor) => {
         const univerInstanceService = accessor.get(IUniverInstanceService);
         const selectionManagerService = accessor.get(SheetsSelectionsService);
@@ -279,9 +270,7 @@ export class SheetLockPlugin extends Plugin {
         if (!selections || selections.length === 0) {
           messageService.show({
             type: MessageType.Warning,
-            content: localeService.t(
-              'parker-vue-lab-plugins.sheet-lock.error.selectFirstUnlock'
-            )
+            content: localeService.t('parker-vue-lab-plugins.sheet-lock.error.selectFirstUnlock')
           });
           return false;
         }
@@ -291,10 +280,9 @@ export class SheetLockPlugin extends Plugin {
         if (!subUnitId) return false;
 
         const store = useUniverStore();
-        const unitLocks = this.lockedRanges[unitId]?.[subUnitId] || [];
+        const unitLocks = this.lockedRangeList[unitId]?.[subUnitId] || [];
 
         let unlockedCount = 0;
-
         const cellValue: IObjectMatrixPrimitiveType<Nullable<ICellData>> = {};
 
         for (const sel of selections) {
@@ -310,10 +298,9 @@ export class SheetLockPlugin extends Plugin {
             const intersectColStart = Math.max(startColumn, l.startColumn);
             const intersectColEnd = Math.min(endColumn, l.endColumn);
 
-            if (
-              intersectRowStart <= intersectRowEnd &&
-              intersectColStart <= intersectColEnd
-            ) {
+            const isIntersecting = intersectRowStart <= intersectRowEnd && intersectColStart <= intersectColEnd;
+
+            if (isIntersecting) {
               if (
                 Array.isArray(lock.allowedRoles) &&
                 lock.allowedRoles.length > 0 &&
@@ -321,9 +308,7 @@ export class SheetLockPlugin extends Plugin {
               ) {
                 messageService.show({
                   type: MessageType.Error,
-                  content: localeService.t(
-                    'parker-vue-lab-plugins.sheet-lock.error.lockedBlocked'
-                  )
+                  content: localeService.t('parker-vue-lab-plugins.sheet-lock.error.lockedBlocked')
                 });
                 return false;
               }
@@ -331,57 +316,46 @@ export class SheetLockPlugin extends Plugin {
               unitLocks.splice(i, 1);
               unlockedCount++;
 
-              const newLocks = [];
-              if (l.startRow < intersectRowStart) {
-                newLocks.push({
-                  range: {
-                    startRow: l.startRow,
-                    endRow: intersectRowStart - 1,
-                    startColumn: l.startColumn,
-                    endColumn: l.endColumn
-                  },
-                  allowedRoles: lock.allowedRoles
-                });
-              }
-              if (l.endRow > intersectRowEnd) {
-                newLocks.push({
-                  range: {
-                    startRow: intersectRowEnd + 1,
-                    endRow: l.endRow,
-                    startColumn: l.startColumn,
-                    endColumn: l.endColumn
-                  },
-                  allowedRoles: lock.allowedRoles
-                });
-              }
-              if (l.startColumn < intersectColStart) {
-                newLocks.push({
-                  range: {
-                    startRow: intersectRowStart,
-                    endRow: intersectRowEnd,
-                    startColumn: l.startColumn,
-                    endColumn: intersectColStart - 1
-                  },
-                  allowedRoles: lock.allowedRoles
-                });
-              }
-              if (l.endColumn > intersectColEnd) {
-                newLocks.push({
-                  range: {
-                    startRow: intersectRowStart,
-                    endRow: intersectRowEnd,
-                    startColumn: intersectColEnd + 1,
-                    endColumn: l.endColumn
-                  },
-                  allowedRoles: lock.allowedRoles
-                });
-              }
-              unitLocks.splice(i, 0, ...newLocks);
-
-              for (let r = intersectRowStart; r <= intersectRowEnd; r++) {
-                if (!cellValue[r]) cellValue[r] = {};
-                for (let c = intersectColStart; c <= intersectColEnd; c++) {
-                  cellValue[r]![c] = {};
+              if (!entire) {
+                const newLocks = [];
+                if (l.startRow < intersectRowStart) {
+                  newLocks.push({
+                    range: { startRow: l.startRow, endRow: intersectRowStart - 1, startColumn: l.startColumn, endColumn: l.endColumn },
+                    allowedRoles: lock.allowedRoles
+                  });
+                }
+                if (l.endRow > intersectRowEnd) {
+                  newLocks.push({
+                    range: { startRow: intersectRowEnd + 1, endRow: l.endRow, startColumn: l.startColumn, endColumn: l.endColumn },
+                    allowedRoles: lock.allowedRoles
+                  });
+                }
+                if (l.startColumn < intersectColStart) {
+                  newLocks.push({
+                    range: { startRow: intersectRowStart, endRow: intersectRowEnd, startColumn: l.startColumn, endColumn: intersectColStart - 1 },
+                    allowedRoles: lock.allowedRoles
+                  });
+                }
+                if (l.endColumn > intersectColEnd) {
+                  newLocks.push({
+                    range: { startRow: intersectRowStart, endRow: intersectRowEnd, startColumn: intersectColEnd + 1, endColumn: l.endColumn },
+                    allowedRoles: lock.allowedRoles
+                  });
+                }
+                unitLocks.splice(i, 0, ...newLocks);
+                
+                for (let r = intersectRowStart; r <= intersectRowEnd; r++) {
+                  if (!cellValue[r]) cellValue[r] = {};
+                  for (let c = intersectColStart; c <= intersectColEnd; c++) {
+                    cellValue[r]![c] = {};
+                  }
+                }
+              } else {
+                for (let r = l.startRow; r <= l.endRow; r++) {
+                  if (!cellValue[r]) cellValue[r] = {};
+                  for (let c = l.startColumn; c <= l.endColumn; c++) {
+                    cellValue[r]![c] = {};
+                  }
                 }
               }
             }
@@ -389,306 +363,159 @@ export class SheetLockPlugin extends Plugin {
         }
 
         if (unlockedCount > 0) {
-          accessor
-            .get(ICommandService)
-            .syncExecuteCommand(SetRangeValuesMutation.id, {
-              unitId,
-              subUnitId,
-              cellValue,
-              triggerByPlugin: true
-            });
+          accessor.get(ICommandService).syncExecuteCommand(SetRangeValuesMutation.id, {
+            unitId,
+            subUnitId,
+            cellValue,
+            triggerByPlugin: true
+          });
           messageService.show({
             type: MessageType.Success,
-            content: localeService.t(
-              'parker-vue-lab-plugins.sheet-lock.success.unlocked'
-            )
+            content: localeService.t('parker-vue-lab-plugins.sheet-lock.success.unlocked')
           });
           return true;
         } else {
           messageService.show({
             type: MessageType.Info,
-            content: localeService.t(
-              'parker-vue-lab-plugins.sheet-lock.success.noLockedRange'
-            )
+            content: localeService.t('parker-vue-lab-plugins.sheet-lock.success.noLockedRange')
           });
           return false;
         }
       }
     };
+  }
 
-    this.commandService.registerCommand(unlockCommand);
-
-    const unlockCommandEntireId = 'sheet.command.unlock-selection-entire';
-    const unlockCommandEntire: ICommand = {
-      type: CommandType.OPERATION,
-      id: unlockCommandEntireId,
-      handler: async (accessor: IAccessor) => {
-        const univerInstanceService = accessor.get(IUniverInstanceService);
-        const selectionManagerService = accessor.get(SheetsSelectionsService);
-        const messageService = accessor.get(IMessageService);
-        const localeService = accessor.get(LocaleService);
-
-        const workbook = univerInstanceService.getFocusedUnit();
-        if (!workbook || workbook.type !== UniverInstanceType.UNIVER_SHEET) {
-          return false;
+  private _createMenuItemHiddenObservable() {
+    return new Observable<boolean>((subscriber) => {
+      const univerInstanceService = this._injector.get(IUniverInstanceService);
+      const subscription = univerInstanceService.focused$.subscribe((unitId) => {
+        if (!unitId) {
+          subscriber.next(true);
+          return;
         }
-
-        const selections = selectionManagerService.getCurrentSelections();
-        if (!selections || selections.length === 0) {
-          messageService.show({
-            type: MessageType.Warning,
-            content: localeService.t(
-              'parker-vue-lab-plugins.sheet-lock.error.selectFirstUnlock'
-            )
-          });
-          return false;
-        }
-
-        const unitId = workbook.getUnitId();
-        const subUnitId = (workbook as Workbook).getActiveSheet()?.getSheetId();
-        if (!subUnitId) return false;
-
-        const store = useUniverStore();
-        const unitLocks = this.lockedRanges[unitId]?.[subUnitId] || [];
-
-        let unlockedCount = 0;
-        const cellValue: IObjectMatrixPrimitiveType<Nullable<ICellData>> = {};
-
-        for (const sel of selections) {
-          const { startRow, endRow, startColumn, endColumn } = sel.range;
-
-          for (let i = unitLocks.length - 1; i >= 0; i--) {
-            const lock = unitLocks[i];
-            if (!lock) continue;
-            const l = lock.range;
-
-            const intersectRow =
-              Math.max(startRow, l.startRow) <= Math.min(endRow, l.endRow);
-            const intersectCol =
-              Math.max(startColumn, l.startColumn) <=
-              Math.min(endColumn, l.endColumn);
-
-            if (intersectRow && intersectCol) {
-              if (
-                Array.isArray(lock.allowedRoles) &&
-                lock.allowedRoles.length > 0 &&
-                !lock.allowedRoles.includes(store.currentUserRole)
-              ) {
-                messageService.show({
-                  type: MessageType.Error,
-                  content: localeService.t(
-                    'parker-vue-lab-plugins.sheet-lock.error.lockedBlocked'
-                  )
-                });
-                return false;
-              }
-
-              unitLocks.splice(i, 1);
-              unlockedCount++;
-
-              for (let r = l.startRow; r <= l.endRow; r++) {
-                if (!cellValue[r]) cellValue[r] = {};
-                for (let c = l.startColumn; c <= l.endColumn; c++) {
-                  cellValue[r]![c] = {};
-                }
-              }
-            }
-          }
-        }
-
-        if (unlockedCount > 0) {
-          accessor
-            .get(ICommandService)
-            .syncExecuteCommand(SetRangeValuesMutation.id, {
-              unitId,
-              subUnitId,
-              cellValue,
-              triggerByPlugin: true
-            });
-          messageService.show({
-            type: MessageType.Success,
-            content: localeService.t(
-              'parker-vue-lab-plugins.sheet-lock.success.unlocked'
-            )
-          });
-          return true;
-        } else {
-          messageService.show({
-            type: MessageType.Info,
-            content: localeService.t(
-              'parker-vue-lab-plugins.sheet-lock.success.noLockedRange'
-            )
-          });
-          return false;
-        }
-      }
-    };
-
-    this.commandService.registerCommand(unlockCommandEntire);
-
-    const menuItemFactory = () => ({
-      id: commandId,
-      title: 'parker-vue-lab-plugins.sheet-lock.title',
-      tooltip: 'parker-vue-lab-plugins.sheet-lock.tooltip',
-      icon: 'Vue3LockIcon',
-      type: MenuItemType.BUTTON,
-      hidden$: new Observable<boolean>((subscriber) => {
-        const univerInstanceService = this._injector.get(
-          IUniverInstanceService
-        );
-        const subscription = univerInstanceService.focused$.subscribe(
-          (unitId) => {
-            if (!unitId) {
-              subscriber.next(true);
-              return;
-            }
-            const unit = univerInstanceService.getUnit(unitId);
-            subscriber.next(unit?.type !== UniverInstanceType.UNIVER_SHEET);
-          }
-        );
-        return () => subscription.unsubscribe();
-      })
+        const unit = univerInstanceService.getUnit(unitId);
+        subscriber.next(unit?.type !== UniverInstanceType.UNIVER_SHEET);
+      });
+      return () => subscription.unsubscribe();
     });
+  }
 
-    const unlockMenuItemFactory = () => ({
-      id: unlockCommandId,
-      title: 'parker-vue-lab-plugins.sheet-lock.unlockTitle',
-      tooltip: 'parker-vue-lab-plugins.sheet-lock.unlockTooltip',
-      icon: 'Vue3UnlockedIcon',
-      type: MenuItemType.BUTTON,
-      hidden$: new Observable<boolean>((subscriber) => {
-        const univerInstanceService = this._injector.get(
-          IUniverInstanceService
-        );
-        const subscription = univerInstanceService.focused$.subscribe(
-          (unitId) => {
-            if (!unitId) {
-              subscriber.next(true);
-              return;
-            }
-            const unit = univerInstanceService.getUnit(unitId);
-            subscriber.next(unit?.type !== UniverInstanceType.UNIVER_SHEET);
-          }
-        );
-        return () => subscription.unsubscribe();
-      })
-    });
-
-    const unlockMenuItemEntireFactory = () => ({
-      id: unlockCommandEntireId,
-      title: 'parker-vue-lab-plugins.sheet-lock.unlockEntireTitle',
-      tooltip: 'parker-vue-lab-plugins.sheet-lock.unlockEntireTooltip',
-      icon: 'Vue3UnlockedIcon',
-      type: MenuItemType.BUTTON,
-      hidden$: new Observable<boolean>((subscriber) => {
-        const univerInstanceService = this._injector.get(
-          IUniverInstanceService
-        );
-        const subscription = univerInstanceService.focused$.subscribe(
-          (unitId) => {
-            if (!unitId) {
-              subscriber.next(true);
-              return;
-            }
-            const unit = univerInstanceService.getUnit(unitId);
-            subscriber.next(unit?.type !== UniverInstanceType.UNIVER_SHEET);
-          }
-        );
-        return () => subscription.unsubscribe();
-      })
-    });
-
-    const parentMenuId = 'parker-vue-lab-plugins.sheet-lock-menu';
-
+  private _registerMenus() {
     this.menuManagerService.mergeMenu({
       [RibbonStartGroup.OTHERS]: {
-        [parentMenuId]: {
+        [MENU_ID_PARENT]: {
           order: 25,
           menuItemFactory: () => ({
-            id: parentMenuId,
+            id: MENU_ID_PARENT,
             tooltip: 'parker-vue-lab-plugins.sheet-lock-menu.tooltip',
             icon: 'Vue3LockedRoundIcon',
             type: MenuItemType.SUBITEMS
           }),
-          [commandId]: {
+          [COMMAND_ID_LOCK]: {
             order: 1,
-            menuItemFactory
+            menuItemFactory: () => ({
+              id: COMMAND_ID_LOCK,
+              title: 'parker-vue-lab-plugins.sheet-lock.title',
+              tooltip: 'parker-vue-lab-plugins.sheet-lock.tooltip',
+              icon: 'Vue3LockIcon',
+              type: MenuItemType.BUTTON,
+              hidden$: this._createMenuItemHiddenObservable()
+            })
           },
-          [unlockCommandId]: {
+          [COMMAND_ID_UNLOCK]: {
             order: 2,
-            menuItemFactory: unlockMenuItemFactory
+            menuItemFactory: () => ({
+              id: COMMAND_ID_UNLOCK,
+              title: 'parker-vue-lab-plugins.sheet-lock.unlockTitle',
+              tooltip: 'parker-vue-lab-plugins.sheet-lock.unlockTooltip',
+              icon: 'Vue3UnlockedIcon',
+              type: MenuItemType.BUTTON,
+              hidden$: this._createMenuItemHiddenObservable()
+            })
           },
-          [unlockCommandEntireId]: {
+          [COMMAND_ID_UNLOCK_ENTIRE]: {
             order: 3,
-            menuItemFactory: unlockMenuItemEntireFactory
+            menuItemFactory: () => ({
+              id: COMMAND_ID_UNLOCK_ENTIRE,
+              title: 'parker-vue-lab-plugins.sheet-lock.unlockEntireTitle',
+              tooltip: 'parker-vue-lab-plugins.sheet-lock.unlockEntireTooltip',
+              icon: 'Vue3UnlockedIcon',
+              type: MenuItemType.BUTTON,
+              hidden$: this._createMenuItemHiddenObservable()
+            })
           }
         }
       }
     });
+  }
 
+  private _isRangeBlocked(
+    unitLocks: ILockedRangeInfo[],
+    startRow: number,
+    endRow: number,
+    startColumn: number,
+    endColumn: number,
+    currentUserRole: string
+  ): boolean {
+    for (const lock of unitLocks) {
+      const l = lock.range;
+      const intersectRow = Math.max(startRow, l.startRow) <= Math.min(endRow, l.endRow);
+      const intersectCol = Math.max(startColumn, l.startColumn) <= Math.min(endColumn, l.endColumn);
+
+      if (intersectRow && intersectCol) {
+        if (Array.isArray(lock.allowedRoles) && !lock.allowedRoles.includes(currentUserRole)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  private _checkSelectionsBlocked(
+    unitId: string,
+    subUnitId: string,
+    selections: ReturnType<SheetsSelectionsService['getCurrentSelections']> | null | undefined,
+    currentUserRole: string
+  ): boolean {
+    const unitLocks = this.lockedRangeList[unitId]?.[subUnitId] || [];
+    if (unitLocks.length === 0) return false;
+
+    if (selections && selections.length > 0) {
+      const firstSelection = selections[0];
+      if (firstSelection && firstSelection.primary) {
+        const { startRow, endRow, startColumn, endColumn } = firstSelection.primary;
+        return this._isRangeBlocked(unitLocks, startRow, endRow, startColumn, endColumn, currentUserRole);
+      }
+    }
+    return false;
+  }
+
+  private _handleSelectionBlockedCheck(unitId: string, subUnitId: string, currentUserRole: string) {
+    const selectionManagerService = this._injector.get(SheetsSelectionsService);
+    const selections = selectionManagerService.getCurrentSelections();
+    
+    if (this._checkSelectionsBlocked(unitId, subUnitId, selections, currentUserRole)) {
+      this.showBlockedMessage();
+      throw new Error(SHEET_LOCK_ERROR_MESSAGE);
+    }
+  }
+
+  private _registerInterceptors() {
     this.commandService.beforeCommandExecuted((commandInfo) => {
       const store = useUniverStore();
+      const currentUserRole = store.currentUserRole;
 
       if (commandInfo.id === RichTextEditingMutation.id) {
-        const params = commandInfo.params as unknown as
-          | IRichTextEditingMutationParams
-          | undefined;
-        if (
-          params &&
-          (params.unitId === DOCS_FORMULA_BAR_EDITOR_UNIT_ID_KEY ||
-            params.unitId === DOCS_NORMAL_EDITOR_UNIT_ID_KEY)
-        ) {
-          const univerInstanceService = this._injector.get(
-            IUniverInstanceService
-          );
-          const workbook = univerInstanceService.getCurrentUnitOfType<Workbook>(
-            UniverInstanceType.UNIVER_SHEET
-          );
+        const params = commandInfo.params as unknown as IRichTextEditingMutationParams | undefined;
+        if (params && (params.unitId === DOCS_FORMULA_BAR_EDITOR_UNIT_ID_KEY || params.unitId === DOCS_NORMAL_EDITOR_UNIT_ID_KEY)) {
+          const univerInstanceService = this._injector.get(IUniverInstanceService);
+          const workbook = univerInstanceService.getCurrentUnitOfType<Workbook>(UniverInstanceType.UNIVER_SHEET);
+          
           if (workbook) {
             const unitId = workbook.getUnitId();
             const subUnitId = workbook.getActiveSheet()?.getSheetId();
             if (subUnitId) {
-              const unitLocks = this.lockedRanges[unitId]?.[subUnitId] || [];
-              if (unitLocks.length > 0) {
-                const selectionManagerService = this._injector.get(
-                  SheetsSelectionsService
-                );
-                const selections =
-                  selectionManagerService.getCurrentSelections();
-                if (selections && selections.length > 0) {
-                  const firstSelection = selections[0];
-                  if (firstSelection && firstSelection.primary) {
-                    const { startRow, endRow, startColumn, endColumn } =
-                      firstSelection.primary;
-
-                    let isBlocked = false;
-                    for (const lock of unitLocks) {
-                      const l = lock.range;
-                      const intersectRow =
-                        Math.max(startRow, l.startRow) <=
-                        Math.min(endRow, l.endRow);
-                      const intersectCol =
-                        Math.max(startColumn, l.startColumn) <=
-                        Math.min(endColumn, l.endColumn);
-
-                      if (intersectRow && intersectCol) {
-                        if (
-                          Array.isArray(lock.allowedRoles) &&
-                          !lock.allowedRoles.includes(store.currentUserRole)
-                        ) {
-                          isBlocked = true;
-                          break;
-                        }
-                      }
-                    }
-
-                    if (isBlocked) {
-                      this.showBlockedMessage();
-                      throw new Error(SHEET_LOCK_ERROR_MESSAGE);
-                    }
-                  }
-                }
-              }
+              this._handleSelectionBlockedCheck(unitId, subUnitId, currentUserRole);
             }
           }
         }
@@ -700,88 +527,34 @@ export class SheetLockPlugin extends Plugin {
         commandInfo.id === 'sheet.operation.set-cell-edit-visible-arrow' ||
         commandInfo.id === 'sheet.operation.set-activate-cell-edit'
       ) {
-        // Type assertion explanation: Using a local type to avoid 'any' for the UI commands' parameters.
         type IEditOperationParams = { visible?: boolean; unitId?: string };
-        const params = commandInfo.params as unknown as
-          | IEditOperationParams
-          | undefined;
-        if (params && 'visible' in params && params.visible === false) {
-          // Allow hiding the editor without permission checks
-        } else {
-          const univerInstanceService = this._injector.get(
-            IUniverInstanceService
-          );
-          const unitId =
-            params?.unitId ||
-            univerInstanceService.getFocusedUnit()?.getUnitId();
+        const params = commandInfo.params as unknown as IEditOperationParams | undefined;
+        
+        if (!(params && 'visible' in params && params.visible === false)) {
+          const univerInstanceService = this._injector.get(IUniverInstanceService);
+          const unitId = params?.unitId || univerInstanceService.getFocusedUnit()?.getUnitId();
 
           if (unitId) {
             const workbook = univerInstanceService.getUnit(unitId) as Workbook;
             const subUnitId = workbook?.getActiveSheet()?.getSheetId();
 
             if (subUnitId) {
-              const unitLocks = this.lockedRanges[unitId]?.[subUnitId] || [];
-              if (unitLocks.length > 0) {
-                const selectionManagerService = this._injector.get(
-                  SheetsSelectionsService
-                );
-                const selections =
-                  selectionManagerService.getCurrentSelections();
-
-                if (selections && selections.length > 0) {
-                  const firstSelection = selections[0];
-                  if (firstSelection && firstSelection.primary) {
-                    const { startRow, endRow, startColumn, endColumn } =
-                      firstSelection.primary;
-
-                    let isBlocked = false;
-                    for (const lock of unitLocks) {
-                      const l = lock.range;
-                      const intersectRow =
-                        Math.max(startRow, l.startRow) <=
-                        Math.min(endRow, l.endRow);
-                      const intersectCol =
-                        Math.max(startColumn, l.startColumn) <=
-                        Math.min(endColumn, l.endColumn);
-
-                      if (intersectRow && intersectCol) {
-                        if (
-                          Array.isArray(lock.allowedRoles) &&
-                          !lock.allowedRoles.includes(store.currentUserRole)
-                        ) {
-                          isBlocked = true;
-                          break;
-                        }
-                      }
-                    }
-
-                    if (isBlocked) {
-                      this.showBlockedMessage();
-                      throw new Error(SHEET_LOCK_ERROR_MESSAGE);
-                    }
-                  }
-                }
-              }
+              this._handleSelectionBlockedCheck(unitId, subUnitId, currentUserRole);
             }
           }
         }
       }
 
       if (commandInfo.id === SetRangeValuesMutation.id) {
-        type ISetRangeValuesMutationParamsWithTrigger =
-          ISetRangeValuesMutationParams & { triggerByPlugin?: boolean };
-        const params =
-          commandInfo.params as ISetRangeValuesMutationParamsWithTrigger;
+        type ISetRangeValuesMutationParamsWithTrigger = ISetRangeValuesMutationParams & { triggerByPlugin?: boolean };
+        const params = commandInfo.params as ISetRangeValuesMutationParamsWithTrigger;
 
         if (params.triggerByPlugin) return;
 
-        const unitLocks =
-          this.lockedRanges[params.unitId]?.[params.subUnitId] || [];
+        const unitLocks = this.lockedRangeList[params.unitId]?.[params.subUnitId] || [];
         if (unitLocks.length === 0) return;
 
-        let isBlocked = false;
         const { cellValue } = params;
-
         if (cellValue) {
           for (const rowStr in cellValue) {
             const row = parseInt(rowStr, 10);
@@ -791,93 +564,38 @@ export class SheetLockPlugin extends Plugin {
             for (const colStr in rowData) {
               const col = parseInt(colStr, 10);
               const cell = rowData[col];
-
               if (cell === undefined || cell === null) continue;
 
-              for (const lock of unitLocks) {
-                const { startRow, endRow, startColumn, endColumn } = lock.range;
-                if (
-                  row >= startRow &&
-                  row <= endRow &&
-                  col >= startColumn &&
-                  col <= endColumn
-                ) {
-                  if (
-                    Array.isArray(lock.allowedRoles) &&
-                    !lock.allowedRoles.includes(store.currentUserRole)
-                  ) {
-                    isBlocked = true;
-                    break;
-                  }
-                }
+              if (this._isRangeBlocked(unitLocks, row, row, col, col, currentUserRole)) {
+                this.showBlockedMessage();
+                throw new Error(SHEET_LOCK_ERROR_MESSAGE);
               }
-              if (isBlocked) break;
             }
-            if (isBlocked) break;
           }
-        }
-
-        if (isBlocked) {
-          this.showBlockedMessage();
-          throw new Error(SHEET_LOCK_ERROR_MESSAGE);
         }
       }
 
       if (commandInfo.id === RemoveRowMutation.id) {
         const params = commandInfo.params as IRemoveRowsMutationParams;
-        const unitLocks =
-          this.lockedRanges[params.unitId]?.[params.subUnitId] || [];
-        if (unitLocks.length === 0) return;
-
-        let isBlocked = false;
-        const { range } = params;
-
-        const { startRow, endRow } = range;
-        for (const lock of unitLocks) {
-          const l = lock.range;
-          if (startRow <= l.endRow && endRow >= l.startRow) {
-            if (
-              Array.isArray(lock.allowedRoles) &&
-              !lock.allowedRoles.includes(store.currentUserRole)
-            ) {
-              isBlocked = true;
-              break;
-            }
+        const unitLocks = this.lockedRangeList[params.unitId]?.[params.subUnitId] || [];
+        if (unitLocks.length > 0) {
+          const { startRow, endRow } = params.range;
+          if (this._isRangeBlocked(unitLocks, startRow, endRow, -Infinity, Infinity, currentUserRole)) {
+            this.showBlockedMessage();
+            throw new Error(SHEET_LOCK_ERROR_MESSAGE);
           }
-        }
-
-        if (isBlocked) {
-          this.showBlockedMessage();
-          throw new Error(SHEET_LOCK_ERROR_MESSAGE);
         }
       }
 
       if (commandInfo.id === RemoveColMutation.id) {
         const params = commandInfo.params as IRemoveColMutationParams;
-        const unitLocks =
-          this.lockedRanges[params.unitId]?.[params.subUnitId] || [];
-        if (unitLocks.length === 0) return;
-
-        let isBlocked = false;
-        const { range } = params;
-
-        const { startColumn, endColumn } = range;
-        for (const lock of unitLocks) {
-          const l = lock.range;
-          if (startColumn <= l.endColumn && endColumn >= l.startColumn) {
-            if (
-              Array.isArray(lock.allowedRoles) &&
-              !lock.allowedRoles.includes(store.currentUserRole)
-            ) {
-              isBlocked = true;
-              break;
-            }
+        const unitLocks = this.lockedRangeList[params.unitId]?.[params.subUnitId] || [];
+        if (unitLocks.length > 0) {
+          const { startColumn, endColumn } = params.range;
+          if (this._isRangeBlocked(unitLocks, -Infinity, Infinity, startColumn, endColumn, currentUserRole)) {
+            this.showBlockedMessage();
+            throw new Error(SHEET_LOCK_ERROR_MESSAGE);
           }
-        }
-
-        if (isBlocked) {
-          this.showBlockedMessage();
-          throw new Error(SHEET_LOCK_ERROR_MESSAGE);
         }
       }
     });
@@ -889,9 +607,7 @@ export class SheetLockPlugin extends Plugin {
       const localeService = this._injector.get(LocaleService);
       messageService.show({
         type: MessageType.Error,
-        content: localeService.t(
-          'parker-vue-lab-plugins.sheet-lock.error.lockedBlocked'
-        )
+        content: localeService.t('parker-vue-lab-plugins.sheet-lock.error.lockedBlocked')
       });
     },
     500,
