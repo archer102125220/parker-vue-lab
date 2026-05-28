@@ -40,9 +40,9 @@ import {
 } from '@univerjs/sheets';
 import { INTERCEPTOR_POINT, SheetInterceptorService } from '@univerjs/sheets';
 
-import Vue3LockedRoundIcon from '@/src/components/Icon/LockedRound.vue';
-import Vue3LockIcon from '@/src/components/Icon/Lock.vue';
-import Vue3UnlockedIcon from '@/src/components/Icon/Unlocked.vue';
+import Vue3LockedRoundIcon from '@src/components/Icon/LockedRound.vue';
+import Vue3LockIcon from '@src/components/Icon/Lock.vue';
+import Vue3UnlockedIcon from '@src/components/Icon/Unlocked.vue';
 import { useUniverStore } from '@src/store/univer';
 
 const SHEET_LOCK_ERROR_MESSAGE = 'Edit blocked: Range is locked.';
@@ -160,6 +160,15 @@ export class SheetLockPlugin extends Plugin {
 
   override onStarting(): void {
     try {
+      this.componentManager.register(
+        'Vue3LockedRoundIcon',
+        Vue3LockedRoundIcon,
+        {
+          framework: 'vue3'
+        }
+      );
+    } catch {}
+    try {
       this.componentManager.register('Vue3LockIcon', Vue3LockIcon, {
         framework: 'vue3'
       });
@@ -168,15 +177,6 @@ export class SheetLockPlugin extends Plugin {
       this.componentManager.register('Vue3UnlockedIcon', Vue3UnlockedIcon, {
         framework: 'vue3'
       });
-    } catch {}
-    try {
-      this.componentManager.register(
-        'Vue3LockedRoundIcon',
-        Vue3LockedRoundIcon,
-        {
-          framework: 'vue3'
-        }
-      );
     } catch {}
 
     const commandId = 'sheet.command.lock-selection';

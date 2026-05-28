@@ -30,12 +30,15 @@ import {
   type IRichTextEditingMutationParams
 } from '@univerjs/docs';
 
-import Vue3LockedRoundIcon from '@/src/components/Icon/LockedRound.vue';
-import Vue3LockIcon from '@/src/components/Icon/Lock.vue';
-import Vue3UnlockedIcon from '@/src/components/Icon/Unlocked.vue';
+import Vue3LockedRoundIcon from '@src/components/Icon/LockedRound.vue';
+import Vue3LockIcon from '@src/components/Icon/Lock.vue';
+import Vue3UnlockedIcon from '@src/components/Icon/Unlocked.vue';
 import { useUniverStore } from '@src/store/univer';
 
 const DOC_LOCK_ERROR_MESSAGE = 'Edit blocked: Range is locked.';
+const COMMAND_ID_LOCK = 'doc.command.lock-selection';
+const COMMAND_ID_UNLOCK = 'doc.command.unlock-selection';
+const MENU_ID_PARENT = 'parker-vue-lab-plugins.doc-lock-menu';
 
 function ignoreErrorLog() {
   if (typeof window === 'undefined') return;
@@ -111,26 +114,27 @@ export class DocLockPlugin extends Plugin {
   }
 
   override onStarting(): void {
-    try {
-      this.componentManager.register('Vue3LockIcon', Vue3LockIcon, {
-        framework: 'vue3'
-      });
-    } catch {}
-    try {
-      this.componentManager.register('Vue3UnlockedIcon', Vue3UnlockedIcon, {
-        framework: 'vue3'
-      });
-    } catch {}
-    try {
-      this.componentManager.register(
-        'Vue3LockedRoundIcon',
-        Vue3LockedRoundIcon,
-        {
-          framework: 'vue3'
-        }
-      );
-    } catch {}
+    this._initIcons();
+    this._patchSelectionManager();
+    this._registerCommands();
+    this._registerMenus();
+    this._registerEditInterceptor();
+  }
 
+  private _initIcons() {
+    const icons = {
+      Vue3LockedRoundIcon,
+      Vue3LockIcon,
+      Vue3UnlockedIcon
+    };
+    for (const [name, component] of Object.entries(icons)) {
+      try {
+        this.componentManager.register(name, component, { framework: 'vue3' });
+      } catch {}
+    }
+  }
+
+  private _patchSelectionManager() {
     // --- Univer Bug Fix: Patch DocSelectionManagerService to prevent preset-docs-hyper-link crash ---
     // The hyper-link plugin reads `activeRanges[0].segmentId` directly on hover,
     // which crashes if `getTextRanges()` returns an empty array.
@@ -156,359 +160,362 @@ export class DocLockPlugin extends Plugin {
         return ranges;
       };
     }
+  }
 
-    const commandId = 'doc.command.lock-selection';
+  private _getLockedRanges(
+    doc: unknown
+  ): ICustomRange<{ locked?: boolean; allowedRoles?: string[] }>[] {
+    const documentDataModel = doc as unknown as DocumentDataModel;
+    const customRanges = documentDataModel.getCustomRanges?.() || [];
+    return customRanges.filter(
+      (r: ICustomRange<{ locked?: boolean; allowedRoles?: string[] }>) =>
+        r.properties?.locked
+    );
+  }
 
+  private _checkEditPermission(
+    lockedRanges: ICustomRange<{ locked?: boolean; allowedRoles?: string[] }>[],
+    editStart: number,
+    editEnd: number,
+    currentUserRole: string,
+    isInsert: boolean = false
+  ): boolean {
+    for (const lockedRange of lockedRanges) {
+      const lStart = lockedRange.startIndex;
+      const lEnd = lockedRange.endIndex + 1;
+
+      let isOverlapping = false;
+      if (isInsert) {
+        isOverlapping = editStart > lStart && editStart < lEnd;
+      } else {
+        isOverlapping =
+          Math.max(0, Math.min(editEnd, lEnd) - Math.max(editStart, lStart)) >
+          0;
+      }
+
+      if (isOverlapping) {
+        const allowedRoles = lockedRange.properties?.allowedRoles;
+        if (
+          Array.isArray(allowedRoles) &&
+          allowedRoles.includes(currentUserRole)
+        ) {
+          continue; // 允許編輯此範圍
+        }
+        return false; // 拒絕編輯
+      }
+    }
+    return true; // 沒有碰到鎖定範圍，或者都有權限
+  }
+
+  private _registerCommands() {
     const lockCommand: ICommand = {
       type: CommandType.OPERATION,
-      id: commandId,
-      handler: async (accessor: IAccessor) => {
-        const univerInstanceService = accessor.get(IUniverInstanceService);
-        const docSelectionManagerService = accessor.get(
-          DocSelectionManagerService
-        );
-        const messageService = accessor.get(IMessageService);
-        const commandService = accessor.get(ICommandService);
-        const localeService = accessor.get(LocaleService);
+      id: COMMAND_ID_LOCK,
+      handler: async (accessor: IAccessor) => this._handleLock(accessor)
+    };
 
-        const doc = univerInstanceService.getFocusedUnit();
-        if (!doc || doc.type !== UniverInstanceType.UNIVER_DOC) {
-          return false;
-        }
-
-        const activeTextRange = docSelectionManagerService.getActiveTextRange();
-        if (!activeTextRange) {
-          messageService.show({
-            type: MessageType.Warning,
-            content: localeService.t(
-              'parker-vue-lab-plugins.doc-lock.error.selectFirst'
-            )
-          });
-          return false;
-        }
-
-        const { startOffset, endOffset } = activeTextRange;
-        if (startOffset === endOffset) {
-          messageService.show({
-            type: MessageType.Warning,
-            content: localeService.t(
-              'parker-vue-lab-plugins.doc-lock.error.emptySelection'
-            )
-          });
-          return false;
-        }
-
-        const store = useUniverStore();
-        const permissionParams = await store.requestLockPermissions();
-        if (!permissionParams) {
-          return false; // 使用者取消鎖定
-        }
-
-        // 使用 CustomRangeFactory 建立自訂範圍
-        const rangeId = generateRandomId();
-        const selection: ITextRangeParam = {
-          startOffset,
-          endOffset,
-          collapsed: false
-        };
-        if (activeTextRange.segmentId) {
-          selection.segmentId = activeTextRange.segmentId;
-        }
-        const selections = [selection];
-
-        const noStyle =
-          typeof this._config.noStyle === 'boolean'
-            ? this._config.noStyle
-            : true;
-        const customRangeMutation = addCustomRangeBySelectionFactory(accessor, {
-          unitId: doc.getUnitId(),
-          rangeId,
-          rangeType: noStyle
-            ? (8888 as CustomRangeType)
-            : CustomRangeType.CUSTOM,
-          properties: {
-            locked: true,
-            allowedRoles: permissionParams.allowedRoles
-          },
-          selections
-        });
-
-        if (customRangeMutation) {
-          this.isPluginModifyingLock = true;
-          try {
-            commandService.syncExecuteCommand(
-              customRangeMutation.id,
-              customRangeMutation.params
-            );
-          } finally {
-            this.isPluginModifyingLock = false;
-          }
-          messageService.show({
-            type: MessageType.Success,
-            content: `${localeService.t('parker-vue-lab-plugins.doc-lock.success.locked')}${startOffset} - ${endOffset}`
-          });
-          console.log(
-            '[DocLockPlugin] Range locked:',
-            startOffset,
-            endOffset,
-            customRangeMutation
-          );
-          return true;
-        }
-
-        return false;
-      }
+    const unlockCommand: ICommand = {
+      type: CommandType.OPERATION,
+      id: COMMAND_ID_UNLOCK,
+      handler: async (accessor: IAccessor) => this._handleUnlock(accessor)
     };
 
     this.commandService.registerCommand(lockCommand);
+    this.commandService.registerCommand(unlockCommand);
+  }
 
-    const unlockCommandId = 'doc.command.unlock-selection';
-    const unlockCommand: ICommand = {
-      type: CommandType.OPERATION,
-      id: unlockCommandId,
-      handler: async (accessor: IAccessor) => {
-        const univerInstanceService = accessor.get(IUniverInstanceService);
-        const docSelectionManagerService = accessor.get(
-          DocSelectionManagerService
-        );
-        const messageService = accessor.get(IMessageService);
-        const commandService = accessor.get(ICommandService);
-        const localeService = accessor.get(LocaleService);
+  private async _handleLock(accessor: IAccessor): Promise<boolean> {
+    const univerInstanceService = accessor.get(IUniverInstanceService);
+    const docSelectionManagerService = accessor.get(DocSelectionManagerService);
+    const messageService = accessor.get(IMessageService);
+    const commandService = accessor.get(ICommandService);
+    const localeService = accessor.get(LocaleService);
 
-        const doc = univerInstanceService.getFocusedUnit();
-        if (!doc || doc.type !== UniverInstanceType.UNIVER_DOC) {
-          return false;
-        }
+    const doc = univerInstanceService.getFocusedUnit();
+    if (!doc || doc.type !== UniverInstanceType.UNIVER_DOC) return false;
 
-        const activeTextRange = docSelectionManagerService.getActiveTextRange();
-        if (!activeTextRange) {
-          messageService.show({
-            type: MessageType.Warning,
-            content: localeService.t(
-              'parker-vue-lab-plugins.doc-lock.error.selectFirstUnlock'
-            )
-          });
-          return false;
-        }
+    const activeTextRange = docSelectionManagerService.getActiveTextRange();
+    if (!activeTextRange) {
+      messageService.show({
+        type: MessageType.Warning,
+        content: localeService.t(
+          'parker-vue-lab-plugins.doc-lock.error.selectFirst'
+        )
+      });
+      return false;
+    }
 
-        const { startOffset: uStart, endOffset: uEnd } = activeTextRange;
-        if (uStart === uEnd || uStart === undefined || uEnd === undefined) {
-          messageService.show({
-            type: MessageType.Warning,
-            content: localeService.t(
-              'parker-vue-lab-plugins.doc-lock.error.emptySelection'
-            )
-          });
-          return false;
-        }
+    const { startOffset, endOffset } = activeTextRange;
+    if (startOffset === endOffset) {
+      messageService.show({
+        type: MessageType.Warning,
+        content: localeService.t(
+          'parker-vue-lab-plugins.doc-lock.error.emptySelection'
+        )
+      });
+      return false;
+    }
 
-        const documentDataModel = doc as unknown as DocumentDataModel;
-        const customRanges = documentDataModel.getCustomRanges?.() || [];
-        const lockedRanges = customRanges.filter(
-          (r: ICustomRange<{ locked?: boolean; allowedRoles?: string[] }>) =>
-            r.properties?.locked
-        );
+    const store = useUniverStore();
+    const permissionParams = await store.requestLockPermissions();
+    if (!permissionParams) return false; // 使用者取消鎖定
 
-        const store = useUniverStore();
-        let unlockedCount = 0;
-
-        for (const lr of lockedRanges) {
-          const lStart = lr.startIndex;
-          const lEnd = lr.endIndex + 1; // Convert inclusive index to exclusive offset
-
-          const overlapStart = Math.max(uStart, lStart);
-          const overlapEnd = Math.min(uEnd, lEnd);
-
-          if (overlapStart < overlapEnd) {
-            // 解鎖前先檢查是否有權限
-            const allowedRoles = lr.properties?.allowedRoles;
-            if (
-              Array.isArray(allowedRoles) &&
-              allowedRoles.length > 0 &&
-              !allowedRoles.includes(store.currentUserRole)
-            ) {
-              messageService.show({
-                type: MessageType.Error,
-                content: localeService.t(
-                  'parker-vue-lab-plugins.doc-lock.error.lockedBlocked'
-                ) // 或者提供專門的拒絕解鎖訊息
-              });
-              return false; // 阻擋解鎖
-            }
-
-            unlockedCount++;
-
-            this.isPluginModifyingLock = true;
-            try {
-              // 刪除原本的鎖定範圍
-              const deleteMutation = deleteCustomRangeFactory(accessor, {
-                unitId: doc.getUnitId(),
-                rangeId: lr.rangeId
-              });
-
-              if (deleteMutation) {
-                commandService.syncExecuteCommand(
-                  deleteMutation.id,
-                  deleteMutation.params
-                );
-              }
-
-              // 若左側還有剩餘的範圍，建立新的鎖定區塊
-              if (lStart < uStart) {
-                const newRangeIdLeft = generateRandomId();
-                const selectionLeft: ITextRangeParam = {
-                  startOffset: lStart,
-                  endOffset: uStart,
-                  collapsed: false
-                };
-                if (activeTextRange.segmentId) {
-                  selectionLeft.segmentId = activeTextRange.segmentId;
-                }
-                const selectionsLeft = [selectionLeft];
-                const leftMutation = addCustomRangeBySelectionFactory(
-                  accessor,
-                  {
-                    unitId: doc.getUnitId(),
-                    rangeId: newRangeIdLeft,
-                    rangeType: lr.rangeType,
-                    properties: { ...lr.properties },
-                    selections: selectionsLeft
-                  }
-                );
-                if (leftMutation)
-                  commandService.syncExecuteCommand(
-                    leftMutation.id,
-                    leftMutation.params
-                  );
-              }
-
-              // 若右側還有剩餘的範圍，建立新的鎖定區塊
-              if (lEnd > uEnd) {
-                const newRangeIdRight = generateRandomId();
-                const selectionRight: ITextRangeParam = {
-                  startOffset: uEnd,
-                  endOffset: lEnd,
-                  collapsed: false
-                };
-                if (activeTextRange.segmentId) {
-                  selectionRight.segmentId = activeTextRange.segmentId;
-                }
-                const selectionsRight = [selectionRight];
-                const rightMutation = addCustomRangeBySelectionFactory(
-                  accessor,
-                  {
-                    unitId: doc.getUnitId(),
-                    rangeId: newRangeIdRight,
-                    rangeType: lr.rangeType,
-                    properties: { ...lr.properties },
-                    selections: selectionsRight
-                  }
-                );
-                if (rightMutation)
-                  commandService.syncExecuteCommand(
-                    rightMutation.id,
-                    rightMutation.params
-                  );
-              }
-            } finally {
-              this.isPluginModifyingLock = false;
-            }
-          }
-        }
-
-        if (unlockedCount > 0) {
-          messageService.show({
-            type: MessageType.Success,
-            content: `${localeService.t('parker-vue-lab-plugins.doc-lock.success.unlocked')}${uStart} - ${uEnd}`
-          });
-          return true;
-        } else {
-          messageService.show({
-            type: MessageType.Info,
-            content: localeService.t(
-              'parker-vue-lab-plugins.doc-lock.success.noLockedRange'
-            )
-          });
-          return false;
-        }
-      }
+    const rangeId = generateRandomId();
+    const selection: ITextRangeParam = {
+      startOffset,
+      endOffset,
+      collapsed: false,
+      ...(activeTextRange.segmentId
+        ? { segmentId: activeTextRange.segmentId }
+        : {})
     };
 
-    this.commandService.registerCommand(unlockCommand);
-
-    const menuItemFactory = () => ({
-      id: commandId,
-      title: 'parker-vue-lab-plugins.doc-lock.title',
-      tooltip: 'parker-vue-lab-plugins.doc-lock.tooltip',
-      icon: 'Vue3LockIcon',
-      type: MenuItemType.BUTTON,
-      hidden$: new Observable<boolean>((subscriber) => {
-        const univerInstanceService = this._injector.get(
-          IUniverInstanceService
-        );
-        const subscription = univerInstanceService.focused$.subscribe(
-          (unitId) => {
-            if (!unitId) {
-              subscriber.next(true);
-              return;
-            }
-            const unit = univerInstanceService.getUnit(unitId);
-            subscriber.next(unit?.type !== UniverInstanceType.UNIVER_DOC);
-          }
-        );
-        return () => subscription.unsubscribe();
-      })
+    const noStyle =
+      typeof this._config.noStyle === 'boolean' ? this._config.noStyle : true;
+    const customRangeMutation = addCustomRangeBySelectionFactory(accessor, {
+      unitId: doc.getUnitId(),
+      rangeId,
+      rangeType: noStyle ? (8888 as CustomRangeType) : CustomRangeType.CUSTOM,
+      properties: {
+        locked: true,
+        allowedRoles: permissionParams.allowedRoles
+      },
+      selections: [selection]
     });
 
-    const unlockMenuItemFactory = () => ({
-      id: unlockCommandId,
-      title: 'parker-vue-lab-plugins.doc-lock.unlockTitle',
-      tooltip: 'parker-vue-lab-plugins.doc-lock.unlockTooltip',
-      icon: 'Vue3UnlockedIcon',
-      type: MenuItemType.BUTTON,
-      hidden$: new Observable<boolean>((subscriber) => {
-        const univerInstanceService = this._injector.get(
-          IUniverInstanceService
+    if (customRangeMutation) {
+      this.isPluginModifyingLock = true;
+      try {
+        commandService.syncExecuteCommand(
+          customRangeMutation.id,
+          customRangeMutation.params
         );
-        const subscription = univerInstanceService.focused$.subscribe(
-          (unitId) => {
-            if (!unitId) {
-              subscriber.next(true);
-              return;
-            }
-            const unit = univerInstanceService.getUnit(unitId);
-            subscriber.next(unit?.type !== UniverInstanceType.UNIVER_DOC);
-          }
-        );
-        return () => subscription.unsubscribe();
-      })
-    });
+      } finally {
+        this.isPluginModifyingLock = false;
+      }
+      messageService.show({
+        type: MessageType.Success,
+        content: `${localeService.t('parker-vue-lab-plugins.doc-lock.success.locked')}${startOffset} - ${endOffset}`
+      });
+      console.log(
+        '[DocLockPlugin] Range locked:',
+        startOffset,
+        endOffset,
+        customRangeMutation
+      );
+      return true;
+    }
 
-    const parentMenuId = 'parker-vue-lab-plugins.doc-lock-menu';
+    return false;
+  }
+
+  private async _handleUnlock(accessor: IAccessor): Promise<boolean> {
+    const univerInstanceService = accessor.get(IUniverInstanceService);
+    const docSelectionManagerService = accessor.get(DocSelectionManagerService);
+    const messageService = accessor.get(IMessageService);
+    const commandService = accessor.get(ICommandService);
+    const localeService = accessor.get(LocaleService);
+
+    const doc = univerInstanceService.getFocusedUnit();
+    if (!doc || doc.type !== UniverInstanceType.UNIVER_DOC) return false;
+
+    const activeTextRange = docSelectionManagerService.getActiveTextRange();
+    if (!activeTextRange) {
+      messageService.show({
+        type: MessageType.Warning,
+        content: localeService.t(
+          'parker-vue-lab-plugins.doc-lock.error.selectFirstUnlock'
+        )
+      });
+      return false;
+    }
+
+    const { startOffset: uStart, endOffset: uEnd } = activeTextRange;
+    if (uStart === uEnd || uStart === undefined || uEnd === undefined) {
+      messageService.show({
+        type: MessageType.Warning,
+        content: localeService.t(
+          'parker-vue-lab-plugins.doc-lock.error.emptySelection'
+        )
+      });
+      return false;
+    }
+
+    const lockedRanges = this._getLockedRanges(doc);
+    const store = useUniverStore();
+    let unlockedCount = 0;
+
+    for (const lr of lockedRanges) {
+      const lStart = lr.startIndex;
+      const lEnd = lr.endIndex + 1; // Convert inclusive index to exclusive offset
+
+      const overlapStart = Math.max(uStart, lStart);
+      const overlapEnd = Math.min(uEnd, lEnd);
+
+      if (overlapStart < overlapEnd) {
+        // 解鎖前先檢查是否有權限
+        const allowedRoles = lr.properties?.allowedRoles;
+        if (
+          Array.isArray(allowedRoles) &&
+          allowedRoles.length > 0 &&
+          !allowedRoles.includes(store.currentUserRole)
+        ) {
+          messageService.show({
+            type: MessageType.Error,
+            content: localeService.t(
+              'parker-vue-lab-plugins.doc-lock.error.lockedBlocked'
+            )
+          });
+          return false; // 阻擋解鎖
+        }
+
+        unlockedCount++;
+
+        this.isPluginModifyingLock = true;
+        try {
+          // 刪除原本的鎖定範圍
+          const deleteMutation = deleteCustomRangeFactory(accessor, {
+            unitId: doc.getUnitId(),
+            rangeId: lr.rangeId
+          });
+
+          if (deleteMutation) {
+            commandService.syncExecuteCommand(
+              deleteMutation.id,
+              deleteMutation.params
+            );
+          }
+
+          // 若左側還有剩餘的範圍，建立新的鎖定區塊
+          if (lStart < uStart) {
+            const leftMutation = addCustomRangeBySelectionFactory(accessor, {
+              unitId: doc.getUnitId(),
+              rangeId: generateRandomId(),
+              rangeType: lr.rangeType,
+              properties: { ...lr.properties },
+              selections: [
+                {
+                  startOffset: lStart,
+                  endOffset: uStart,
+                  collapsed: false,
+                  ...(activeTextRange.segmentId
+                    ? { segmentId: activeTextRange.segmentId }
+                    : {})
+                }
+              ]
+            });
+            if (leftMutation)
+              commandService.syncExecuteCommand(
+                leftMutation.id,
+                leftMutation.params
+              );
+          }
+
+          // 若右側還有剩餘的範圍，建立新的鎖定區塊
+          if (lEnd > uEnd) {
+            const rightMutation = addCustomRangeBySelectionFactory(accessor, {
+              unitId: doc.getUnitId(),
+              rangeId: generateRandomId(),
+              rangeType: lr.rangeType,
+              properties: { ...lr.properties },
+              selections: [
+                {
+                  startOffset: uEnd,
+                  endOffset: lEnd,
+                  collapsed: false,
+                  ...(activeTextRange.segmentId
+                    ? { segmentId: activeTextRange.segmentId }
+                    : {})
+                }
+              ]
+            });
+            if (rightMutation)
+              commandService.syncExecuteCommand(
+                rightMutation.id,
+                rightMutation.params
+              );
+          }
+        } finally {
+          this.isPluginModifyingLock = false;
+        }
+      }
+    }
+
+    if (unlockedCount > 0) {
+      messageService.show({
+        type: MessageType.Success,
+        content: `${localeService.t('parker-vue-lab-plugins.doc-lock.success.unlocked')}${uStart} - ${uEnd}`
+      });
+      return true;
+    } else {
+      messageService.show({
+        type: MessageType.Info,
+        content: localeService.t(
+          'parker-vue-lab-plugins.doc-lock.success.noLockedRange'
+        )
+      });
+      return false;
+    }
+  }
+
+  private _createMenuHiddenObservable(): Observable<boolean> {
+    return new Observable<boolean>((subscriber) => {
+      const univerInstanceService = this._injector.get(IUniverInstanceService);
+      const subscription = univerInstanceService.focused$.subscribe(
+        (unitId) => {
+          if (!unitId) {
+            subscriber.next(true);
+            return;
+          }
+          const unit = univerInstanceService.getUnit(unitId);
+          subscriber.next(unit?.type !== UniverInstanceType.UNIVER_DOC);
+        }
+      );
+      return () => subscription.unsubscribe();
+    });
+  }
+
+  private _registerMenus() {
+    const hidden$ = this._createMenuHiddenObservable();
 
     this.menuManagerService.mergeMenu({
       [RibbonStartGroup.OTHERS]: {
-        [parentMenuId]: {
+        [MENU_ID_PARENT]: {
           order: 25,
           menuItemFactory: () => ({
-            id: parentMenuId,
+            id: MENU_ID_PARENT,
             tooltip: 'parker-vue-lab-plugins.doc-lock-menu.tooltip',
             icon: 'Vue3LockedRoundIcon',
             type: MenuItemType.SUBITEMS
           }),
-          [commandId]: {
+          [COMMAND_ID_LOCK]: {
             order: 25,
-            menuItemFactory
+            menuItemFactory: () => ({
+              id: COMMAND_ID_LOCK,
+              title: 'parker-vue-lab-plugins.doc-lock.title',
+              tooltip: 'parker-vue-lab-plugins.doc-lock.tooltip',
+              icon: 'Vue3LockIcon',
+              type: MenuItemType.BUTTON,
+              hidden$
+            })
           },
-          [unlockCommandId]: {
+          [COMMAND_ID_UNLOCK]: {
             order: 26,
-            menuItemFactory: unlockMenuItemFactory
+            menuItemFactory: () => ({
+              id: COMMAND_ID_UNLOCK,
+              title: 'parker-vue-lab-plugins.doc-lock.unlockTitle',
+              tooltip: 'parker-vue-lab-plugins.doc-lock.unlockTooltip',
+              icon: 'Vue3UnlockedIcon',
+              type: MenuItemType.BUTTON,
+              hidden$
+            })
           }
         }
       }
     });
+  }
 
-    // 攔截核心編輯 Mutation
+  private _registerEditInterceptor() {
     this.commandService.beforeCommandExecuted((commandInfo) => {
       if (this.isPluginModifyingLock) return;
 
@@ -520,49 +527,12 @@ export class DocLockPlugin extends Plugin {
         const doc = univerInstanceService.getUnit(params.unitId);
 
         if (doc && doc.type === UniverInstanceType.UNIVER_DOC) {
-          // 取得文件中所有的 custom ranges
-          const documentDataModel = doc as unknown as DocumentDataModel;
-          const customRanges = documentDataModel.getCustomRanges?.() || [];
-          const lockedRanges = customRanges.filter(
-            (r: ICustomRange<{ locked?: boolean; allowedRoles?: string[] }>) =>
-              r.properties?.locked
-          );
+          const lockedRanges = this._getLockedRanges(doc);
 
           if (lockedRanges.length > 0) {
             const store = useUniverStore();
-            // 從 ot-json1 的 JSONOp 中遞迴尋找 TextX 操作陣列
-            const findTextXActions = (obj: unknown): unknown[] | null => {
-              if (Array.isArray(obj)) {
-                for (const item of obj) {
-                  if (item && typeof item === 'object') {
-                    const record = item as Record<string, unknown>;
-                    if (record.t === 'TextX' && Array.isArray(record.o)) {
-                      return record.o;
-                    }
-                    if (record.et === 'text-x' && Array.isArray(record.e)) {
-                      return record.e;
-                    }
-                  }
-                  const res = findTextXActions(item);
-                  if (res) return res;
-                }
-              } else if (obj && typeof obj === 'object') {
-                const record = obj as Record<string, unknown>;
-                if (record.t === 'TextX' && Array.isArray(record.o)) {
-                  return record.o;
-                }
-                if (record.et === 'text-x' && Array.isArray(record.e)) {
-                  return record.e;
-                }
-                for (const key in record) {
-                  const res = findTextXActions(record[key]);
-                  if (res) return res;
-                }
-              }
-              return null;
-            };
+            const textXActions = this._extractTextXActions(params.actions);
 
-            const textXActions = findTextXActions(params.actions) || [];
             let currentOffset = 0;
             let isBlocked = false;
 
@@ -572,74 +542,53 @@ export class DocLockPlugin extends Plugin {
                 len?: number;
                 body?: unknown;
               };
+
               if (action.t === 'r') {
                 if (action.body) {
                   const editStart = currentOffset;
                   const editEnd = currentOffset + (action.len ?? 0);
-                  for (const lockedRange of lockedRanges) {
-                    const lStart = lockedRange.startIndex;
-                    const lEnd = lockedRange.endIndex + 1;
-                    const overlap = Math.max(
-                      0,
-                      Math.min(editEnd, lEnd) - Math.max(editStart, lStart)
-                    );
-                    if (overlap > 0) {
-                      const allowedRoles = lockedRange.properties?.allowedRoles;
-                      if (
-                        Array.isArray(allowedRoles) &&
-                        allowedRoles.includes(store.currentUserRole)
-                      ) {
-                        continue; // 允許編輯
-                      }
-                      isBlocked = true;
-                      break;
-                    }
+                  if (
+                    !this._checkEditPermission(
+                      lockedRanges,
+                      editStart,
+                      editEnd,
+                      store.currentUserRole
+                    )
+                  ) {
+                    isBlocked = true;
+                    break;
                   }
                 }
                 currentOffset += action.len ?? 0;
               } else if (action.t === 'i') {
-                const editOffset = currentOffset;
-                for (const lockedRange of lockedRanges) {
-                  const lStart = lockedRange.startIndex;
-                  const lEnd = lockedRange.endIndex + 1;
-                  if (editOffset > lStart && editOffset < lEnd) {
-                    const allowedRoles = lockedRange.properties?.allowedRoles;
-                    if (
-                      Array.isArray(allowedRoles) &&
-                      allowedRoles.includes(store.currentUserRole)
-                    ) {
-                      continue; // 允許編輯
-                    }
-                    isBlocked = true;
-                    break;
-                  }
+                if (
+                  !this._checkEditPermission(
+                    lockedRanges,
+                    currentOffset,
+                    currentOffset,
+                    store.currentUserRole,
+                    true
+                  )
+                ) {
+                  isBlocked = true;
+                  break;
                 }
               } else if (action.t === 'd') {
                 const editStart = currentOffset;
                 const editEnd = currentOffset + (action.len ?? 0);
-                for (const lockedRange of lockedRanges) {
-                  const lStart = lockedRange.startIndex;
-                  const lEnd = lockedRange.endIndex + 1;
-                  const overlap = Math.max(
-                    0,
-                    Math.min(editEnd, lEnd) - Math.max(editStart, lStart)
-                  );
-                  if (overlap > 0) {
-                    const allowedRoles = lockedRange.properties?.allowedRoles;
-                    if (
-                      Array.isArray(allowedRoles) &&
-                      allowedRoles.includes(store.currentUserRole)
-                    ) {
-                      continue; // 允許編輯
-                    }
-                    isBlocked = true;
-                    break;
-                  }
+                if (
+                  !this._checkEditPermission(
+                    lockedRanges,
+                    editStart,
+                    editEnd,
+                    store.currentUserRole
+                  )
+                ) {
+                  isBlocked = true;
+                  break;
                 }
                 currentOffset += action.len ?? 0;
               }
-
-              if (isBlocked) break;
             }
 
             if (isBlocked) {
@@ -657,5 +606,34 @@ export class DocLockPlugin extends Plugin {
         }
       }
     });
+  }
+
+  private _extractTextXActions(actionsObj: unknown): unknown[] {
+    const findTextXActions = (obj: unknown): unknown[] | null => {
+      if (Array.isArray(obj)) {
+        for (const item of obj) {
+          if (item && typeof item === 'object') {
+            const record = item as Record<string, unknown>;
+            if (record.t === 'TextX' && Array.isArray(record.o))
+              return record.o;
+            if (record.et === 'text-x' && Array.isArray(record.e))
+              return record.e;
+          }
+          const res = findTextXActions(item);
+          if (res) return res;
+        }
+      } else if (obj && typeof obj === 'object') {
+        const record = obj as Record<string, unknown>;
+        if (record.t === 'TextX' && Array.isArray(record.o)) return record.o;
+        if (record.et === 'text-x' && Array.isArray(record.e)) return record.e;
+        for (const key in record) {
+          const res = findTextXActions(record[key]);
+          if (res) return res;
+        }
+      }
+      return null;
+    };
+
+    return findTextXActions(actionsObj) || [];
   }
 }
