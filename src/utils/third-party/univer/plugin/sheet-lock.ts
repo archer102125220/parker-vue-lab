@@ -86,6 +86,8 @@ export class SheetLockPlugin extends Plugin {
   // { unitId: { subUnitId: ILockedRangeInfo[] } }
   private lockedRanges: Record<string, Record<string, ILockedRangeInfo[]>> = {};
 
+  private _lastShowMessageTime = 0;
+
   constructor(
     config: Partial<ISheetLockPluginConfig> | undefined,
     @Inject(Injector) protected override _injector: Injector,
@@ -331,6 +333,76 @@ export class SheetLockPlugin extends Plugin {
     this.commandService.beforeCommandExecuted((commandInfo) => {
       const store = useUniverStore();
 
+      if (
+        commandInfo.id === 'sheet.operation.set-cell-edit-visible' ||
+        commandInfo.id === 'sheet.operation.set-cell-edit-visible-f2' ||
+        commandInfo.id === 'sheet.operation.set-cell-edit-visible-arrow' ||
+        commandInfo.id === 'sheet.operation.set-activate-cell-edit'
+      ) {
+        // Type assertion explanation: Using a local type to avoid 'any' for the UI commands' parameters.
+        type IEditOperationParams = { visible?: boolean; unitId?: string };
+        const params =
+          commandInfo.params as unknown as IEditOperationParams | undefined;
+        if (params && 'visible' in params && params.visible === false) {
+          // Allow hiding the editor without permission checks
+        } else {
+          const univerInstanceService = this._injector.get(
+            IUniverInstanceService
+          );
+          const unitId =
+            params?.unitId || univerInstanceService.getFocusedUnit()?.getUnitId();
+          
+          if (unitId) {
+            const workbook = univerInstanceService.getUnit(unitId) as Workbook;
+            const subUnitId = workbook?.getActiveSheet()?.getSheetId();
+            
+            if (subUnitId) {
+              const unitLocks = this.lockedRanges[unitId]?.[subUnitId] || [];
+              if (unitLocks.length > 0) {
+                const selectionManagerService = this._injector.get(
+                  SheetsSelectionsService
+                );
+                const selections = selectionManagerService.getCurrentSelections();
+
+                if (selections && selections.length > 0) {
+                  const firstSelection = selections[0];
+                  if (firstSelection && firstSelection.primary) {
+                    const { startRow, endRow, startColumn, endColumn } =
+                      firstSelection.primary;
+
+                    let isBlocked = false;
+                    for (const lock of unitLocks) {
+                      const l = lock.range;
+                      const intersectRow =
+                        Math.max(startRow, l.startRow) <=
+                        Math.min(endRow, l.endRow);
+                      const intersectCol =
+                        Math.max(startColumn, l.startColumn) <=
+                        Math.min(endColumn, l.endColumn);
+
+                      if (intersectRow && intersectCol) {
+                        if (
+                          Array.isArray(lock.allowedRoles) &&
+                          !lock.allowedRoles.includes(store.currentUserRole)
+                        ) {
+                          isBlocked = true;
+                          break;
+                        }
+                      }
+                    }
+
+                    if (isBlocked) {
+                      this.showBlockedMessage();
+                      throw new Error(SHEET_LOCK_ERROR_MESSAGE);
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
       if (commandInfo.id === SetRangeValuesMutation.id) {
         const params = commandInfo.params as ISetRangeValuesMutationParams;
         const unitLocks =
@@ -442,6 +514,13 @@ export class SheetLockPlugin extends Plugin {
   }
 
   private showBlockedMessage() {
+    const now = Date.now();
+    // Throttle the message to prevent multiple popups at once (debounce effect)
+    if (now - this._lastShowMessageTime < 500) {
+      return;
+    }
+    this._lastShowMessageTime = now;
+
     const messageService = this._injector.get(IMessageService);
     const localeService = this._injector.get(LocaleService);
     messageService.show({

@@ -17,12 +17,12 @@ const unitId = computed(() => route.query.unit as string | undefined);
 <template>
   <DefaultLayout>
     <div class="univer_sheet_page">
-      <div class="univer_doc_page-tools">
+      <div class="univer_sheet_page-tools">
         <label for="role_select">當前測試身份：</label>
         <select
           id="role_select"
           v-model="univerStore.currentUserRole"
-          class="univer_doc_page-tools-select"
+          class="univer_sheet_page-tools-select"
         >
           <option
             v-for="role in univerStore.availableRoles"
