@@ -62,9 +62,9 @@ function ignoreErrorLog() {
   // 3. 原本的 console.error 覆寫 (以防 Univer 內部有去 catch 並且用 console.error 印出來)
   window.originalConsoleError = window.console.error;
 
-  window.console.error = function (...args) {
+  window.console.error = function (...argList) {
     // 檢查參數中是否包含特定的鎖定阻擋錯誤（字串或 Error 物件）
-    const isLockedError = args.some(
+    const isLockedError = argList.some(
       (arg) =>
         (typeof arg === 'string' && arg.includes(DOC_LOCK_ERROR_MESSAGE)) ||
         (arg instanceof Error && arg.message.includes(DOC_LOCK_ERROR_MESSAGE))
@@ -76,7 +76,7 @@ function ignoreErrorLog() {
     }
 
     // 如果不是我們要攔截的錯誤，就照常印出
-    window.originalConsoleError!.apply(console, args);
+    window.originalConsoleError!.apply(console, argList);
   };
 
   window.__UNIVER__DOC_LOCKED_ERROR_FILTERED__ = true;
@@ -122,12 +122,12 @@ export class DocLockPlugin extends Plugin {
   }
 
   private _initIcons() {
-    const icons = {
+    const iconList = {
       Vue3LockedRoundIcon,
       Vue3LockIcon,
       Vue3UnlockedIcon
     };
-    for (const [name, component] of Object.entries(icons)) {
+    for (const [name, component] of Object.entries(iconList)) {
       try {
         this.componentManager.register(name, component, { framework: 'vue3' });
       } catch {}
@@ -147,40 +147,40 @@ export class DocLockPlugin extends Plugin {
           docSelectionManagerService
         );
       docSelectionManagerService.getTextRanges = () => {
-        const ranges = originalGetTextRanges();
-        if (Array.isArray(ranges) && ranges.length === 0) {
+        const rangeList = originalGetTextRanges();
+        if (Array.isArray(rangeList) && rangeList.length === 0) {
           // Return a Proxy that acts as an empty array but returns an empty object for index 0 to avoid undefined crash
-          return new Proxy(ranges, {
+          return new Proxy(rangeList, {
             get(target, prop) {
               if (prop === '0') return {};
               return Reflect.get(target, prop);
             }
-          }) as unknown as typeof ranges;
+          }) as unknown as typeof rangeList;
         }
-        return ranges;
+        return rangeList;
       };
     }
   }
 
-  private _getLockedRanges(
+  private _getLockedRangeList(
     doc: unknown
-  ): ICustomRange<{ locked?: boolean; allowedRoles?: string[] }>[] {
+  ): ICustomRange<{ locked?: boolean; allowedRoleList?: string[] }>[] {
     const documentDataModel = doc as unknown as DocumentDataModel;
-    const customRanges = documentDataModel.getCustomRanges?.() || [];
-    return customRanges.filter(
-      (r: ICustomRange<{ locked?: boolean; allowedRoles?: string[] }>) =>
+    const customRangeList = documentDataModel.getCustomRanges?.() || [];
+    return customRangeList.filter(
+      (r: ICustomRange<{ locked?: boolean; allowedRoleList?: string[] }>) =>
         r.properties?.locked
     );
   }
 
   private _checkEditPermission(
-    lockedRanges: ICustomRange<{ locked?: boolean; allowedRoles?: string[] }>[],
+    lockedRangeList: ICustomRange<{ locked?: boolean; allowedRoleList?: string[] }>[],
     editStart: number,
     editEnd: number,
     currentUserRole: string,
     isInsert: boolean = false
   ): boolean {
-    for (const lockedRange of lockedRanges) {
+    for (const lockedRange of lockedRangeList) {
       const lockedStart = lockedRange.startIndex;
       const lockedEnd = lockedRange.endIndex + 1;
 
@@ -194,10 +194,10 @@ export class DocLockPlugin extends Plugin {
       }
 
       if (isOverlapping) {
-        const allowedRoles = lockedRange.properties?.allowedRoles;
+        const allowedRoleList = lockedRange.properties?.allowedRoleList;
         if (
-          Array.isArray(allowedRoles) &&
-          allowedRoles.includes(currentUserRole)
+          Array.isArray(allowedRoleList) &&
+          allowedRoleList.includes(currentUserRole)
         ) {
           continue; // 允許編輯此範圍
         }
@@ -278,7 +278,7 @@ export class DocLockPlugin extends Plugin {
       rangeType: noStyle ? (8888 as CustomRangeType) : CustomRangeType.CUSTOM,
       properties: {
         locked: true,
-        allowedRoles: permissionParams.allowedRoles
+        allowedRoleList: permissionParams.allowedRoles
       },
       selections: [selection]
     });
@@ -341,11 +341,11 @@ export class DocLockPlugin extends Plugin {
       return false;
     }
 
-    const lockedRanges = this._getLockedRanges(doc);
+    const lockedRangeList = this._getLockedRangeList(doc);
     const store = useUniverStore();
     let unlockedCount = 0;
 
-    for (const lockedRange of lockedRanges) {
+    for (const lockedRange of lockedRangeList) {
       const lockedStart = lockedRange.startIndex;
       const lockedEnd = lockedRange.endIndex + 1; // Convert inclusive index to exclusive offset
 
@@ -354,11 +354,11 @@ export class DocLockPlugin extends Plugin {
 
       if (overlapStart < overlapEnd) {
         // 解鎖前先檢查是否有權限
-        const allowedRoles = lockedRange.properties?.allowedRoles;
+        const allowedRoleList = lockedRange.properties?.allowedRoleList;
         if (
-          Array.isArray(allowedRoles) &&
-          allowedRoles.length > 0 &&
-          !allowedRoles.includes(store.currentUserRole)
+          Array.isArray(allowedRoleList) &&
+          allowedRoleList.length > 0 &&
+          !allowedRoleList.includes(store.currentUserRole)
         ) {
           messageService.show({
             type: MessageType.Error,
@@ -527,16 +527,16 @@ export class DocLockPlugin extends Plugin {
         const doc = univerInstanceService.getUnit(params.unitId);
 
         if (doc && doc.type === UniverInstanceType.UNIVER_DOC) {
-          const lockedRanges = this._getLockedRanges(doc);
+          const lockedRangeList = this._getLockedRangeList(doc);
 
-          if (lockedRanges.length > 0) {
+          if (lockedRangeList.length > 0) {
             const store = useUniverStore();
-            const textXActions = this._extractTextXActions(params.actions);
+            const textXActionList = this._extractTextXActionList(params.actions);
 
             let currentOffset = 0;
             let isBlocked = false;
 
-            for (const actionUnsafe of textXActions) {
+            for (const actionUnsafe of textXActionList) {
               const action = actionUnsafe as {
                 t: string;
                 len?: number;
@@ -549,7 +549,7 @@ export class DocLockPlugin extends Plugin {
                   const editEnd = currentOffset + (action.len ?? 0);
                   if (
                     !this._checkEditPermission(
-                      lockedRanges,
+                      lockedRangeList,
                       editStart,
                       editEnd,
                       store.currentUserRole
@@ -563,7 +563,7 @@ export class DocLockPlugin extends Plugin {
               } else if (action.t === 'i') {
                 if (
                   !this._checkEditPermission(
-                    lockedRanges,
+                    lockedRangeList,
                     currentOffset,
                     currentOffset,
                     store.currentUserRole,
@@ -578,7 +578,7 @@ export class DocLockPlugin extends Plugin {
                 const editEnd = currentOffset + (action.len ?? 0);
                 if (
                   !this._checkEditPermission(
-                    lockedRanges,
+                    lockedRangeList,
                     editStart,
                     editEnd,
                     store.currentUserRole
@@ -608,8 +608,8 @@ export class DocLockPlugin extends Plugin {
     });
   }
 
-  private _extractTextXActions(actionsObj: unknown): unknown[] {
-    const findTextXActions = (obj: unknown): unknown[] | null => {
+  private _extractTextXActionList(actionsObj: unknown): unknown[] {
+    const findTextXActionList = (obj: unknown): unknown[] | null => {
       if (Array.isArray(obj)) {
         for (const item of obj) {
           if (item && typeof item === 'object') {
@@ -619,7 +619,7 @@ export class DocLockPlugin extends Plugin {
             if (record.et === 'text-x' && Array.isArray(record.e))
               return record.e;
           }
-          const res = findTextXActions(item);
+          const res = findTextXActionList(item);
           if (res) return res;
         }
       } else if (obj && typeof obj === 'object') {
@@ -627,13 +627,13 @@ export class DocLockPlugin extends Plugin {
         if (record.t === 'TextX' && Array.isArray(record.o)) return record.o;
         if (record.et === 'text-x' && Array.isArray(record.e)) return record.e;
         for (const key in record) {
-          const res = findTextXActions(record[key]);
+          const res = findTextXActionList(record[key]);
           if (res) return res;
         }
       }
       return null;
     };
 
-    return findTextXActions(actionsObj) || [];
+    return findTextXActionList(actionsObj) || [];
   }
 }
