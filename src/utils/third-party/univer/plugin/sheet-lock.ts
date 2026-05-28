@@ -1,5 +1,6 @@
 import { Observable } from 'rxjs';
 import { Inject, Injector } from '@wendellhu/redi';
+import { throttle } from 'lodash';
 import {
   Plugin,
   ICommandService,
@@ -85,8 +86,6 @@ export class SheetLockPlugin extends Plugin {
 
   // { unitId: { subUnitId: ILockedRangeInfo[] } }
   private lockedRanges: Record<string, Record<string, ILockedRangeInfo[]>> = {};
-
-  private _lastShowMessageTime = 0;
 
   constructor(
     config: Partial<ISheetLockPluginConfig> | undefined,
@@ -513,21 +512,18 @@ export class SheetLockPlugin extends Plugin {
     });
   }
 
-  private showBlockedMessage() {
-    const now = Date.now();
-    // Throttle the message to prevent multiple popups at once (debounce effect)
-    if (now - this._lastShowMessageTime < 500) {
-      return;
-    }
-    this._lastShowMessageTime = now;
-
-    const messageService = this._injector.get(IMessageService);
-    const localeService = this._injector.get(LocaleService);
-    messageService.show({
-      type: MessageType.Error,
-      content: localeService.t(
-        'parker-vue-lab-plugins.sheet-lock.error.lockedBlocked'
-      )
-    });
-  }
+  private showBlockedMessage = throttle(
+    () => {
+      const messageService = this._injector.get(IMessageService);
+      const localeService = this._injector.get(LocaleService);
+      messageService.show({
+        type: MessageType.Error,
+        content: localeService.t(
+          'parker-vue-lab-plugins.sheet-lock.error.lockedBlocked'
+        )
+      });
+    },
+    500,
+    { trailing: false }
+  );
 }
