@@ -1,6 +1,6 @@
+import { throttle } from 'lodash';
 import { Observable } from 'rxjs';
 import { Inject, Injector } from '@wendellhu/redi';
-import { throttle } from 'lodash';
 import {
   Plugin,
   ICommandService,
@@ -8,10 +8,13 @@ import {
   UniverInstanceType,
   CommandType,
   LocaleService,
+  DOCS_FORMULA_BAR_EDITOR_UNIT_ID_KEY,
+  DOCS_NORMAL_EDITOR_UNIT_ID_KEY,
   type ICommand,
   type IAccessor,
   type Workbook
 } from '@univerjs/core';
+import { MessageType } from '@univerjs/design';
 import {
   ComponentManager,
   IMenuManagerService,
@@ -19,7 +22,10 @@ import {
   RibbonStartGroup,
   IMessageService
 } from '@univerjs/ui';
-import { MessageType } from '@univerjs/design';
+import {
+  RichTextEditingMutation,
+  type IRichTextEditingMutationParams
+} from '@univerjs/docs';
 import {
   SheetsSelectionsService,
   SetRangeValuesMutation,
@@ -332,6 +338,72 @@ export class SheetLockPlugin extends Plugin {
     this.commandService.beforeCommandExecuted((commandInfo) => {
       const store = useUniverStore();
 
+      if (commandInfo.id === RichTextEditingMutation.id) {
+        const params = commandInfo.params as unknown as
+          | IRichTextEditingMutationParams
+          | undefined;
+        if (
+          params &&
+          (params.unitId === DOCS_FORMULA_BAR_EDITOR_UNIT_ID_KEY ||
+            params.unitId === DOCS_NORMAL_EDITOR_UNIT_ID_KEY)
+        ) {
+          const univerInstanceService = this._injector.get(
+            IUniverInstanceService
+          );
+          const workbook =
+            univerInstanceService.getCurrentUnitForType<Workbook>(
+              UniverInstanceType.UNIVER_SHEET
+            );
+          if (workbook) {
+            const unitId = workbook.getUnitId();
+            const subUnitId = workbook.getActiveSheet()?.getSheetId();
+            if (subUnitId) {
+              const unitLocks = this.lockedRanges[unitId]?.[subUnitId] || [];
+              if (unitLocks.length > 0) {
+                const selectionManagerService = this._injector.get(
+                  SheetsSelectionsService
+                );
+                const selections =
+                  selectionManagerService.getCurrentSelections();
+                if (selections && selections.length > 0) {
+                  const firstSelection = selections[0];
+                  if (firstSelection && firstSelection.primary) {
+                    const { startRow, endRow, startColumn, endColumn } =
+                      firstSelection.primary;
+
+                    let isBlocked = false;
+                    for (const lock of unitLocks) {
+                      const l = lock.range;
+                      const intersectRow =
+                        Math.max(startRow, l.startRow) <=
+                        Math.min(endRow, l.endRow);
+                      const intersectCol =
+                        Math.max(startColumn, l.startColumn) <=
+                        Math.min(endColumn, l.endColumn);
+
+                      if (intersectRow && intersectCol) {
+                        if (
+                          Array.isArray(lock.allowedRoles) &&
+                          !lock.allowedRoles.includes(store.currentUserRole)
+                        ) {
+                          isBlocked = true;
+                          break;
+                        }
+                      }
+                    }
+
+                    if (isBlocked) {
+                      this.showBlockedMessage();
+                      throw new Error(SHEET_LOCK_ERROR_MESSAGE);
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
       if (
         commandInfo.id === 'sheet.operation.set-cell-edit-visible' ||
         commandInfo.id === 'sheet.operation.set-cell-edit-visible-f2' ||
@@ -340,8 +412,9 @@ export class SheetLockPlugin extends Plugin {
       ) {
         // Type assertion explanation: Using a local type to avoid 'any' for the UI commands' parameters.
         type IEditOperationParams = { visible?: boolean; unitId?: string };
-        const params =
-          commandInfo.params as unknown as IEditOperationParams | undefined;
+        const params = commandInfo.params as unknown as
+          | IEditOperationParams
+          | undefined;
         if (params && 'visible' in params && params.visible === false) {
           // Allow hiding the editor without permission checks
         } else {
@@ -349,19 +422,21 @@ export class SheetLockPlugin extends Plugin {
             IUniverInstanceService
           );
           const unitId =
-            params?.unitId || univerInstanceService.getFocusedUnit()?.getUnitId();
-          
+            params?.unitId ||
+            univerInstanceService.getFocusedUnit()?.getUnitId();
+
           if (unitId) {
             const workbook = univerInstanceService.getUnit(unitId) as Workbook;
             const subUnitId = workbook?.getActiveSheet()?.getSheetId();
-            
+
             if (subUnitId) {
               const unitLocks = this.lockedRanges[unitId]?.[subUnitId] || [];
               if (unitLocks.length > 0) {
                 const selectionManagerService = this._injector.get(
                   SheetsSelectionsService
                 );
-                const selections = selectionManagerService.getCurrentSelections();
+                const selections =
+                  selectionManagerService.getCurrentSelections();
 
                 if (selections && selections.length > 0) {
                   const firstSelection = selections[0];
