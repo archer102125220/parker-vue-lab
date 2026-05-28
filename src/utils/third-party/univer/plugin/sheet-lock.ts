@@ -296,13 +296,12 @@ export class SheetLockPlugin extends Plugin {
             if (!lock) continue;
             const l = lock.range;
 
-            const intersectRow =
-              Math.max(startRow, l.startRow) <= Math.min(endRow, l.endRow);
-            const intersectCol =
-              Math.max(startColumn, l.startColumn) <=
-              Math.min(endColumn, l.endColumn);
+            const intersectRowStart = Math.max(startRow, l.startRow);
+            const intersectRowEnd = Math.min(endRow, l.endRow);
+            const intersectColStart = Math.max(startColumn, l.startColumn);
+            const intersectColEnd = Math.min(endColumn, l.endColumn);
 
-            if (intersectRow && intersectCol) {
+            if (intersectRowStart <= intersectRowEnd && intersectColStart <= intersectColEnd) {
               if (
                 Array.isArray(lock.allowedRoles) &&
                 lock.allowedRoles.length > 0 &&
@@ -320,9 +319,56 @@ export class SheetLockPlugin extends Plugin {
               unitLocks.splice(i, 1);
               unlockedCount++;
 
-              for (let r = Math.max(startRow, l.startRow); r <= Math.min(endRow, l.endRow); r++) {
+              const newLocks = [];
+              if (l.startRow < intersectRowStart) {
+                newLocks.push({
+                  range: {
+                    startRow: l.startRow,
+                    endRow: intersectRowStart - 1,
+                    startColumn: l.startColumn,
+                    endColumn: l.endColumn
+                  },
+                  allowedRoles: lock.allowedRoles
+                });
+              }
+              if (l.endRow > intersectRowEnd) {
+                newLocks.push({
+                  range: {
+                    startRow: intersectRowEnd + 1,
+                    endRow: l.endRow,
+                    startColumn: l.startColumn,
+                    endColumn: l.endColumn
+                  },
+                  allowedRoles: lock.allowedRoles
+                });
+              }
+              if (l.startColumn < intersectColStart) {
+                newLocks.push({
+                  range: {
+                    startRow: intersectRowStart,
+                    endRow: intersectRowEnd,
+                    startColumn: l.startColumn,
+                    endColumn: intersectColStart - 1
+                  },
+                  allowedRoles: lock.allowedRoles
+                });
+              }
+              if (l.endColumn > intersectColEnd) {
+                newLocks.push({
+                  range: {
+                    startRow: intersectRowStart,
+                    endRow: intersectRowEnd,
+                    startColumn: intersectColEnd + 1,
+                    endColumn: l.endColumn
+                  },
+                  allowedRoles: lock.allowedRoles
+                });
+              }
+              unitLocks.splice(i, 0, ...newLocks);
+
+              for (let r = intersectRowStart; r <= intersectRowEnd; r++) {
                 if (!cellValue[r]) cellValue[r] = {};
-                for (let c = Math.max(startColumn, l.startColumn); c <= Math.min(endColumn, l.endColumn); c++) {
+                for (let c = intersectColStart; c <= intersectColEnd; c++) {
                   cellValue[r]![c] = {};
                 }
               }
