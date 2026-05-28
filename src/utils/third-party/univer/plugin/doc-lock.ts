@@ -168,8 +168,8 @@ export class DocLockPlugin extends Plugin {
     const documentDataModel = doc as unknown as DocumentDataModel;
     const customRangeList = documentDataModel.getCustomRanges?.() || [];
     return customRangeList.filter(
-      (r: ICustomRange<{ locked?: boolean; allowedRoleList?: string[] }>) =>
-        r.properties?.locked
+      (range: ICustomRange<{ locked?: boolean; allowedRoleList?: string[] }>) =>
+        range.properties?.locked
     );
   }
 
