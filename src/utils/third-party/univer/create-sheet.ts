@@ -180,6 +180,7 @@ export async function importCustomSheetPlugin() {
     { ServerExportButtonPlugin },
     { LocalImportButtonPlugin },
     { UniverExchangeLifecyclePlugin },
+    { SheetLockPlugin },
     { importRegisterVue },
     { default: CustomPluginEnUS },
     { default: CustomPluginZhTW }
@@ -190,6 +191,7 @@ export async function importCustomSheetPlugin() {
     import('@src/utils/third-party/univer/plugin/server-export'),
     import('@src/utils/third-party/univer/plugin/local-import'),
     import('@src/utils/third-party/univer/plugin/exchange-lifecycle'),
+    import('@src/utils/third-party/univer/plugin/sheet-lock'),
     import('@src/utils/third-party/univer/plugin/register-vue'),
     import('@src/utils/third-party/univer/i18n/en-US'),
     import('@src/utils/third-party/univer/i18n/zh-TW')
@@ -202,6 +204,7 @@ export async function importCustomSheetPlugin() {
     ServerExportButtonPlugin,
     LocalImportButtonPlugin,
     UniverExchangeLifecyclePlugin,
+    SheetLockPlugin,
     importRegisterVue,
     CustomPluginEnUS,
     CustomPluginZhTW
@@ -343,6 +346,7 @@ export async function createSheetInstance(
     ServerExportButtonPlugin,
     LocalImportButtonPlugin,
     UniverExchangeLifecyclePlugin,
+    SheetLockPlugin,
     importRegisterVue,
     CustomPluginEnUS,
     CustomPluginZhTW
@@ -535,7 +539,8 @@ export async function createSheetInstance(
     [LocalExportButtonPlugin],
     [ServerExportButtonPlugin],
     [LocalImportButtonPlugin],
-    [UniverExchangeLifecyclePlugin]
+    [UniverExchangeLifecyclePlugin],
+    [SheetLockPlugin]
   ]);
 
   if (collaboration === true && liveShare === true) {

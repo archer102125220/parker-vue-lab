@@ -5,6 +5,7 @@ interface Window {
   ___IS_VUE_INITED__?: boolean;
   originalConsoleError?: (...args: unknown[]) => void;
   __UNIVER__DOC_LOCKED_ERROR_FILTERED__?: boolean;
+  __UNIVER__SHEET_LOCKED_ERROR_FILTERED__?: boolean;
 }
 
 interface ImportMetaEnv {

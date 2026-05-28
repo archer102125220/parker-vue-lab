@@ -62,6 +62,23 @@ export default {
         noLockedRange: '選取範圍內沒有鎖定的區塊'
       }
     },
+    'sheet-lock': {
+      title: '鎖定選取範圍 (Sheet)',
+      tooltip: '鎖定選取範圍',
+      unlockTitle: '解除鎖定選取範圍 (Sheet)',
+      unlockTooltip: '解除鎖定選取範圍',
+      error: {
+        selectFirst: '請先選擇要鎖定的儲存格範圍',
+        selectFirstUnlock: '請先選擇要解除鎖定的儲存格範圍',
+        emptySelection: '選取範圍不能為空',
+        lockedBlocked: '此區域已鎖定，無法編輯'
+      },
+      success: {
+        locked: '已標記選取範圍為鎖定狀態',
+        unlocked: '已解除選取範圍的鎖定',
+        noLockedRange: '選取範圍內沒有鎖定的區塊'
+      }
+    },
     'import-export-menu': {
       tooltip: '匯入與匯出選項'
     }

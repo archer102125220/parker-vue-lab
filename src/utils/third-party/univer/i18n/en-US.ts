@@ -64,6 +64,23 @@ export default {
         noLockedRange: 'No locked blocks in the selection'
       }
     },
+    'sheet-lock': {
+      title: 'Lock Selection (Sheet)',
+      tooltip: 'Lock Selection',
+      unlockTitle: 'Unlock Selection (Sheet)',
+      unlockTooltip: 'Unlock Selection',
+      error: {
+        selectFirst: 'Please select a cell range to lock first',
+        selectFirstUnlock: 'Please select a cell range to unlock first',
+        emptySelection: 'Selection cannot be empty',
+        lockedBlocked: 'This area is locked and cannot be edited'
+      },
+      success: {
+        locked: 'Marked selection as locked',
+        unlocked: 'Unlocked selection',
+        noLockedRange: 'No locked blocks in the selection'
+      }
+    },
     'import-export-menu': {
       tooltip: 'Import and Export options'
     }

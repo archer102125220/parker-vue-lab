@@ -110,12 +110,16 @@ export class DocLockPlugin extends Plugin {
   }
 
   override onStarting(): void {
-    this.componentManager.register('Vue3LockIcon', Vue3LockIcon, {
-      framework: 'vue3'
-    });
-    this.componentManager.register('Vue3UnlockedIcon', Vue3UnlockedIcon, {
-      framework: 'vue3'
-    });
+    try {
+      this.componentManager.register('Vue3LockIcon', Vue3LockIcon, {
+        framework: 'vue3'
+      });
+    } catch {}
+    try {
+      this.componentManager.register('Vue3UnlockedIcon', Vue3UnlockedIcon, {
+        framework: 'vue3'
+      });
+    } catch {}
 
     // --- Univer Bug Fix: Patch DocSelectionManagerService to prevent preset-docs-hyper-link crash ---
     // The hyper-link plugin reads `activeRanges[0].segmentId` directly on hover,
@@ -166,7 +170,9 @@ export class DocLockPlugin extends Plugin {
         if (!activeTextRange) {
           messageService.show({
             type: MessageType.Warning,
-            content: localeService.t('parker-vue-lab-plugins.doc-lock.error.selectFirst')
+            content: localeService.t(
+              'parker-vue-lab-plugins.doc-lock.error.selectFirst'
+            )
           });
           return false;
         }
@@ -175,7 +181,9 @@ export class DocLockPlugin extends Plugin {
         if (startOffset === endOffset) {
           messageService.show({
             type: MessageType.Warning,
-            content: localeService.t('parker-vue-lab-plugins.doc-lock.error.emptySelection')
+            content: localeService.t(
+              'parker-vue-lab-plugins.doc-lock.error.emptySelection'
+            )
           });
           return false;
         }
@@ -208,7 +216,10 @@ export class DocLockPlugin extends Plugin {
           rangeType: noStyle
             ? (8888 as CustomRangeType)
             : CustomRangeType.CUSTOM,
-          properties: { locked: true, allowedRoles: permissionParams.allowedRoles },
+          properties: {
+            locked: true,
+            allowedRoles: permissionParams.allowedRoles
+          },
           selections
         });
 
@@ -263,7 +274,9 @@ export class DocLockPlugin extends Plugin {
         if (!activeTextRange) {
           messageService.show({
             type: MessageType.Warning,
-            content: localeService.t('parker-vue-lab-plugins.doc-lock.error.selectFirstUnlock')
+            content: localeService.t(
+              'parker-vue-lab-plugins.doc-lock.error.selectFirstUnlock'
+            )
           });
           return false;
         }
@@ -272,7 +285,9 @@ export class DocLockPlugin extends Plugin {
         if (uStart === uEnd || uStart === undefined || uEnd === undefined) {
           messageService.show({
             type: MessageType.Warning,
-            content: localeService.t('parker-vue-lab-plugins.doc-lock.error.emptySelection')
+            content: localeService.t(
+              'parker-vue-lab-plugins.doc-lock.error.emptySelection'
+            )
           });
           return false;
         }
@@ -280,7 +295,8 @@ export class DocLockPlugin extends Plugin {
         const documentDataModel = doc as unknown as DocumentDataModel;
         const customRanges = documentDataModel.getCustomRanges?.() || [];
         const lockedRanges = customRanges.filter(
-          (r: ICustomRange<{ locked?: boolean; allowedRoles?: string[] }>) => r.properties?.locked
+          (r: ICustomRange<{ locked?: boolean; allowedRoles?: string[] }>) =>
+            r.properties?.locked
         );
 
         const store = useUniverStore();
@@ -296,10 +312,16 @@ export class DocLockPlugin extends Plugin {
           if (overlapStart < overlapEnd) {
             // 解鎖前先檢查是否有權限
             const allowedRoles = lr.properties?.allowedRoles;
-            if (Array.isArray(allowedRoles) && allowedRoles.length > 0 && !allowedRoles.includes(store.currentUserRole)) {
+            if (
+              Array.isArray(allowedRoles) &&
+              allowedRoles.length > 0 &&
+              !allowedRoles.includes(store.currentUserRole)
+            ) {
               messageService.show({
                 type: MessageType.Error,
-                content: localeService.t('parker-vue-lab-plugins.doc-lock.error.lockedBlocked') // 或者提供專門的拒絕解鎖訊息
+                content: localeService.t(
+                  'parker-vue-lab-plugins.doc-lock.error.lockedBlocked'
+                ) // 或者提供專門的拒絕解鎖訊息
               });
               return false; // 阻擋解鎖
             }
@@ -393,7 +415,9 @@ export class DocLockPlugin extends Plugin {
         } else {
           messageService.show({
             type: MessageType.Info,
-            content: localeService.t('parker-vue-lab-plugins.doc-lock.success.noLockedRange')
+            content: localeService.t(
+              'parker-vue-lab-plugins.doc-lock.success.noLockedRange'
+            )
           });
           return false;
         }
@@ -479,7 +503,8 @@ export class DocLockPlugin extends Plugin {
           const documentDataModel = doc as unknown as DocumentDataModel;
           const customRanges = documentDataModel.getCustomRanges?.() || [];
           const lockedRanges = customRanges.filter(
-            (r: ICustomRange<{ locked?: boolean; allowedRoles?: string[] }>) => r.properties?.locked
+            (r: ICustomRange<{ locked?: boolean; allowedRoles?: string[] }>) =>
+              r.properties?.locked
           );
 
           if (lockedRanges.length > 0) {
@@ -539,7 +564,10 @@ export class DocLockPlugin extends Plugin {
                     );
                     if (overlap > 0) {
                       const allowedRoles = lockedRange.properties?.allowedRoles;
-                      if (Array.isArray(allowedRoles) && allowedRoles.includes(store.currentUserRole)) {
+                      if (
+                        Array.isArray(allowedRoles) &&
+                        allowedRoles.includes(store.currentUserRole)
+                      ) {
                         continue; // 允許編輯
                       }
                       isBlocked = true;
@@ -555,7 +583,10 @@ export class DocLockPlugin extends Plugin {
                   const lEnd = lockedRange.endIndex + 1;
                   if (editOffset > lStart && editOffset < lEnd) {
                     const allowedRoles = lockedRange.properties?.allowedRoles;
-                    if (Array.isArray(allowedRoles) && allowedRoles.includes(store.currentUserRole)) {
+                    if (
+                      Array.isArray(allowedRoles) &&
+                      allowedRoles.includes(store.currentUserRole)
+                    ) {
                       continue; // 允許編輯
                     }
                     isBlocked = true;
@@ -574,7 +605,10 @@ export class DocLockPlugin extends Plugin {
                   );
                   if (overlap > 0) {
                     const allowedRoles = lockedRange.properties?.allowedRoles;
-                    if (Array.isArray(allowedRoles) && allowedRoles.includes(store.currentUserRole)) {
+                    if (
+                      Array.isArray(allowedRoles) &&
+                      allowedRoles.includes(store.currentUserRole)
+                    ) {
                       continue; // 允許編輯
                     }
                     isBlocked = true;
@@ -592,7 +626,9 @@ export class DocLockPlugin extends Plugin {
               const localeService = this._injector.get(LocaleService);
               messageService.show({
                 type: MessageType.Error,
-                content: localeService.t('parker-vue-lab-plugins.doc-lock.error.lockedBlocked')
+                content: localeService.t(
+                  'parker-vue-lab-plugins.doc-lock.error.lockedBlocked'
+                )
               });
               throw new Error(DOC_LOCK_ERROR_MESSAGE);
             }

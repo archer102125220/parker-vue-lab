@@ -2,7 +2,7 @@
 import { ref, reactive, onMounted, onBeforeUnmount, watch } from 'vue';
 
 import SkeletonLoader from '@src/components/SkeletonLoader.vue';
-import LockPermissionDialog from './LockPermissionDialog.vue';
+import LockPermissionDialog from '@src/components/Univer/LockPermissionDialog.vue';
 
 import {
   createDocInstance,
