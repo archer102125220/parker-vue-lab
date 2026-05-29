@@ -16,14 +16,28 @@ export default tseslint.config(
       },
       globals: {
         ...globals.browser,
-        ...globals.node,
-      },
+        ...globals.node
+      }
     },
     plugins: {
       '@typescript-eslint': tseslint.plugin,
-      'vue': pluginVue
+      vue: pluginVue
     },
     rules: {
+      'vue/no-deprecated-destroyed-lifecycle': 1,
+      'vue/no-v-for-template-key-on-child': 0,
+      'vue/multi-word-component-names': 0,
+      'no-extra-semi': 2,
+      semi: [1, 'always'],
+      quotes: [1, 'single', { avoidEscape: true }],
+      'prefer-const': 2,
+      'no-var': 2,
+      'no-console': 0,
+      'no-const-assign': 2,
+      'no-useless-escape': 1,
+      'unicorn/escape-case': 1,
+      camelcase: 0,
+      'vue/no-dupe-keys': 1,
       '@typescript-eslint/no-explicit-any': 'error'
     }
   },
