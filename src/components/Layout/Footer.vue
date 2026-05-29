@@ -16,6 +16,14 @@ onMounted(() => {
 <template>
   <footer class="layout_footer" :css-animation="animation">
     <p class="layout_footer-copyright">&copy; {{ copyright }}</p>
+    <a
+      class="layout_footer-git_hub_link"
+      href="https://github.com/archer102125220/parker-vue-lab"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      GitHub
+    </a>
   </footer>
 </template>
 
@@ -33,6 +41,12 @@ onMounted(() => {
 }
 
 .layout_footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+  gap: 12px;
+
   // Display & Box Model
   padding: 32px 24px;
   margin-top: 60px;
@@ -52,6 +66,14 @@ onMounted(() => {
     margin: 0;
     padding: 0;
 
+    // Typography
+    font-size: 14px;
+    text-align: center;
+    color: #6c757d;
+    font-weight: 400;
+  }
+
+  &-git_hub_link {
     // Typography
     font-size: 14px;
     text-align: center;
