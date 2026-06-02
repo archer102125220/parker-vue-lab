@@ -63,14 +63,14 @@ const createRoom = async () => {
           <div class="univer_sheet_page-tools-online-unit">
             <input
               type="text"
-              class="univer_sheet_page-tools-input"
+              class="univer_sheet_page-tools-collaboration_room"
               placeholder="輸入房間 ID"
               v-model="inputUnitId"
               :disabled="isCollaboration === false"
               @keyup.enter="joinRoom"
             />
             <button
-              class="univer_sheet_page-tools-btn"
+              class="univer_sheet_page-tools-join_btn"
               :disabled="isCollaboration === false"
               @click="joinRoom"
             >
@@ -78,7 +78,7 @@ const createRoom = async () => {
             </button>
           </div>
           <button
-            class="univer_sheet_page-tools-btn univer_sheet_page-tools-btn--outline"
+            class="univer_sheet_page-tools-create_btn"
             :disabled="isCollaboration === false"
             @click="createRoom"
           >
@@ -153,8 +153,8 @@ const createRoom = async () => {
       }
     }
 
-    &-select,
-    &-input {
+    &-select {
+      min-width: 150px;
       padding: 4px 8px;
       border: 1px solid #ced4da;
       border-radius: 4px;
@@ -167,11 +167,17 @@ const createRoom = async () => {
       }
     }
 
-    &-select {
-      min-width: 150px;
+    &-collaboration_room {
+      @extend .univer_sheet_page-tools-select;
+      min-width: unset;
+
+      &:disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+      }
     }
 
-    &-btn {
+    &-join_btn {
       padding: 4px 12px;
       border: 1px solid transparent;
       border-radius: 4px;
@@ -184,19 +190,25 @@ const createRoom = async () => {
         color 0.2s,
         border-color 0.2s;
 
-      &:hover {
+      &:not([disabled]):hover {
         background-color: #0056b3;
       }
+      &:disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+      }
+    }
 
-      &--outline {
-        background-color: transparent;
-        border-color: #007bff;
-        color: #007bff;
+    &-create_btn {
+      @extend .univer_sheet_page-tools-join_btn;
 
-        &:hover {
-          background-color: #007bff;
-          color: #fff;
-        }
+      background-color: transparent;
+      border-color: #007bff;
+      color: #007bff;
+
+      &:not([disabled]):hover {
+        background-color: #007bff;
+        color: #fff;
       }
     }
   }
