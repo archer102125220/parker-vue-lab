@@ -8,7 +8,7 @@ import UniverDocEditor from '@src/components/Univer/DocEditor.vue';
 
 const { locale } = useI18n();
 const univerStore = useUniverStore();
-const isCollaboration = ref(false);
+const isCollaboration = ref(true);
 
 const unitId = ref('');
 const inputUnitId = ref('');
@@ -111,6 +111,9 @@ const createRoom = async () => {
         <p>目前沒有指定房間，請先「新建協同房間」以測試協同編輯功能。</p>
       </div>
       <UniverDocEditor
+        v-else
+        :key="unitId"
+        class="univer_doc_page-editor"
         :locale="locale"
         :unit-id="unitId"
         :collaboration="isCollaboration"

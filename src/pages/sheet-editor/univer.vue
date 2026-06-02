@@ -108,6 +108,7 @@ const createRoom = async () => {
       </div>
       <UniverSheetEditor
         v-else
+        :key="unitId"
         class="univer_sheet_page-editor"
         :locale="locale"
         :unit-id="unitId"
