@@ -24,11 +24,11 @@ watch(
   { immediate: true }
 );
 
-const joinRoom = () => {
+function joinRoom() {
   unitId.value = inputUnitId.value;
-};
+}
 
-const createRoom = async () => {
+async function createRoom() {
   try {
     const res = await fetch('/universer-api/snapshot/1/unit/-/create', {
       method: 'POST',
@@ -46,7 +46,7 @@ const createRoom = async () => {
     console.error('Create room error:', error);
     alert('建立房間失敗，請查看 Console。');
   }
-};
+}
 </script>
 
 <template>
