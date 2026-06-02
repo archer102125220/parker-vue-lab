@@ -10,7 +10,7 @@ import UniverSheetEditor from '@src/components/Univer/SheetEditor.vue';
 const { locale } = useI18n();
 const route = useRoute();
 const univerStore = useUniverStore();
-const isCollaboration = ref(true);
+const isCollaboration = ref(false);
 const isLiveShare = ref(false);
 
 const unitId = ref('');
@@ -130,7 +130,13 @@ const createRoom = async () => {
             />
           </div>
           <div class="univer_sheet_page-tools-online-live_share">
-            <label for="live_share_checkbox">演示跟隨</label>
+            <label
+              for="live_share_checkbox"
+              class="univer_sheet_page-tools-online-live_share-label"
+              :disabled="isCollaboration === false"
+            >
+              演示跟隨
+            </label>
             <input
               id="live_share_checkbox"
               type="checkbox"
@@ -226,6 +232,11 @@ const createRoom = async () => {
         display: flex;
         align-items: center;
         gap: 4px;
+
+        &-label[disabled='true'] {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
       }
     }
 

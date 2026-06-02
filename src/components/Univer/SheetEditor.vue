@@ -6,17 +6,18 @@ import LockPermissionDialog from '@src/components/Univer/LockPermissionDialog.vu
 
 import {
   createSheetInstance,
-  type univerInstanceRef,
   fetchUniverSnapshot,
   UniverInstanceType,
-  type IWorkbookData
+  type univerInstanceRef,
+  type IWorkbookData,
+  type IDisposable
 } from '@src/utils/third-party/univer';
 
 defineOptions({
   inheritAttrs: false
 });
 
-const disposableList = [];
+const disposableList: IDisposable[] = [];
 
 const props = defineProps({
   locale: {
@@ -297,6 +298,15 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
+  disposableList.forEach((item) => {
+    try {
+      item.dispose?.();
+    } catch (error) {
+      if (import.meta.env.DEV) {
+        console.error(error);
+      }
+    }
+  });
   // if (typeof univerInstance.univer?.dispose === 'function') {
   //   univerInstance.univer?.dispose();
   // }

@@ -6,11 +6,11 @@ import LockPermissionDialog from '@src/components/Univer/LockPermissionDialog.vu
 
 import {
   createDocInstance,
+  fetchUniverSnapshot,
+  UniverInstanceType,
   type univerInstanceRef,
   type IDisposable,
-  type IDocumentData,
-  fetchUniverSnapshot,
-  UniverInstanceType
+  type IDocumentData
 } from '@src/utils/third-party/univer';
 
 defineOptions({
@@ -147,13 +147,13 @@ async function handleUniverDoc(overrideSnapshot?: Partial<IDocumentData>) {
     if (container.value instanceof HTMLElement === false) return;
 
     // 清除舊的 univer 實例 (如果有的話)
-    if (univerInstance.univer) {
-      univerInstance.univer.dispose();
-      univerInstance.univerAPI = null;
-      if (container.value) {
-        container.value.innerHTML = ''; // 清空容器
-      }
-    }
+    // if (univerInstance.univer) {
+    //   univerInstance.univer.dispose();
+    //   univerInstance.univerAPI = null;
+    //   if (container.value) {
+    //     container.value.innerHTML = ''; // 清空容器
+    //   }
+    // }
 
     const { univer, univerAPI, LocaleType } = await createDocInstance(
       container.value,
@@ -324,12 +324,12 @@ onBeforeUnmount(() => {
       }
     }
   });
-  if (typeof univerInstance.univer?.dispose === 'function') {
-    univerInstance.univer?.dispose();
-  }
-  if (typeof univerInstance.univerAPI?.dispose === 'function') {
-    univerInstance.univerAPI?.dispose();
-  }
+  // if (typeof univerInstance.univer?.dispose === 'function') {
+  //   univerInstance.univer?.dispose();
+  // }
+  // if (typeof univerInstance.univerAPI?.dispose === 'function') {
+  //   univerInstance.univerAPI?.dispose();
+  // }
   univerInstance.univer = null;
   univerInstance.univerAPI = null;
 });
