@@ -1,18 +1,29 @@
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useRoute } from 'vue-router';
 import { useUniverStore } from '@src/store/univer';
 
 import DefaultLayout from '@src/layouts/default.vue';
 import UniverSheetEditor from '@src/components/Univer/SheetEditor.vue';
 
 const { locale } = useI18n();
+const route = useRoute();
 const univerStore = useUniverStore();
 const isCollaboration = ref(true);
 const isLiveShare = ref(false);
 
 const unitId = ref('');
 const inputUnitId = ref('');
+
+watch(
+  () => route.query.unitId,
+  (newUnitId) => {
+    unitId.value = (newUnitId || '') as string;
+    inputUnitId.value = (newUnitId || '') as string;
+  },
+  { immediate: true }
+);
 
 const joinRoom = () => {
   unitId.value = inputUnitId.value;
