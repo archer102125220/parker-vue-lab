@@ -85,7 +85,7 @@ const createRoom = async () => {
           <select
             id="role_select"
             v-model="univerStore.currentUserRole"
-            class="univer_sheet_page-tools-select"
+            class="univer_sheet_page-tools-role-select"
           >
             <option
               v-for="role in univerStore.availableRoles"
@@ -100,14 +100,14 @@ const createRoom = async () => {
           <div class="univer_sheet_page-tools-online-unit">
             <input
               type="text"
-              class="univer_sheet_page-tools-collaboration_room"
+              class="univer_sheet_page-tools-online-unit-collaboration_room"
               placeholder="輸入房間 ID"
               v-model="inputUnitId"
               :disabled="isCollaboration === false"
               @keyup.enter="joinRoom"
             />
             <button
-              class="univer_sheet_page-tools-join_btn"
+              class="univer_sheet_page-tools-online-unit-join_btn"
               :disabled="isCollaboration === false"
               @click="joinRoom"
             >
@@ -115,7 +115,7 @@ const createRoom = async () => {
             </button>
           </div>
           <button
-            class="univer_sheet_page-tools-create_btn"
+            class="univer_sheet_page-tools-online-create_btn"
             :disabled="isCollaboration === false"
             @click="createRoom"
           >
@@ -216,6 +216,22 @@ const createRoom = async () => {
 
     background-color: #f8f9fa;
 
+    &-role {
+      &-select {
+        min-width: 150px;
+        padding: 4px 8px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        background-color: #fff;
+        outline: none;
+
+        &:focus {
+          border-color: #80bdff;
+          box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+      }
+    }
+
     &-online {
       display: flex;
       align-items: center;
@@ -225,77 +241,66 @@ const createRoom = async () => {
         display: flex;
         align-items: center;
         gap: 4px;
+
+        &-collaboration_room {
+          @extend .univer_sheet_page-tools-role-select;
+          min-width: unset;
+
+          &:disabled {
+            cursor: not-allowed;
+            opacity: 0.5;
+          }
+        }
+
+        &-join_btn {
+          padding: 4px 12px;
+          border: 1px solid transparent;
+          border-radius: 4px;
+          background-color: #007bff;
+          color: #fff;
+          cursor: pointer;
+          font-size: 14px;
+          transition:
+            background-color 0.2s,
+            color 0.2s,
+            border-color 0.2s;
+
+          &:not([disabled]):hover {
+            background-color: #0056b3;
+          }
+          &:disabled {
+            cursor: not-allowed;
+            opacity: 0.5;
+          }
+        }
       }
 
-      &-collaboration,
-      &-live_share {
+      &-create_btn {
+        @extend .univer_sheet_page-tools-online-unit-join_btn;
+
+        background-color: transparent;
+        border-color: #007bff;
+        color: #007bff;
+
+        &:not([disabled]):hover {
+          background-color: #007bff;
+          color: #fff;
+        }
+      }
+
+      &-collaboration {
         display: flex;
         align-items: center;
         gap: 4px;
+      }
+
+      &-live_share {
+        @extend .univer_sheet_page-tools-online-collaboration;
 
         &-label[disabled='true'] {
           opacity: 0.5;
           cursor: not-allowed;
         }
-      }
-    }
-
-    &-select {
-      min-width: 150px;
-      padding: 4px 8px;
-      border: 1px solid #ced4da;
-      border-radius: 4px;
-      background-color: #fff;
-      outline: none;
-
-      &:focus {
-        border-color: #80bdff;
-        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-      }
-    }
-
-    &-collaboration_room {
-      @extend .univer_sheet_page-tools-select;
-      min-width: unset;
-
-      &:disabled {
-        cursor: not-allowed;
-        opacity: 0.5;
-      }
-    }
-
-    &-join_btn {
-      padding: 4px 12px;
-      border: 1px solid transparent;
-      border-radius: 4px;
-      background-color: #007bff;
-      color: #fff;
-      cursor: pointer;
-      font-size: 14px;
-      transition:
-        background-color 0.2s,
-        color 0.2s,
-        border-color 0.2s;
-
-      &:not([disabled]):hover {
-        background-color: #0056b3;
-      }
-      &:disabled {
-        cursor: not-allowed;
-        opacity: 0.5;
-      }
-    }
-
-    &-create_btn {
-      @extend .univer_sheet_page-tools-join_btn;
-
-      background-color: transparent;
-      border-color: #007bff;
-      color: #007bff;
-
-      &:not([disabled]):hover {
-        background-color: #007bff;
-        color: #fff;
       }
     }
   }
