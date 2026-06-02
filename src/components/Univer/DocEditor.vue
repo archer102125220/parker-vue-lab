@@ -364,6 +364,14 @@ onBeforeUnmount(() => {
   </div>
 </template>
 
+<style lang="scss">
+body {
+  [data-radix-popper-content-wrapper] > div {
+    background-color: #fff;
+  }
+}
+</style>
+
 <style lang="scss" scoped>
 .univer_doc {
   position: relative;
