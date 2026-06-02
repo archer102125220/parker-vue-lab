@@ -66,6 +66,31 @@ const createRoom = async () => {
           </li>
         </ul>
       </div>
+      <div class="univer_doc_page-warning">
+        <p>⚠️ <b>線上環境功能限制說明：</b></p>
+        <ul>
+          <li>
+            <b>協同編輯：</b> 依賴後端 <code>universer</code> 服務進行 WebSocket
+            訊息廣播，以及 <code>collaboration-server</code> 處理 OT
+            (Operational Transformation) 演算法同步。
+          </li>
+          <li>
+            <b>新建 / 加入房間：</b> 依賴
+            <code>collaboration-helper</code> 服務生成與儲存檔案快照 (Snapshot
+            API)。
+          </li>
+          <li>
+            <b>實體檔案匯出 (DOCX)：</b> 若需在伺服器端轉換並匯出實體 Office
+            檔案，需依賴高運算資源的 <code>exchange worker</code> 服務。
+          </li>
+          <li>
+            若在線上環境中遇到功能失效或 API 報錯，通常是因為缺乏上述後端 Docker
+            微服務所導致（例如 <code>/universer-api</code>），由於目前是 github
+            static page 做上線部署，因此若要測試需自行 clone 專案到本地端串接
+            univer docker 服務。
+          </li>
+        </ul>
+      </div>
       <div class="univer_doc_page-tools">
         <div class="univer_doc_page-tools-role">
           <label for="role_select">當前測試身份：</label>
@@ -155,6 +180,13 @@ const createRoom = async () => {
       margin: 0;
       padding-left: 20px;
     }
+  }
+
+  &-warning {
+    @extend .univer_doc_page-remark;
+    background-color: #f8d7da;
+    color: #721c24;
+    border-bottom-color: #f5c6cb;
   }
 
   &-tools {

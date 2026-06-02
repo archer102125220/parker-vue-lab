@@ -233,8 +233,8 @@ export async function importSheetAdvanced() {
 export async function importSheetCollaboration() {
   const [
     UniverPresetSheetsCollaboration,
-    { default: UniverSheetsCollaborationPresetZhTW },
-    { default: UniverSheetsCollaborationPresetEnUS }
+    { default: UniverPresetSheetsCollaborationZhTW },
+    { default: UniverPresetSheetsCollaborationEnUs }
   ] = await Promise.all([
     import('@univerjs/preset-sheets-collaboration'),
     import('@univerjs/preset-sheets-collaboration/locales/zh-TW'),
@@ -245,8 +245,8 @@ export async function importSheetCollaboration() {
 
   return {
     UniverPresetSheetsCollaboration,
-    UniverSheetsCollaborationPresetZhTW,
-    UniverSheetsCollaborationPresetEnUS
+    UniverPresetSheetsCollaborationZhTW,
+    UniverPresetSheetsCollaborationEnUs
   };
 }
 
@@ -411,8 +411,8 @@ export async function createSheetInstance(
   if (collaboration === true) {
     const {
       UniverPresetSheetsCollaboration,
-      UniverSheetsCollaborationPresetZhTW,
-      UniverSheetsCollaborationPresetEnUS
+      UniverPresetSheetsCollaborationZhTW,
+      UniverPresetSheetsCollaborationEnUs
     } = await importSheetCollaboration();
 
     const { UniverSheetsCollaborationPreset } = UniverPresetSheetsCollaboration;
@@ -437,7 +437,7 @@ export async function createSheetInstance(
         UniverSheetsZenEditorZhTW,
 
         UniverPresetSheetsAdvancedZhTW,
-        UniverSheetsCollaborationPresetZhTW,
+        UniverPresetSheetsCollaborationZhTW,
 
         CustomPluginZhTW
       ),
@@ -460,7 +460,7 @@ export async function createSheetInstance(
         UniverSheetsZenEditorEnUS,
 
         UniverPresetSheetsAdvancedEnUS,
-        UniverSheetsCollaborationPresetEnUS,
+        UniverPresetSheetsCollaborationEnUs,
 
         CustomPluginEnUS
       )
