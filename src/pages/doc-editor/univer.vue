@@ -8,8 +8,7 @@ import UniverDocEditor from '@src/components/Univer/DocEditor.vue';
 
 const { locale } = useI18n();
 const univerStore = useUniverStore();
-const isCollaboration = ref(true);
-const isLiveShare = ref(false);
+const isCollaboration = ref(false);
 
 const unitId = ref('');
 const inputUnitId = ref('');
@@ -106,15 +105,6 @@ const createRoom = async () => {
               v-model="isCollaboration"
             />
           </div>
-          <div class="univer_doc_page-tools-online-live_share">
-            <label for="live_share_checkbox">演示跟隨</label>
-            <input
-              id="live_share_checkbox"
-              type="checkbox"
-              v-model="isLiveShare"
-              :disabled="isCollaboration === false"
-            />
-          </div>
         </div>
       </div>
       <div v-if="!unitId && isCollaboration" class="univer_doc_page-empty">
@@ -124,7 +114,6 @@ const createRoom = async () => {
         :locale="locale"
         :unit-id="unitId"
         :collaboration="isCollaboration"
-        :live-share="isCollaboration && isLiveShare"
       />
     </div>
   </DefaultLayout>
@@ -177,8 +166,7 @@ const createRoom = async () => {
         gap: 4px;
       }
 
-      &-collaboration,
-      &-live_share {
+      &-collaboration {
         display: flex;
         align-items: center;
         gap: 4px;
