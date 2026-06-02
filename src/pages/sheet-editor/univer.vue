@@ -156,6 +156,12 @@ const createRoom = async () => {
   </DefaultLayout>
 </template>
 
+<style lang="scss">
+#univer-history-container {
+  top: 61px !important;
+}
+</style>
+
 <style lang="scss" scoped>
 .univer_sheet_page {
   height: 90vh;
