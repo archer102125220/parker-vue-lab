@@ -19,7 +19,7 @@ const joinRoom = () => {
 
 const createRoom = async () => {
   try {
-    const res = await fetch('/universer-api/snapshot/2/unit/-/create', {
+    const res = await fetch('/universer-api/snapshot/1/unit/-/create', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({})
