@@ -180,6 +180,18 @@ const createRoom = async () => {
       margin: 0;
       padding-left: 20px;
     }
+
+    b {
+      font-weight: bold;
+    }
+
+    code {
+      background-color: rgba(0, 0, 0, 0.05);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 0.9em;
+    }
   }
 
   &-warning {
