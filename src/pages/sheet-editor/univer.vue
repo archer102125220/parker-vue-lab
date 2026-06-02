@@ -17,10 +17,10 @@ const unitId = ref('');
 const inputUnitId = ref('');
 
 watch(
-  () => route.query.unitId,
-  (newUnitId) => {
-    unitId.value = (newUnitId || '') as string;
-    inputUnitId.value = (newUnitId || '') as string;
+  () => [route.query.unitId, route.query.unit],
+  ([newUnitId, newUnit]) => {
+    unitId.value = (newUnitId || newUnit || '') as string;
+    inputUnitId.value = (newUnitId || newUnit || '') as string;
   },
   { immediate: true }
 );
