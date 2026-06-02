@@ -1,20 +1,22 @@
 <script lang="ts" setup>
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useRoute, useRouter } from 'vue-router';
 import { useUniverStore } from '@src/store/univer';
 
 import DefaultLayout from '@src/layouts/default.vue';
 import UniverSheetEditor from '@src/components/Univer/SheetEditor.vue';
 
 const { locale } = useI18n();
-const route = useRoute();
-const router = useRouter();
 const univerStore = useUniverStore();
 const isCollaboration = ref(true);
 const isLiveShare = ref(false);
 
-const unitId = computed(() => route.query.unit as string | undefined);
+const unitId = ref('');
+const inputUnitId = ref('');
+
+const joinRoom = () => {
+  unitId.value = inputUnitId.value;
+};
 
 const createRoom = async () => {
   try {
@@ -25,7 +27,8 @@ const createRoom = async () => {
     });
     const data = await res.json();
     if (data && data.unitID) {
-      router.push({ query: { ...route.query, unit: data.unitID } });
+      unitId.value = data.unitID;
+      inputUnitId.value = data.unitID;
     } else {
       alert('無法建立房間：' + JSON.stringify(data));
     }
@@ -57,7 +60,30 @@ const createRoom = async () => {
           </select>
         </div>
         <div class="univer_sheet_page-tools-online">
-          <button class="univer_sheet_page-tools-btn" @click="createRoom">新建協同房間</button>
+          <div class="univer_sheet_page-tools-online-unit">
+            <input
+              type="text"
+              class="univer_sheet_page-tools-input"
+              placeholder="輸入房間 ID"
+              v-model="inputUnitId"
+              :disabled="isCollaboration === false"
+              @keyup.enter="joinRoom"
+            />
+            <button
+              class="univer_sheet_page-tools-btn"
+              :disabled="isCollaboration === false"
+              @click="joinRoom"
+            >
+              加入
+            </button>
+          </div>
+          <button
+            class="univer_sheet_page-tools-btn univer_sheet_page-tools-btn--outline"
+            :disabled="isCollaboration === false"
+            @click="createRoom"
+          >
+            新建房間
+          </button>
           <div class="univer_sheet_page-tools-online-collaboration">
             <label for="collaboration_checkbox">協同編輯</label>
             <input
@@ -82,6 +108,7 @@ const createRoom = async () => {
       </div>
       <UniverSheetEditor
         v-else
+        :key="unitId"
         :locale="locale"
         :unit-id="unitId"
         :collaboration="isCollaboration"
@@ -107,18 +134,41 @@ const createRoom = async () => {
 
     background-color: #f8f9fa;
 
-    &-select {
+    &-online {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      &-unit {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      &-collaboration,
+      &-live_share {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+    }
+
+    &-select,
+    &-input {
       padding: 4px 8px;
       border: 1px solid #ced4da;
       border-radius: 4px;
       background-color: #fff;
-      min-width: 150px;
       outline: none;
 
       &:focus {
         border-color: #80bdff;
         box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
       }
+    }
+
+    &-select {
+      min-width: 150px;
     }
 
     &-btn {
@@ -129,10 +179,24 @@ const createRoom = async () => {
       color: #fff;
       cursor: pointer;
       font-size: 14px;
-      transition: background-color 0.2s;
+      transition:
+        background-color 0.2s,
+        color 0.2s,
+        border-color 0.2s;
 
       &:hover {
         background-color: #0056b3;
+      }
+
+      &--outline {
+        background-color: transparent;
+        border-color: #007bff;
+        color: #007bff;
+
+        &:hover {
+          background-color: #007bff;
+          color: #fff;
+        }
       }
     }
   }
