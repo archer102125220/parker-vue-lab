@@ -47,6 +47,7 @@ export default defineConfig(({ command, mode }) => {
           target:
             process.env.VITE_UNIVERSER_DOCKER_HOST || 'http://localhost:8000',
           changeOrigin: true,
+          ws: true,
           configure: (proxy, options) => {
             // 監聽代理請求發出
             proxy.on('proxyReq', (proxyReq, req, _res) => {
