@@ -3,8 +3,7 @@ import type { univerInstance } from '@src/utils/third-party/univer/index';
 // const UNIVER_SERVER_ENDPOINT =
 //   import.meta.env.VITE_UNIVER_SERVER_ENDPOINT ||
 //   'http://localhost:3000/api/univer';
-const UNIVERSER_DOCKER_HOST =
-  import.meta.env.VITE_UNIVERSER_DOCKER_HOST || 'http://localhost:8000';
+const UNIVERSER_DOCKER_HOST = import.meta.env.VITE_UNIVERSER_PROXY_PATH ?? '';
 
 export async function importDoc() {
   const [

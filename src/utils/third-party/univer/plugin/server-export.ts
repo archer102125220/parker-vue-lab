@@ -33,7 +33,7 @@ import Vue3DownloadIcon from '@src/components/Icon/Download';
 export interface IServerExportPluginConfig {
   /**
    * 自訂後端 API 請求的前綴路徑。
-   * 若未提供，將預設使用 `VITE_UNIVERSER_DOCKER_HOST` 環境變數加上 `/universer-api`，
+   * 若未提供，將預設使用 `VITE_UNIVERSER_PROXY_PATH` 環境變數加上 `/universer-api`，
    * 或是 `http://localhost:8000/universer-api`。
    *
    * @example
@@ -143,8 +143,7 @@ export class ServerExportButtonPlugin extends Plugin {
 
           // 定義後端 API 路徑
           const UNIVERSER_HOST =
-            import.meta.env.VITE_UNIVERSER_DOCKER_HOST ||
-            'http://localhost:8000';
+            import.meta.env.VITE_UNIVERSER_PROXY_PATH ?? '';
           const API_PREFIX =
             this._config?.apiPrefix || `${UNIVERSER_HOST}/universer-api`;
 

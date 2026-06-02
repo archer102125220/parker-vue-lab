@@ -2,7 +2,11 @@ import {
   transformSnapshotJsonToWorkbookData,
   transformSnapshotJsonToDocumentData
 } from '@univerjs-pro/exchange-client';
-import { UniverInstanceType, type IWorkbookData, type IDocumentData } from '@univerjs/core';
+import {
+  UniverInstanceType,
+  type IWorkbookData,
+  type IDocumentData
+} from '@univerjs/core';
 
 /**
  * 從遠端伺服器拉取 Univer Snapshot 並轉譯為本機可用格式
@@ -10,14 +14,22 @@ import { UniverInstanceType, type IWorkbookData, type IDocumentData } from '@uni
  * @param type UniverInstanceType (UNIVER_DOC 或是 UNIVER_SHEET)
  * @returns 轉譯後的資料，符合 Univer 嚴格模式所預期的 Partial 格式
  */
-export async function fetchUniverSnapshot(unitId: string, type: UniverInstanceType.UNIVER_DOC): Promise<Partial<IDocumentData>>;
-export async function fetchUniverSnapshot(unitId: string, type: UniverInstanceType.UNIVER_SHEET): Promise<Partial<IWorkbookData>>;
+export async function fetchUniverSnapshot(
+  unitId: string,
+  type: UniverInstanceType.UNIVER_DOC
+): Promise<Partial<IDocumentData>>;
+export async function fetchUniverSnapshot(
+  unitId: string,
+  type: UniverInstanceType.UNIVER_SHEET
+): Promise<Partial<IWorkbookData>>;
 export async function fetchUniverSnapshot(
   unitId: string,
   type: UniverInstanceType.UNIVER_DOC | UniverInstanceType.UNIVER_SHEET
 ): Promise<Partial<IDocumentData> | Partial<IWorkbookData>> {
-  const host = import.meta.env.VITE_UNIVERSER_DOCKER_HOST || 'http://localhost:8000';
-  const res = await fetch(`${host}/universer-api/snapshot/${type}/unit/${unitId}/rev/0`);
+  const host = import.meta.env.VITE_UNIVERSER_PROXY_PATH ?? '';
+  const res = await fetch(
+    `${host}/universer-api/snapshot/${type}/unit/${unitId}/rev/0`
+  );
   const data = await res.json();
 
   if (!data || !data.snapshot) {

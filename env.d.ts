@@ -9,8 +9,9 @@ interface Window {
 }
 
 interface ImportMetaEnv {
-  readonly VITE_UNIVERSER_DOCKER_HOST?: string;
   readonly VITE_UNIVER_LICENSE?: string;
+  readonly VITE_UNIVERSER_PROXY_PATH?: string;
+  readonly VITE_UNIVERSER_DOCKER_HOST?: string;
 }
 
 interface ImportMeta {

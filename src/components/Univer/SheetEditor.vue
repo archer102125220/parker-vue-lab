@@ -158,13 +158,13 @@ async function handleUniverSheet(overrideSnapshot?: Partial<IWorkbookData>) {
   try {
     if (container.value instanceof HTMLElement === false) return;
 
-    if (univerInstance.univer) {
-      univerInstance.univer.dispose();
-      univerInstance.univerAPI = null;
-      if (container.value) {
-        container.value.innerHTML = '';
-      }
-    }
+    // if (univerInstance.univer) {
+    //   univerInstance.univer.dispose();
+    //   univerInstance.univerAPI = null;
+    //   if (container.value) {
+    //     container.value.innerHTML = '';
+    //   }
+    // }
 
     const { univer, univerAPI, LocaleType } = await createSheetInstance(
       container.value,
@@ -297,12 +297,12 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
-  if (typeof univerInstance.univer?.dispose === 'function') {
-    univerInstance.univer?.dispose();
-  }
-  if (typeof univerInstance.univerAPI?.dispose === 'function') {
-    univerInstance.univerAPI?.dispose();
-  }
+  // if (typeof univerInstance.univer?.dispose === 'function') {
+  //   univerInstance.univer?.dispose();
+  // }
+  // if (typeof univerInstance.univerAPI?.dispose === 'function') {
+  //   univerInstance.univerAPI?.dispose();
+  // }
   univerInstance.univer = null;
   univerInstance.univerAPI = null;
 });
