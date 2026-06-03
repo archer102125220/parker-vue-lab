@@ -4,11 +4,9 @@ declare global {
   }
 }
 
-export function handleBindScrollEnd(
+export function handleBindScrollEnd<Args extends unknown[]>(
   el: HTMLElement | Window,
-  // TODO
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-  handler: Function,
+  handler: (event: Event, ...args: Args) => void,
   wait: number = 100
 ) {
   if (typeof el?.addEventListener !== 'function') {
@@ -22,19 +20,16 @@ export function handleBindScrollEnd(
 
   const _el: HTMLElement | Window = el;
   if ('onscrollend' in _el) {
-    // TODO
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    function handleScrollEnd(event: Event, ...arg: any[]): void {
+    function handleScrollEnd(event: Event, ...arg: Args): void {
       setTimeout(() => handler(event, ...arg), wait);
     }
-    el.addEventListener('scrollend', handleScrollEnd);
-    return () => el.removeEventListener('scrollend', handleScrollEnd);
+    // 使用 as unknown as EventListener 斷言以兼容原生 addEventListener 只接受一個參數的介面
+    el.addEventListener('scrollend', handleScrollEnd as unknown as EventListener);
+    return () => el.removeEventListener('scrollend', handleScrollEnd as unknown as EventListener);
   }
 
   let setTimeoutTimer: NodeJS.Timeout | number = 0;
-  // TODO
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  function polyfillScrollEnd(event: Event, ...arg: any[]) {
+  function polyfillScrollEnd(event: Event, ...arg: Args) {
     if (setTimeoutTimer !== 0) {
       clearTimeout(setTimeoutTimer);
       setTimeoutTimer = 0;
@@ -45,9 +40,9 @@ export function handleBindScrollEnd(
       handler(event, ...arg);
     }, wait);
   }
-  el.addEventListener('scroll', polyfillScrollEnd);
+  el.addEventListener('scroll', polyfillScrollEnd as unknown as EventListener);
 
-  return () => el.removeEventListener('scroll', polyfillScrollEnd);
+  return () => el.removeEventListener('scroll', polyfillScrollEnd as unknown as EventListener);
 }
 
 export function createScrollEndEvent(wait: number = 100) {
