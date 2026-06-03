@@ -77,6 +77,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@originjs/vite-plugin-federation": "^1.4.1",
     "@tsconfig/node24": "^24.0.4",
     "@types/lodash": "^4",
     "@types/node": "^24.12.2",

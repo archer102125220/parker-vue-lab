@@ -10,6 +10,7 @@ import glsl from 'vite-plugin-glsl';
 import autoprefixer from 'autoprefixer';
 import postcssPxtorem from 'postcss-pxtorem';
 import vuetify, { transformAssetUrls } from 'vite-plugin-vuetify';
+import federation from '@originjs/vite-plugin-federation';
 
 const isHttps = process.env['HTTPS'] === 'true';
 
@@ -85,7 +86,52 @@ export default defineConfig(({ command, mode }) => {
         routesFolder: 'src/pages',
         dts: 'src/typed-router.d.ts'
       }),
-      vuetify({ autoImport: true })
+      vuetify({ autoImport: true }),
+      federation({
+        filename: 'parker-vue-lab-federation.js',
+        exposes: {
+          './SkeletonLoader': '@src/components/SkeletonLoader.vue',
+          './UniverDocEditor': '@src/components/Univer/DocEditor.vue',
+          './UniverSheetEditor': '@src/components/Univer/SheetEditor.vue',
+          './univer': '@src/utils/third-party/univer/index.ts',
+          './univer/components': '@src/utils/third-party/univer/components.ts',
+          './univer/i18n': '@src/utils/third-party/univer/i18n/index.ts',
+          './univer/plugin': '@src/utils/third-party/univer/plugin/index.ts'
+        },
+        shared: [
+          'vue',
+          'vuetify',
+          'vue-i18n',
+          'pinia',
+          '@univerjs-pro/collaboration-client',
+          '@univerjs-pro/live-share',
+          '@univerjs/docs-quick-insert-ui',
+          '@univerjs/preset-docs-advanced',
+          '@univerjs/preset-docs-core',
+          '@univerjs/preset-docs-drawing',
+          '@univerjs/preset-docs-hyper-link',
+          '@univerjs/preset-docs-thread-comment',
+          '@univerjs/preset-sheets-advanced',
+          '@univerjs/preset-sheets-collaboration',
+          '@univerjs/preset-sheets-conditional-formatting',
+          '@univerjs/preset-sheets-core',
+          '@univerjs/preset-sheets-data-validation',
+          '@univerjs/preset-sheets-drawing',
+          '@univerjs/preset-sheets-filter',
+          '@univerjs/preset-sheets-find-replace',
+          '@univerjs/preset-sheets-hyper-link',
+          '@univerjs/preset-sheets-note',
+          '@univerjs/preset-sheets-sort',
+          '@univerjs/preset-sheets-table',
+          '@univerjs/preset-sheets-thread-comment',
+          '@univerjs/presets',
+          '@univerjs/sheets-crosshair-highlight',
+          '@univerjs/sheets-zen-editor',
+          '@univerjs/ui-adapter-vue3',
+          '@univerjs/uniscript',
+          '@univerjs/watermark'
+        ]
+      })
     ],
     resolve: {
       alias: {
