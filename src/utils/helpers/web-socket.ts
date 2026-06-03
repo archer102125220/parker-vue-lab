@@ -1,15 +1,8 @@
-// TODO
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type WebSocketConfingFunction = (event: Event) => any;
-// TODO
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type WebSocketConfingMessageFunction = (event: MessageEvent) => any;
-type CustomWebSocketSend = (
-  event: string | ArrayBufferLike | Blob | ArrayBufferView,
-  // TODO
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  data?: any
-) => void;
+type WebSocketConfingFunction = (event: Event) => void;
+type WebSocketConfingMessageFunction = (event: MessageEvent) => void;
+
+type CustomWebSocketSend = (event: string, data?: unknown) => void;
+
 interface WebSocketConfing {
   open: WebSocketConfingFunction;
   message: WebSocketConfingMessageFunction;
@@ -19,8 +12,7 @@ interface WebSocketConfing {
 }
 
 interface WebSocketInterface extends Omit<WebSocket, 'send'> {
-  // _send?: WebSocket['send'];
-  _send?: CustomWebSocketSend;
+  _send: WebSocket['send'];
   send: CustomWebSocketSend;
 }
 
@@ -34,7 +26,9 @@ export function createWebSocket(
 ) {
   if (typeof window !== 'object') return;
 
-  if (typeof confing !== 'object') throw new Error('invalid confing');
+  if (typeof confing !== 'object' || confing === null) {
+    throw new Error('invalid confing');
+  }
 
   const { url, open, message, close, error } = confing;
 
@@ -46,17 +40,17 @@ export function createWebSocket(
     throw new Error('invalid url');
   }
 
-  const socket: WebSocketInterface = new WebSocket(url);
+  // 這裡需要使用型別斷言，因為我們要修改原生的 WebSocket 實例，
+  // 實作自定義的 WebSocketInterface 並覆寫其 'send' 方法。
+  const socket = new WebSocket(url) as unknown as WebSocketInterface;
 
-  socket._send = socket.send;
-  // TODO
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  socket.send = function (event: any, data: any) {
+  // 這裡需要型別斷言來取得原本原生 WebSocket 的 'send' 方法，
+  // 因為 'socket' 已經被定義為 WebSocketInterface 型別。
+  socket._send = (socket as unknown as WebSocket).send;
+
+  socket.send = function (event: string, data?: unknown) {
     const payload = { event, data };
     // console.log(payload);
-    // TODO
-    // eslint-disable-next-line
-    // @ts-ignore
     this._send(JSON.stringify(payload));
   };
 
