@@ -27,28 +27,19 @@ export function doubleTap(doubleTapMs: number) {
   };
 }
 
-export function customDoubleTap(
-  // TODO
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-  func: Function,
+export function customDoubleTap<This, Args extends unknown[]>(
+  func: (this: This, ...args: Args) => void,
   doubleTapMs: number = 200,
-  // TODO
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-  defaultFunc: Function
+  defaultFunc?: (this: This, ...args: Args) => void
 ) {
   let timeout: NodeJS.Timeout,
     lastTap = 0;
 
-  // TODO
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return function detectDoubleTap(...args: any[]) {
+  return function detectDoubleTap(this: This, ...args: Args) {
     const currentTime = new Date().getTime();
     const tapLength = currentTime - lastTap;
 
     if (0 < tapLength && tapLength < doubleTapMs) {
-      // TODO
-      // eslint-disable-next-line
-      // @ts-ignore
       func.apply(this, args);
     } else {
       timeout = setTimeout(() => clearTimeout(timeout), doubleTapMs);
@@ -56,9 +47,6 @@ export function customDoubleTap(
     lastTap = currentTime;
 
     if (typeof defaultFunc === 'function') {
-      // TODO
-      // eslint-disable-next-line
-      // @ts-ignore
       defaultFunc.apply(this, args);
     }
   };
