@@ -68,7 +68,7 @@ export function cacheAdapterEnhancer(
     const { method, forceUpdate, ttlConfig = {} } = _config;
     const useCache: boolean =
       _config[cacheFlag] !== undefined && _config[cacheFlag] !== null
-        ? _config[cacheFlag]
+        ? (_config[cacheFlag] as boolean)
         : enabledByDefault;
     const isLike: boolean = isCacheLike(getCache, setCache, deleteCache);
     const requestKey: requestKey =
@@ -78,7 +78,7 @@ export function cacheAdapterEnhancer(
 
     let response: AxiosResponse<unknown> | null = null;
     if (useCache === true && isLike === true) {
-      response = (await getCache(requestKey, { ...ttlConfig, method })) || null; // 從快取中取得請求key對應的響應對象
+      response = (await getCache(requestKey, { ...ttlConfig, method })) as AxiosResponse<unknown> | null; // 從快取中取得請求key對應的響應對象
     }
 
     if (response === null || forceUpdate === true) {

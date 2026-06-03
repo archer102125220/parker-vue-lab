@@ -29,7 +29,7 @@ const API_BASE = process.env.NEXT_PUBLIC_API_BASE || '';
 // https://www.hai-fe.com/docs/nuxt/apiCache.html
 // https://www.npmjs.com/package/lru-cache
 // api資料快取儲存物件
-const cacheCfg: LRUCache<string, number> = new LRUCache({
+const cacheCfg: LRUCache<string, NonNullable<unknown>> = new LRUCache({
   ttl: 1000 * 60 * 10,
   max: 100
 });
@@ -37,9 +37,7 @@ const cacheCfg: LRUCache<string, number> = new LRUCache({
 export class cancelRequest implements cancelRequestInterface {
   requestCancelerList: requestCancelerList = {};
 
-  // TODO
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  getRequestKey(method: string, url: string | undefined, params: any) {
+  getRequestKey(method: string, url: string | undefined, params: unknown) {
     let requestKey = method.toLocaleLowerCase() + '|__|' + url;
     if (typeof params === 'object' && params !== null) {
       requestKey += '|__|' + JSON.stringify(params);
@@ -51,9 +49,7 @@ export class cancelRequest implements cancelRequestInterface {
     cancel: requestCanceler,
     method: string | undefined = 'GET',
     url: string | undefined,
-    // TODO
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    params: any
+    params: unknown
   ): void {
     const key = this.getRequestKey(method, url, params);
     this.requestCancelerList[key] = cancel;
@@ -62,28 +58,22 @@ export class cancelRequest implements cancelRequestInterface {
   getRequestCanceler(
     method: string = 'GET',
     url: string,
-    // TODO
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    params: any
+    params: unknown
   ): requestCanceler {
     const key = this.getRequestKey(method, url, params);
-    return this.requestCancelerList[key];
+    return this.requestCancelerList[key] || null;
   }
 
   removeRequestCanceler(
     method: string | undefined = 'GET',
     url: string | undefined,
-    // TODO
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    params: any
+    params: unknown
   ): void {
     const key = this.getRequestKey(method, url, params);
     this.requestCancelerList[key] = null;
   }
 
-  // TODO
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  handlerCancel = (method: string = 'GET', url: string, params: any): void => {
+  handlerCancel = (method: string = 'GET', url: string, params: unknown): void => {
     const key = this.getRequestKey(method, url, params);
     const requestCanceler: requestCanceler =
       this.requestCancelerList[key] || null;
@@ -111,15 +101,13 @@ export class cancelRequest implements cancelRequestInterface {
 
 export const CancelRequest: cancelRequestInterface = new cancelRequest();
 
-export function getCache(requestKey: requestKey = '') {
+export function getCache(requestKey: requestKey = '', config?: Record<string, unknown>) {
   return cacheCfg.get(requestKey);
 }
-// TODO
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function setCache(requestKey: requestKey = '', response: any) {
-  return cacheCfg.set(requestKey, response);
+export function setCache(requestKey: requestKey = '', response: unknown, config?: Record<string, unknown>) {
+  return cacheCfg.set(requestKey, response as NonNullable<unknown>);
 }
-export function deleteCache(requestKey: requestKey = '') {
+export function deleteCache(requestKey: requestKey = '', config?: Record<string, unknown>) {
   return cacheCfg.delete(requestKey);
 }
 export function removeCache() {
@@ -131,9 +119,7 @@ export let ax: AxiosInstance | null = null;
 export function axiosInit(
   baseURL: string,
   errorAdapter?: errorAdapterType,
-  // TODO
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  defaultExtendOption?: { [key: string]: any }
+  defaultExtendOption?: Record<string, unknown>
 ) {
   ax = axios.create({
     baseURL,
@@ -145,7 +131,7 @@ export function axiosInit(
         setCache,
         deleteCache
       },
-      function defaultAdapter(config: config) {
+      function defaultAdapter(config: InternalAxiosRequestConfig) {
         delete config.adapter;
         return axios(config);
       }
@@ -153,7 +139,7 @@ export function axiosInit(
   });
 
   if (typeof window === 'undefined') {
-    ax.interceptors.request.use(function (config: config) {
+    ax.interceptors.request.use(function (config: InternalAxiosRequestConfig) {
       let params = config.params;
       const _baseURL = config.baseURL || '';
       const configData = config.data;
@@ -180,7 +166,7 @@ export function axiosInit(
     });
   }
 
-  ax.interceptors.request.use(function (config: config) {
+  ax.interceptors.request.use(function (config: InternalAxiosRequestConfig) {
     const controller = new AbortController();
     let params = config.params;
     const configData = config.data;
@@ -231,13 +217,9 @@ export interface responseConfigType extends InternalAxiosRequestConfig {
 export const request: requestInterface = function (
   _method: string = 'GET',
   url: string,
-  // TODO
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  _params: { [key: string]: any } = {},
-  // TODO
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  _extendOption: { [key: string]: any } = {},
-  hasErrorAdapter: boolean = true
+  _params: Record<string, unknown> | undefined = {},
+  _extendOption: Record<string, unknown> | undefined = {},
+  hasErrorAdapter: boolean | undefined = true
 ) {
   const method: string = _method.toUpperCase();
   const defaultExtendOption = request.defaultExtendOption;
@@ -245,7 +227,7 @@ export const request: requestInterface = function (
 
   let extendOption = _extendOption;
   if (typeof defaultExtendOption === 'function') {
-    extendOption = defaultExtendOption(_extendOption) || {};
+    extendOption = (defaultExtendOption as unknown as Function)(_extendOption) || {};
   } else if (
     typeof defaultExtendOption === 'object' &&
     defaultExtendOption !== null
@@ -274,8 +256,8 @@ export const request: requestInterface = function (
       typeof extendOption.headers === 'object' &&
       extendOption.headers !== null
     ) {
-      extendOption.headers['X-Is-Cacheable'] = 'true';
-      extendOption.headers['Cache-Control'] = 'max-age=604800';
+      (extendOption.headers as Record<string, string>)['X-Is-Cacheable'] = 'true';
+      (extendOption.headers as Record<string, string>)['Cache-Control'] = 'max-age=604800';
     } else {
       extendOption.headers = {
         'X-Is-Cacheable': 'true',
@@ -343,14 +325,12 @@ export const request: requestInterface = function (
           const headers = extendOption?.headers;
           const response = await request.errorAdapter(
             error,
-            // TODO
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (newHeaders: any) =>
+            (newHeaders: Record<string, unknown>) =>
               request(
                 _method,
                 url,
                 _params,
-                { ...extendOption, headers: { ...headers, ...newHeaders } },
+                { ...extendOption, headers: { ...(headers as object), ...newHeaders } },
                 false
               )
           );
@@ -384,29 +364,19 @@ export const request: requestInterface = function (
     });
 };
 
-// TODO
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-request.get = function (...arg: requestArg): Promise<any> {
+request.get = function (...arg: requestArg): Promise<unknown> {
   return request('GET', ...arg);
 };
-// TODO
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-request.post = function (...arg: requestArg): Promise<any> {
+request.post = function (...arg: requestArg): Promise<unknown> {
   return request('POST', ...arg);
 };
-// TODO
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-request.put = function (...arg: requestArg): Promise<any> {
+request.put = function (...arg: requestArg): Promise<unknown> {
   return request('PUT', ...arg);
 };
-// TODO
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-request.delete = function (...arg: requestArg): Promise<any> {
+request.delete = function (...arg: requestArg): Promise<unknown> {
   return request('DELETE', ...arg);
 };
-// TODO
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-request.patch = function (...arg: requestArg): Promise<any> {
+request.patch = function (...arg: requestArg): Promise<unknown> {
   return request('PATCH', ...arg);
 };
 request.cancel = CancelRequest.handlerCancel;

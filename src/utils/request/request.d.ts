@@ -3,65 +3,41 @@ import type { InternalAxiosRequestConfig } from 'axios';
 export type getRequestKey = (
   method: string,
   url: string | undefined,
-  // TODO
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  params: any
+  params: unknown
 ) => string;
 export type addRequestCanceler = (
   cancel: AbortController,
   method: string | undefined,
   url: string | undefined,
-  // TODO
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  params: any
+  params: unknown
 ) => void;
 export type getRequestCanceler = (
   method: string,
   url: string,
-  // TODO
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  params: any
+  params: unknown
 ) => AbortController | null;
 export type removeRequestCanceler = (
   method: string | undefined,
   url: string | undefined,
-  // TODO
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  params: any
+  params: unknown
 ) => void;
-// TODO
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type handlerCancel = (method: string, url: string, params: any) => void;
+export type handlerCancel = (method: string, url: string, params: unknown) => void;
 export type handlerCancelAll = () => void;
 export type requestCanceler = AbortController | null;
 
 export type requestType = (
   _method: string,
   url: string,
-  // TODO
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  _params: any,
-  // TODO
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  _extendOption: any,
-  errorAdapter: boolean
-  // TODO
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-) => Promise<any>;
+  _params: Record<string, unknown> | undefined,
+  _extendOption: Record<string, unknown> | undefined,
+  errorAdapter: boolean | undefined
+) => Promise<unknown>;
 
-// TODO
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type requestArg = [string, any?, any?, any?];
-// TODO
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type cancelArg = [string, any];
-// TODO
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type errorAdapterType = (error: any, headers?: any) => any;
+export type requestArg = [string, Record<string, unknown>?, Record<string, unknown>?, boolean?];
+export type cancelArg = [string, unknown];
+export type errorAdapterType = (error: unknown, getRequestWithNewHeaders?: (newHeaders: Record<string, unknown>) => Promise<unknown>) => unknown;
 
-// TODO
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type expandReques = (...arg: requestArg) => Promise<any>;
+export type expandReques = (...arg: requestArg) => Promise<unknown>;
 export type expandCancel = (...arg: cancelArg) => void;
 
 export interface requestCancelerList {
@@ -82,9 +58,7 @@ export interface requestInterface extends requestType {
   axios?: typeof axios;
   baseURL?: string;
   errorAdapter?: errorAdapterType | boolean;
-  // TODO
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  defaultExtendOption?: { [key: string]: any };
+  defaultExtendOption?: Record<string, unknown>;
 
   get: expandReques;
   post: expandReques;
@@ -100,12 +74,8 @@ export interface requestInterface extends requestType {
   cancelAll: cancelRequestInterface['handlerCancelAll'];
 }
 export interface requestParams {
-  // TODO
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  data?: any;
-  // TODO
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  params?: any;
+  data?: unknown;
+  params?: unknown;
 }
 
 export type generateReqKey = (config: config) => string | undefined;
@@ -113,21 +83,13 @@ export type generateReqKey = (config: config) => string | undefined;
 export interface options {
   enabledByDefault: boolean;
   cacheFlag: string;
-  // TODO
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-  getCache: Function;
-  // TODO
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-  setCache: Function;
-  // TODO
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-  deleteCache: Function;
+  getCache: (requestKey: string | undefined, config?: Record<string, unknown>) => unknown;
+  setCache: (requestKey: string | undefined, response: unknown, config?: Record<string, unknown>) => void;
+  deleteCache: (requestKey: string | undefined, config?: Record<string, unknown>) => void;
 }
 
 export interface config extends InternalAxiosRequestConfig {
-  // TODO
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [key: string]: any;
+  [key: string]: unknown;
   forceUpdate?: boolean;
   // method: string;
   // url: string;
