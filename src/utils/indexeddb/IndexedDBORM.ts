@@ -324,12 +324,12 @@ class QueryBuilder {
   async first(): Promise<ModelInstance | null> {
     this.limitValue = 1;
     const results = await this.toArray();
-    return results.length > 0 ? results[0] : null;
+    return results.length > 0 ? results[0] ?? null : null;
   }
 
   async last(): Promise<ModelInstance | null> {
     const results = await this.toArray();
-    return results.length > 0 ? results[results.length - 1] : null;
+    return results.length > 0 ? results[results.length - 1] ?? null : null;
   }
 
   async count(): Promise<number> {
@@ -634,7 +634,7 @@ export class Model {
 
   async findOne(options: FindOptions = {}): Promise<ModelInstance | null> {
     const results = await this.findAll({ ...options, limit: 1 });
-    return results.length > 0 ? results[0] : null;
+    return results.length > 0 ? results[0] ?? null : null;
   }
 
   async findAll(options: FindOptions = {}): Promise<ModelInstance[]> {
@@ -812,7 +812,13 @@ export class Model {
           return;
         }
 
-        const request = store.delete(ids[index]);
+        const id = ids[index];
+        if (id === undefined) {
+          resolve(count);
+          return;
+        }
+
+        const request = store.delete(id);
 
         request.onsuccess = () => {
           count++;
@@ -905,7 +911,7 @@ export class IndexedDBORM {
                   : index.fields;
                 const keyPath = Array.isArray(index.fields)
                   ? index.fields.length === 1
-                    ? index.fields[0]
+                    ? index.fields[0]!
                     : index.fields
                   : index.fields;
 
