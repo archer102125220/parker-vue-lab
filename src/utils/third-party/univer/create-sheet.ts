@@ -262,12 +262,28 @@ export async function importSheetLiveShare() {
   };
 }
 
-export async function createSheetInstance(
-  container: HTMLElement,
-  locale: string = '',
-  collaboration: boolean = false,
-  liveShare: boolean = false
-): Promise<univerInstance> {
+export type CreateSheetSetting = {
+  container?: HTMLElement;
+  locale?: string;
+  collaboration?: boolean;
+  liveShare?: boolean;
+};
+export async function createSheetInstance({
+  container,
+  locale = '',
+  collaboration = false,
+  liveShare = false
+}: CreateSheetSetting = {}): Promise<univerInstance> {
+  if (typeof window === 'undefined') {
+    throw new Error(
+      'createSheetInstance is only available in browser environment'
+    );
+  }
+
+  if (container instanceof HTMLElement === false) {
+    throw new Error('container must be an HTMLElement');
+  }
+
   const {
     UniverPresets,
     UniverPresetSheetsCore,

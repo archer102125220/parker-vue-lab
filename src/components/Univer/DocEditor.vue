@@ -155,11 +155,11 @@ async function handleUniverDoc(overrideSnapshot?: Partial<IDocumentData>) {
     //   }
     // }
 
-    const { univer, univerAPI, LocaleType } = await createDocInstance(
-      container.value,
-      props.locale,
-      props.collaboration
-    );
+    const { univer, univerAPI, LocaleType } = await createDocInstance({
+      container: container.value,
+      locale: props.locale,
+      collaboration: props.collaboration
+    });
 
     // 只有出現在 univerAPI.Event 中的事件能被觸發
     // 官網上（https://docs.univer.ai/guides/docs/features/core/general-api#%E4%BA%8B%E4%BB%B6%E9%A1%9E%E5%88%A5）

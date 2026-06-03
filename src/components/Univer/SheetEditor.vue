@@ -167,12 +167,12 @@ async function handleUniverSheet(overrideSnapshot?: Partial<IWorkbookData>) {
     //   }
     // }
 
-    const { univer, univerAPI, LocaleType } = await createSheetInstance(
-      container.value,
-      props.locale,
-      props.collaboration,
-      props.liveShare
-    );
+    const { univer, univerAPI, LocaleType } = await createSheetInstance({
+      container: container.value,
+      locale: props.locale,
+      collaboration: props.collaboration,
+      liveShare: props.liveShare
+    });
 
     disposableList.push(
       univerAPI.addEvent(univerAPI.Event.LifeCycleChanged, (event) => {

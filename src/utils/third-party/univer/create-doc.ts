@@ -166,11 +166,26 @@ export async function importDocCollaboration() {
   };
 }
 
-export async function createDocInstance(
-  container: HTMLElement,
-  locale: string,
-  collaboration: boolean = false
-): Promise<univerInstance> {
+export type CreateDocSetting = {
+  container?: HTMLElement;
+  locale?: string;
+  collaboration?: boolean;
+};
+export async function createDocInstance({
+  container,
+  locale = '',
+  collaboration = false
+}: CreateDocSetting = {}): Promise<univerInstance> {
+  if (typeof window === 'undefined') {
+    throw new Error(
+      'createDocInstance is only available in browser environment'
+    );
+  }
+
+  if (container instanceof HTMLElement === false) {
+    throw new Error('container must be an HTMLElement');
+  }
+
   const {
     UniverPresets,
     UniverPresetDocsCore,
