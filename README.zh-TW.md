@@ -237,6 +237,28 @@ parker-vue-lab/
 
 在動態 `<component :is="...">` 中使用組件時，確保組件已正確註冊或引用，特別是當沒有 Nuxt 自動引入功能時，必須在 `<script setup>` 內確保正確導入。
 
+## 📦 Module Federation (模組聯邦)
+
+此專案透過 `@originjs/vite-plugin-federation` 輸出聯邦模組（例如 `DocEditor`, `SheetEditor` 等等），作為其他專案可以直接引用的微前端 (Micro-Frontend) 組件。
+
+### 型別定義 (TypeScript)
+
+在 Module Federation 的多進入點生態中，為了解決引用端難以正確匹配相對路徑的問題，我們做了以下處理：
+1. **保留原始目錄結構**：專案使用 `vite-plugin-dts` 來生成 `.d.ts` 檔案，並保留原有的目錄結構（而非打包成單一檔案），這是為了讓引用端能夠精準映射到每個獨立的被匯出模組。
+2. **自動化產生入口型別檔**：在 `vite.config.ts` 內有一個專用的 Vite Plugin (`generate-federation-dts`)。會在 `yarn build` 完成後，自動根據 `federationExposes` 的設定，在 `dist/types/` 目錄下自動產生一份統一的入口型別檔：`dist/types/parker-vue-lab-federation.d.ts`。
+
+### 引用端專案的超簡易設定方式
+
+引用此模組的專案（Consumer）只需要拿到產出的 `dist/types` 資料夾放入專案內，接著只要做一件事：
+
+在專案的 `env.d.ts` (或是任意的全域 `.d.ts` 檔案) 頂部加上這行 Reference 指令：
+
+```typescript
+/// <reference types="path/to/dist/types/parker-vue-lab-federation.d.ts" />
+```
+
+這樣一來，TypeScript 就會自動讀取這份統一入口的型別定義檔，並且沿著資料夾結構完美展開。其他專案完全不需要在 `tsconfig.json` 設定複雜的 `paths` 映射，要抓取並引入型別變得直覺非常多！
+
 ## 測試（Vitest + Playwright）
 
 專案採用 **Vitest** 進行單元/整合測試，**Playwright** 進行 E2E 測試。

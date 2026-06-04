@@ -70,6 +70,24 @@ import DefaultLayout from '@src/layouts/default.vue';
           </div>
         </div>
       </section>
+
+      <!-- Module Federation -->
+      <section class="about_page-section about_page-federation">
+        <div class="about_page-section-container">
+          <h2 class="about_page-section-title">模組聯邦 (Module Federation)</h2>
+          <div class="about_page-overview-content">
+            <p class="about_page-overview-content-text">
+              此專案透過 <code>@originjs/vite-plugin-federation</code> 輸出聯邦模組（如 DocEditor, SheetEditor 等等），作為微前端組件供其他專案引用。
+            </p>
+            <p class="about_page-overview-content-text">
+              為了克服多進入點型別匯出的痛點，專案內建了客製化的 Vite 插件。在打包時自動於 <code>dist/types/</code> 產出 <code>parker-vue-lab-federation.d.ts</code> 統一入口型別檔，並且完美保留原始的型別目錄結構。
+            </p>
+            <p class="about_page-overview-content-text">
+              引用端專案只需在全域型別聲明加入一條 <code>&lt;/// reference types="..." /&gt;</code>，TypeScript 即可自動沿著原始目錄結構解析所有匯出模組的型別，完全不需要在 tsconfig.json 中設定複雜的 paths 映射！
+            </p>
+          </div>
+        </div>
+      </section>
     </div>
   </DefaultLayout>
 </template>

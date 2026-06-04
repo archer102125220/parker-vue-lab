@@ -263,6 +263,28 @@ parker-vue-lab/
 
 When using components inside a dynamic `<component :is="...">`, ensure they are properly registered or resolved, especially if they are auto-imported or globally registered. 
 
+## 📦 Module Federation
+
+This project exports federated modules (e.g., `DocEditor`, `SheetEditor`) using `@originjs/vite-plugin-federation`, acting as Micro-Frontend components that can be directly consumed by other projects.
+
+### Type Definitions (TypeScript)
+
+In the multi-entry ecosystem of Module Federation, to solve the issue where consuming projects struggle to correctly match relative paths for types, we implemented the following solution:
+1. **Preserving Original Directory Structure**: The project uses `vite-plugin-dts` to generate `.d.ts` files while maintaining the original directory structure (instead of bundling them into a single file). This allows the consumer to accurately map to each independently exported module.
+2. **Automated Entry Type Generation**: There is a dedicated Vite Plugin (`generate-federation-dts`) inside `vite.config.ts`. After `yarn build` completes, it automatically generates a unified entry type file based on the `federationExposes` configuration at `dist/types/parker-vue-lab-federation.d.ts`.
+
+### Super Easy Setup for Consuming Projects
+
+Projects consuming this module (Consumers) only need to copy the generated `dist/types` folder into their workspace and do one simple thing:
+
+Add the following Reference directive at the top of their `env.d.ts` (or any global `.d.ts` file):
+
+```typescript
+/// <reference types="path/to/dist/types/parker-vue-lab-federation.d.ts" />
+```
+
+By doing this, TypeScript will automatically read this unified entry type definition file and perfectly expand the relative paths along the directory structure. Consuming projects absolutely do not need to configure complex `paths` mappings in their `tsconfig.json`. Grabbing and importing types becomes incredibly intuitive!
+
 ## Testing (Vitest + Playwright)
 
 The project uses **Vitest** for unit/integration tests and **Playwright** for E2E tests.
