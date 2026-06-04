@@ -1,4 +1,32 @@
+import type {
+  DependencyOverride,
+  IUniverConfig,
+  Plugin,
+  PluginCtor
+} from '@univerjs/core';
+
+import type { IUniverDocsAdvancedPresetConfig } from '@univerjs/preset-docs-advanced';
+
 import type { univerInstance } from '@src/utils/third-party/univer/index';
+
+export interface IPreset {
+  plugins: Array<
+    | PluginCtor<Plugin>
+    | [PluginCtor<Plugin>, ConstructorParameters<PluginCtor<Plugin>>[0]]
+  >;
+}
+export interface IPresetOptions {
+  lazy?: boolean;
+}
+export type CreateUniverOptions = Partial<IUniverConfig> & {
+  presets: Array<IPreset | [IPreset, IPresetOptions]>;
+  plugins?: Array<
+    | PluginCtor<Plugin>
+    | [PluginCtor<Plugin>, ConstructorParameters<PluginCtor<Plugin>>[0]]
+  >;
+  override?: DependencyOverride;
+  collaboration?: true;
+};
 
 // const UNIVER_SERVER_ENDPOINT =
 //   import.meta.env.VITE_UNIVER_SERVER_ENDPOINT ||
@@ -166,14 +194,22 @@ export async function importDocCollaboration() {
   };
 }
 
+type createUniverOptions = CreateUniverOptions & {
+  plugins: Array<
+    | PluginCtor<Plugin>
+    | [PluginCtor<Plugin>, ConstructorParameters<PluginCtor<Plugin>>[0]]
+  >;
+};
 export type CreateDocSetting = {
   container?: HTMLElement;
   locale?: string;
+  license?: IUniverDocsAdvancedPresetConfig['license'];
   collaboration?: boolean;
 };
 export async function createDocInstance({
   container,
   locale = '',
+  license,
   collaboration = false
 }: CreateDocSetting = {}): Promise<univerInstance> {
   if (typeof window === 'undefined') {
@@ -185,6 +221,9 @@ export async function createDocInstance({
   if (container instanceof HTMLElement === false) {
     throw new Error('container must be an HTMLElement');
   }
+  const safeLicense: IUniverDocsAdvancedPresetConfig['license'] =
+    (license ?? import.meta.env.VITE_UNIVER_LICENSE) || '';
+  const sheetsAdvanced = typeof safeLicense === 'string' && safeLicense !== '';
 
   const {
     UniverPresets,
@@ -233,14 +272,6 @@ export async function createDocInstance({
     CustomPluginZhTW
   } = await importCustomDocPlugin();
 
-  const {
-    UniverPresetDocsAdvanced,
-    UniverPresetDocsAdvancedZhTW,
-    UniverPresetDocsAdvancedEnUS
-  } = await importDocAdvanced();
-  const { UniverDocsAdvancedPreset, UniverDocsExchangeClientPlugin } =
-    UniverPresetDocsAdvanced;
-
   const univerConfig = {
     locale: locale.includes('zh') ? LocaleType.ZH_TW : LocaleType.EN_US,
     // 迴避 TS 型別錯誤問題
@@ -265,88 +296,40 @@ export async function createDocInstance({
     ]
   };
 
-  if (collaboration === true) {
+  const localeZhTW = [
+    UniverPresetDocsCoreZhTW,
+    UniverPresetDocsHyperLinkZhTW,
+    UniverPresetDocsDrawingZhTW,
+    UniverDocsQuickInsertUIZhTW,
+    UniverPresetDocsThreadCommentZhTW,
+
+    CustomPluginZhTW
+  ];
+
+  const localeEnUS = [
+    UniverPresetDocsCoreEnUS,
+    UniverPresetDocsHyperLinkEnUS,
+    UniverPresetDocsDrawingEnUS,
+    UniverDocsQuickInsertUIEnUS,
+    UniverPresetDocsThreadCommentEnUS,
+
+    CustomPluginEnUS
+  ];
+
+  if (sheetsAdvanced === true) {
     const {
-      UniverPresetDocsCollaboration,
-      UniverPresetDocsCollaborationZhTW,
-      UniverPresetDocsCollaborationEnUS
-    } = await importDocCollaboration();
-    const { UniverDocsCollaborationPreset } = UniverPresetDocsCollaboration;
+      UniverPresetDocsAdvanced,
+      UniverPresetDocsAdvancedZhTW,
+      UniverPresetDocsAdvancedEnUS
+    } = await importDocAdvanced();
+    const { UniverDocsAdvancedPreset, UniverDocsExchangeClientPlugin } =
+      UniverPresetDocsAdvanced;
 
-    univerConfig.locales = {
-      [LocaleType.ZH_TW]: mergeLocales(
-        UniverPresetDocsCoreZhTW,
-        UniverPresetDocsHyperLinkZhTW,
-        UniverPresetDocsDrawingZhTW,
-        UniverDocsQuickInsertUIZhTW,
-        UniverPresetDocsThreadCommentZhTW,
-
-        UniverPresetDocsAdvancedZhTW,
-        UniverPresetDocsCollaborationZhTW,
-
-        CustomPluginZhTW
-      ),
-      [LocaleType.EN_US]: mergeLocales(
-        UniverPresetDocsCoreEnUS,
-        UniverPresetDocsHyperLinkEnUS,
-        UniverPresetDocsDrawingEnUS,
-        UniverDocsQuickInsertUIEnUS,
-        UniverPresetDocsThreadCommentEnUS,
-
-        UniverPresetDocsAdvancedEnUS,
-        UniverPresetDocsCollaborationEnUS,
-
-        CustomPluginEnUS
-      )
-    };
-
-    univerConfig.collaboration = true;
-
-    univerConfig.presets.push(
-      UniverDocsDrawingPreset({
-        collaboration: true
-      }),
-      UniverDocsAdvancedPreset({
-        license: import.meta.env.VITE_UNIVER_LICENSE,
-        useWorker: true,
-        // universerEndpoint: UNIVER_SERVER_ENDPOINT
-        universerEndpoint: UNIVERSER_DOCKER_HOST
-      }),
-      UniverDocsCollaborationPreset({
-        // universerEndpoint: UNIVER_SERVER_ENDPOINT
-        universerEndpoint: UNIVERSER_DOCKER_HOST
-      })
-    );
-  } else {
-    univerConfig.locales = {
-      [LocaleType.ZH_TW]: mergeLocales(
-        UniverPresetDocsCoreZhTW,
-        UniverPresetDocsHyperLinkZhTW,
-        UniverPresetDocsDrawingZhTW,
-        UniverDocsQuickInsertUIZhTW,
-        UniverPresetDocsThreadCommentZhTW,
-
-        UniverPresetDocsAdvancedZhTW,
-
-        CustomPluginZhTW
-      ),
-      [LocaleType.EN_US]: mergeLocales(
-        UniverPresetDocsCoreEnUS,
-        UniverPresetDocsHyperLinkEnUS,
-        UniverPresetDocsDrawingEnUS,
-        UniverDocsQuickInsertUIEnUS,
-        UniverPresetDocsThreadCommentEnUS,
-
-        UniverPresetDocsAdvancedEnUS,
-
-        CustomPluginEnUS
-      )
-    };
-
-    univerConfig.collaboration = undefined;
+    localeZhTW.push(UniverPresetDocsAdvancedZhTW);
+    localeEnUS.push(UniverPresetDocsAdvancedEnUS);
 
     const advancedPreset = UniverDocsAdvancedPreset({
-      license: import.meta.env.VITE_UNIVER_LICENSE,
+      license: safeLicense,
       useWorker: true,
       // universerEndpoint: UNIVER_SERVER_ENDPOINT
       universerEndpoint: UNIVERSER_DOCKER_HOST
@@ -360,8 +343,41 @@ export async function createDocInstance({
       }
     );
 
-    univerConfig.presets.push(UniverDocsDrawingPreset(), advancedPreset);
+    univerConfig.presets.push(advancedPreset);
   }
+
+  if (sheetsAdvanced === true && collaboration === true) {
+    const {
+      UniverPresetDocsCollaboration,
+      UniverPresetDocsCollaborationZhTW,
+      UniverPresetDocsCollaborationEnUS
+    } = await importDocCollaboration();
+    const { UniverDocsCollaborationPreset } = UniverPresetDocsCollaboration;
+
+    localeZhTW.push(UniverPresetDocsCollaborationZhTW);
+    localeEnUS.push(UniverPresetDocsCollaborationEnUS);
+
+    univerConfig.collaboration = true;
+
+    univerConfig.presets.push(
+      UniverDocsDrawingPreset({
+        collaboration: true
+      }),
+      UniverDocsCollaborationPreset({
+        // universerEndpoint: UNIVER_SERVER_ENDPOINT
+        universerEndpoint: UNIVERSER_DOCKER_HOST
+      })
+    );
+  } else {
+    univerConfig.collaboration = undefined;
+
+    univerConfig.presets.push(UniverDocsDrawingPreset());
+  }
+
+  univerConfig.locales = {
+    [LocaleType.ZH_TW]: mergeLocales(...localeZhTW),
+    [LocaleType.EN_US]: mergeLocales(...localeEnUS)
+  };
 
   const univerInstance = importRegisterVue(createUniver(univerConfig));
   univerInstance.univer.registerPlugins([
