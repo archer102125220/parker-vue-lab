@@ -125,7 +125,7 @@ const cssVariable = computed(() => {
   <div v-if="loading" class="loading_bar" :style="cssVariable" />
 </template>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .loading_bar {
   // Positioning
   position: var(--loading_position);
