@@ -1,9 +1,3 @@
-import type {
-  DependencyOverride,
-  IUniverConfig,
-  Plugin,
-  PluginCtor
-} from '@univerjs/core';
 import type { IUniverSheetsCorePresetConfig } from '@univerjs/preset-sheets-core';
 import type { IUniverSheetsFilterPresetConfig } from '@univerjs/preset-sheets-filter';
 import type { IUniverSheetsDataValidationPresetConfig } from '@univerjs/preset-sheets-data-validation';
@@ -19,31 +13,15 @@ import type { IUniverSheetsZenEditorConfig } from '@univerjs/sheets-zen-editor';
 import type { IUniverSheetsCollaborationPresetConfig } from '@univerjs/preset-sheets-collaboration';
 import type { IUniverLiveShareConfig } from '@univerjs-pro/live-share';
 
-import type { univerInstance } from '@src/utils/third-party/univer/index';
+import type {
+  CreateUniverOptions,
+  PluginCtor,
+  Plugin,
+  univerInstance
+} from '@src/utils/third-party/univer/index';
 import type { ISheetLockPluginConfig } from '@src/utils/third-party/univer/plugin/sheet-lock';
 
-// @univerjs/presets/lib/types/umd.d.ts 沒倒出的 createUniver 接收參數的型別
-export interface IPreset {
-  plugins: Array<
-    | PluginCtor<Plugin>
-    | [PluginCtor<Plugin>, ConstructorParameters<PluginCtor<Plugin>>[0]]
-  >;
-}
-export interface IPresetOptions {
-  lazy?: boolean;
-}
-export type CreateUniverOptions = Partial<IUniverConfig> & {
-  presets: Array<IPreset | [IPreset, IPresetOptions]>;
-  plugins?: Array<
-    | PluginCtor<Plugin>
-    | [PluginCtor<Plugin>, ConstructorParameters<PluginCtor<Plugin>>[0]]
-  >;
-  override?: DependencyOverride;
-  collaboration?: true;
-};
 export type {
-  DependencyOverride,
-  IUniverConfig,
   Plugin,
   PluginCtor,
   IUniverSheetsCorePresetConfig,
@@ -68,7 +46,7 @@ export type {
 //   'http://localhost:3000/api/univer';
 const UNIVERSER_DOCKER_HOST = import.meta.env.VITE_UNIVERSER_PROXY_PATH ?? '';
 
-export async function importSheet() {
+export async function importSheet(): Promise<any> {
   const [
     UniverPresets,
     UniverPresetSheetsCore,
@@ -230,7 +208,7 @@ export async function importSheet() {
   };
 }
 
-export async function importCustomSheetPlugin() {
+export async function importCustomSheetPlugin(): Promise<any> {
   const [
     { ImportCSVButtonPlugin },
     { ExportCSVButtonPlugin },
@@ -269,7 +247,7 @@ export async function importCustomSheetPlugin() {
   };
 }
 
-export async function importSheetAdvanced() {
+export async function importSheetAdvanced(): Promise<any> {
   const [
     UniverPresetSheetsAdvanced,
     { default: UniverPresetSheetsAdvancedZhTW },
@@ -289,7 +267,7 @@ export async function importSheetAdvanced() {
   };
 }
 
-export async function importSheetCollaboration() {
+export async function importSheetCollaboration(): Promise<any> {
   const [
     UniverPresetSheetsCollaboration,
     { default: UniverPresetSheetsCollaborationZhTW },
@@ -309,7 +287,7 @@ export async function importSheetCollaboration() {
   };
 }
 
-export async function importSheetLiveShare() {
+export async function importSheetLiveShare(): Promise<any> {
   const [UniverProLiveShare] = await Promise.all([
     import('@univerjs-pro/live-share'),
     import('@univerjs-pro/live-share/facade'),

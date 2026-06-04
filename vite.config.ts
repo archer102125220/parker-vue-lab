@@ -11,6 +11,7 @@ import autoprefixer from 'autoprefixer';
 import postcssPxtorem from 'postcss-pxtorem';
 import vuetify, { transformAssetUrls } from 'vite-plugin-vuetify';
 import federation from '@originjs/vite-plugin-federation';
+import dts from 'vite-plugin-dts';
 
 const isHttps = process.env['HTTPS'] === 'true';
 
@@ -39,6 +40,17 @@ export default defineConfig(({ command, mode }) => {
 
   // 或者你也可以用 mode 來判斷預設環境
   // const isDev = mode === 'development'
+
+  // 定義 Module Federation 要 expose 的模組
+  const federationExposes = {
+    './SkeletonLoader': '@src/components/SkeletonLoader.vue',
+    './UniverDocEditor': '@src/components/Univer/DocEditor.vue',
+    './UniverSheetEditor': '@src/components/Univer/SheetEditor.vue',
+    './univer': '@src/utils/third-party/univer/index.ts',
+    './univer/components': '@src/utils/third-party/univer/components.ts',
+    './univer/i18n': '@src/utils/third-party/univer/i18n/index.ts',
+    './univer/plugin': '@src/utils/third-party/univer/plugin/index.ts'
+  };
 
   return {
     base: isDev ? '/' : '/parker-vue-lab/',
@@ -87,17 +99,21 @@ export default defineConfig(({ command, mode }) => {
         dts: 'src/typed-router.d.ts'
       }),
       vuetify({ autoImport: true }),
+      dts({
+        tsconfigPath: './tsconfig.app.json',
+        include: [
+          'env.d.ts',
+          ...Object.values(federationExposes).map((path) =>
+            path.replace(/^@src\//, 'src/')
+          )
+        ],
+        insertTypesEntry: true,
+        bundleTypes: false,
+        outDirs: 'dist/types'
+      }),
       federation({
         filename: 'parker-vue-lab-federation.js',
-        exposes: {
-          './SkeletonLoader': '@src/components/SkeletonLoader.vue',
-          './UniverDocEditor': '@src/components/Univer/DocEditor.vue',
-          './UniverSheetEditor': '@src/components/Univer/SheetEditor.vue',
-          './univer': '@src/utils/third-party/univer/index.ts',
-          './univer/components': '@src/utils/third-party/univer/components.ts',
-          './univer/i18n': '@src/utils/third-party/univer/i18n/index.ts',
-          './univer/plugin': '@src/utils/third-party/univer/plugin/index.ts'
-        },
+        exposes: federationExposes,
         shared: [
           'vue',
           'vuetify',

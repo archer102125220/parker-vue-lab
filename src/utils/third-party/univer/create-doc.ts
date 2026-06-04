@@ -1,9 +1,3 @@
-import type {
-  DependencyOverride,
-  IUniverConfig,
-  Plugin,
-  PluginCtor
-} from '@univerjs/core';
 import type { IUniverDocsCorePresetConfig } from '@univerjs/preset-docs-core';
 import type { IUniverDocsThreadCommentPresetConfig } from '@univerjs/preset-docs-thread-comment';
 import type { IUniverDocsQuickInsertUIConfig } from '@univerjs/docs-quick-insert-ui';
@@ -13,27 +7,14 @@ import type { IUniverDocsDrawingPresetConfig } from '@univerjs/preset-docs-drawi
 import type { IUniverDocsAdvancedPresetConfig } from '@univerjs/preset-docs-advanced';
 import type { IUniverDocsCollaborationPresetConfig } from '@univerjs/preset-docs-collaboration';
 
-import type { univerInstance } from '@src/utils/third-party/univer/index';
+import type {
+  CreateUniverOptions,
+  PluginCtor,
+  Plugin,
+  univerInstance
+} from '@src/utils/third-party/univer/index';
 import type { IDocLockPluginConfig } from '@src/utils/third-party/univer/plugin/doc-lock';
 
-export interface IPreset {
-  plugins: Array<
-    | PluginCtor<Plugin>
-    | [PluginCtor<Plugin>, ConstructorParameters<PluginCtor<Plugin>>[0]]
-  >;
-}
-export interface IPresetOptions {
-  lazy?: boolean;
-}
-export type CreateUniverOptions = Partial<IUniverConfig> & {
-  presets: Array<IPreset | [IPreset, IPresetOptions]>;
-  plugins?: Array<
-    | PluginCtor<Plugin>
-    | [PluginCtor<Plugin>, ConstructorParameters<PluginCtor<Plugin>>[0]]
-  >;
-  override?: DependencyOverride;
-  collaboration?: true;
-};
 export type {
   IUniverDocsCorePresetConfig,
   IUniverDocsThreadCommentPresetConfig,
@@ -49,9 +30,9 @@ export type {
 // const UNIVER_SERVER_ENDPOINT =
 //   import.meta.env.VITE_UNIVER_SERVER_ENDPOINT ||
 //   'http://localhost:3000/api/univer';
-const UNIVERSER_DOCKER_HOST = import.meta.env.VITE_UNIVERSER_PROXY_PATH ?? '';
+// const UNIVERSER_DOCKER_HOST = import.meta.env.VITE_UNIVERSER_PROXY_PATH ?? '';
 
-export async function importDoc() {
+export async function importDoc(): Promise<any> {
   const [
     UniverPresets,
     UniverPresetDocsCore,
@@ -135,7 +116,7 @@ export async function importDoc() {
   };
 }
 
-export async function importCustomDocPlugin() {
+export async function importCustomDocPlugin(): Promise<any> {
   const [
     { LocalExportButtonPlugin },
     { ServerExportButtonPlugin },
@@ -168,7 +149,7 @@ export async function importCustomDocPlugin() {
   };
 }
 
-export async function importDocAdvanced() {
+export async function importDocAdvanced(): Promise<any> {
   const [
     UniverPresetDocsAdvanced,
     { default: UniverPresetDocsAdvancedZhTW },
@@ -188,7 +169,7 @@ export async function importDocAdvanced() {
   };
 }
 
-export async function importDocCollaboration() {
+export async function importDocCollaboration(): Promise<any> {
   const [
     UniverPresetDocsCollaboration,
     { default: UniverPresetDocsCollaborationZhTW },
