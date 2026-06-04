@@ -330,17 +330,15 @@ type createUniverOptions = CreateUniverOptions & {
 export type CreateSheetSetting = {
   container?: HTMLElement;
   locale?: string;
-  collaboration?: boolean;
-  liveShare?: boolean;
-  watermark?: boolean;
-  uniscript?: boolean;
   coreConfig?: IUniverSheetsCorePresetConfig;
   filterConfig?: IUniverSheetsFilterPresetConfig;
   dataValidationConfig?: IUniverSheetsDataValidationPresetConfig;
   hyperlinkConfig?: IUniverSheetsHyperLinkPresetConfig;
   findReplaceConfig?: IUniverSheetsFindReplacePresetConfig;
   threadCommentConfig?: IUniverSheetsThreadCommentPresetConfig;
+  watermark?: boolean;
   watermarkConfig?: IUniverWatermarkConfig;
+  uniscript?: boolean;
   uniscriptConfig?: IUniverUniscriptConfig;
   drawingPresetConfig?: IUniverSheetsDrawingPresetConfig;
   license?: IUniverSheetsAdvancedPresetConfig['license'];
@@ -351,21 +349,21 @@ export type CreateSheetSetting = {
   collaborationPresetConfig?: IUniverSheetsCollaborationPresetConfig;
   liveShareConfig?: IUniverLiveShareConfig;
   lockPluginConfig?: ISheetLockPluginConfig;
+  collaboration?: boolean;
+  liveShare?: boolean;
 };
 export async function createSheetInstance({
   container,
   locale = '',
-  collaboration = false,
-  liveShare = false,
-  watermark = false,
-  uniscript = false,
   coreConfig,
   filterConfig,
   dataValidationConfig,
   hyperlinkConfig,
   findReplaceConfig,
   threadCommentConfig,
+  watermark = false,
   watermarkConfig,
+  uniscript = false,
   uniscriptConfig,
   drawingPresetConfig = {},
   license,
@@ -375,7 +373,9 @@ export async function createSheetInstance({
   zenEditorConfig,
   collaborationPresetConfig = {},
   liveShareConfig,
-  lockPluginConfig = {}
+  lockPluginConfig = {},
+  collaboration = false,
+  liveShare = false
 }: CreateSheetSetting = {}): Promise<univerInstance> {
   if (typeof window === 'undefined') {
     throw new Error(
@@ -451,12 +451,9 @@ export async function createSheetInstance({
   const { UniverSheetsNotePreset } = UniverPresetSheetsNote;
   const { UniverSheetsTablePreset } = UniverPresetSheetsTable;
 
-  const { UniverWatermarkPlugin } = UniverWatermark;
   const { UniverSheetsCrosshairHighlightPlugin } =
     UniverSheetsCrosshairHighlight;
   const { UniverSheetsZenEditorPlugin } = UniverSheetsZenEditor;
-
-  const { UniverUniscriptPlugin } = UniverUniscript;
 
   const {
     ImportCSVButtonPlugin,
@@ -539,6 +536,8 @@ export async function createSheetInstance({
   ];
 
   if (watermark === true) {
+    const { UniverWatermarkPlugin } = UniverWatermark;
+
     if (typeof watermarkConfig === 'object' && watermarkConfig !== null) {
       univerConfig.plugins.push([
         UniverWatermarkPlugin,
@@ -556,6 +555,8 @@ export async function createSheetInstance({
   }
 
   if (uniscript === true) {
+    const { UniverUniscriptPlugin } = UniverUniscript;
+
     // uniscript 好像是 experimental ，並且 CDN 需要額外想辦法處理 monaco-editor
     if (typeof uniscriptConfig === 'object' && uniscriptConfig !== null) {
       univerConfig.plugins.push([UniverUniscriptPlugin, uniscriptConfig]);
@@ -623,9 +624,9 @@ export async function createSheetInstance({
         collaboration: true
       }),
       UniverSheetsCollaborationPreset({
-        ...collaborationPresetConfig,
         // universerEndpoint: UNIVER_SERVER_ENDPOINT
-        universerEndpoint: safeUniverserEndpoint
+        universerEndpoint: safeUniverserEndpoint,
+        ...collaborationPresetConfig
       })
     );
   } else {

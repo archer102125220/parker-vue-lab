@@ -4,10 +4,17 @@ import type {
   Plugin,
   PluginCtor
 } from '@univerjs/core';
-
+import type { IUniverDocsCorePresetConfig } from '@univerjs/preset-docs-core';
+import type { IUniverDocsThreadCommentPresetConfig } from '@univerjs/preset-docs-thread-comment';
+import type { IUniverDocsQuickInsertUIConfig } from '@univerjs/docs-quick-insert-ui';
+import type { IUniverWatermarkConfig } from '@univerjs/watermark';
+import type { IUniverUniscriptConfig } from '@univerjs/uniscript';
+import type { IUniverDocsDrawingPresetConfig } from '@univerjs/preset-docs-drawing';
 import type { IUniverDocsAdvancedPresetConfig } from '@univerjs/preset-docs-advanced';
+import type { IUniverDocsCollaborationPresetConfig } from '@univerjs/preset-docs-collaboration';
 
 import type { univerInstance } from '@src/utils/third-party/univer/index';
+import type { IDocLockPluginConfig } from '@src/utils/third-party/univer/plugin/doc-lock';
 
 export interface IPreset {
   plugins: Array<
@@ -26,6 +33,17 @@ export type CreateUniverOptions = Partial<IUniverConfig> & {
   >;
   override?: DependencyOverride;
   collaboration?: true;
+};
+export type {
+  IUniverDocsCorePresetConfig,
+  IUniverDocsThreadCommentPresetConfig,
+  IUniverDocsQuickInsertUIConfig,
+  IUniverWatermarkConfig,
+  IUniverUniscriptConfig,
+  IUniverDocsDrawingPresetConfig,
+  IUniverDocsAdvancedPresetConfig,
+  IUniverDocsCollaborationPresetConfig,
+  IDocLockPluginConfig
 };
 
 // const UNIVER_SERVER_ENDPOINT =
@@ -51,12 +69,11 @@ export async function importDoc() {
     UniverPresetDocsThreadComment,
     { default: UniverPresetDocsThreadCommentZhTW },
     { default: UniverPresetDocsThreadCommentEnUS },
-    UniverWatermark
+    UniverWatermark,
 
-    // uniscript 好像是 experimental ，並且 CDN 需要額外想辦法處理 monaco-editor ，暫先註解掉
-    // UniverUniscript,
-    // { default: UniverUniscriptZhTW },
-    // { default: UniverUniscriptEnUS },
+    UniverUniscript,
+    { default: UniverUniscriptZhTW },
+    { default: UniverUniscriptEnUS }
   ] = await Promise.all([
     import('@univerjs/presets'),
     import('@univerjs/preset-docs-core'),
@@ -76,10 +93,9 @@ export async function importDoc() {
     import('@univerjs/preset-docs-thread-comment/locales/en-US'),
     import('@univerjs/watermark'),
 
-    // uniscript 好像是 experimental ，並且 CDN 需要額外想辦法處理 monaco-editor ，暫先註解掉
-    // import('@univerjs/uniscript'),
-    // import('@univerjs/uniscript/locale/zh-TW'),
-    // import('@univerjs/uniscript/locale/en-US'),
+    import('@univerjs/uniscript'),
+    import('@univerjs/uniscript/locale/zh-TW'),
+    import('@univerjs/uniscript/locale/en-US'),
 
     import('@univerjs/watermark/facade'),
 
@@ -89,10 +105,9 @@ export async function importDoc() {
     import('@univerjs/docs-quick-insert-ui/lib/index.css'),
     import('@univerjs/preset-docs-thread-comment/lib/index.css'),
 
-    import('@univerjs/ui/facade')
+    import('@univerjs/ui/facade'),
 
-    // uniscript 好像是 experimental ，並且 CDN 需要額外想辦法處理 monaco-editor ，暫先註解掉
-    // import('@univerjs/uniscript/lib/index.css'),
+    import('@univerjs/uniscript/lib/index.css')
   ]);
 
   return {
@@ -112,12 +127,11 @@ export async function importDoc() {
     UniverPresetDocsThreadComment,
     UniverPresetDocsThreadCommentZhTW,
     UniverPresetDocsThreadCommentEnUS,
-    UniverWatermark
+    UniverWatermark,
 
-    // uniscript 好像是 experimental ，並且 CDN 需要額外想辦法處理 monaco-editor ，暫先註解掉
-    // UniverUniscript,
-    // UniverUniscriptZhTW,
-    // UniverUniscriptEnUS,
+    UniverUniscript,
+    UniverUniscriptZhTW,
+    UniverUniscriptEnUS
   };
 }
 
@@ -204,13 +218,37 @@ export type CreateDocSetting = {
   container?: HTMLElement;
   locale?: string;
   license?: IUniverDocsAdvancedPresetConfig['license'];
+  universerEndpoint?: IUniverDocsAdvancedPresetConfig['universerEndpoint'];
+  docsCoreConfig?: IUniverDocsCorePresetConfig;
+  threadCommentPresetConfig?: IUniverDocsThreadCommentPresetConfig;
+  quickInsertUIConfig?: IUniverDocsQuickInsertUIConfig;
+  watermark?: boolean;
+  watermarkConfig?: IUniverWatermarkConfig;
+  uniscript?: boolean;
+  uniscriptConfig?: IUniverUniscriptConfig;
+  drawingPresetConfig?: IUniverDocsDrawingPresetConfig;
   collaboration?: boolean;
+  advancedPresetConfig?: IUniverDocsAdvancedPresetConfig;
+  collaborationConfig?: IUniverDocsCollaborationPresetConfig;
+  docLockConfig?: IDocLockPluginConfig;
 };
 export async function createDocInstance({
   container,
   locale = '',
   license,
-  collaboration = false
+  universerEndpoint,
+  docsCoreConfig = {},
+  threadCommentPresetConfig,
+  quickInsertUIConfig,
+  watermark = false,
+  watermarkConfig,
+  uniscript = false,
+  uniscriptConfig,
+  drawingPresetConfig,
+  collaboration = false,
+  advancedPresetConfig = {},
+  collaborationConfig = {},
+  docLockConfig = {}
 }: CreateDocSetting = {}): Promise<univerInstance> {
   if (typeof window === 'undefined') {
     throw new Error(
@@ -241,13 +279,12 @@ export async function createDocInstance({
     UniverDocsQuickInsertUIEnUS,
     UniverPresetDocsThreadComment,
     UniverPresetDocsThreadCommentZhTW,
-    UniverPresetDocsThreadCommentEnUS
-    // UniverWatermark,
+    UniverPresetDocsThreadCommentEnUS,
+    UniverWatermark,
 
-    // uniscript 好像是 experimental ，並且 CDN 需要額外想辦法處理 monaco-editor ，暫先註解掉
-    // UniverUniscript,
-    // UniverUniscriptZhTW,
-    // UniverUniscriptEnUS,
+    UniverUniscript,
+    UniverUniscriptZhTW,
+    UniverUniscriptEnUS
   } = await importDoc();
 
   const { createUniver, LocaleType, mergeLocales } = UniverPresets;
@@ -256,10 +293,6 @@ export async function createDocInstance({
   const { UniverDocsDrawingPreset } = UniverPresetDocsDrawing;
   const { UniverDocsQuickInsertUIPlugin } = UniverDocsQuickInsertUi;
   const { UniverDocsThreadCommentPreset } = UniverPresetDocsThreadComment;
-  // const { UniverWatermarkPlugin: _UniverWatermarkPlugin } = UniverWatermark;
-
-  // uniscript 好像是 experimental ，並且 CDN 需要額外想辦法處理 monaco-editor ，暫先註解掉
-  // const { UniverUniscriptPlugin } = UniverUniscript;
 
   const {
     LocalExportButtonPlugin,
@@ -272,27 +305,20 @@ export async function createDocInstance({
     CustomPluginZhTW
   } = await importCustomDocPlugin();
 
-  const univerConfig = {
+  const univerConfig: createUniverOptions = {
     locale: locale.includes('zh') ? LocaleType.ZH_TW : LocaleType.EN_US,
     // 迴避 TS 型別錯誤問題
     collaboration: collaboration || undefined,
     locales: {},
     presets: [
-      UniverDocsCorePreset({ container }),
+      UniverDocsCorePreset({ ...docsCoreConfig, container }),
       UniverDocsHyperLinkPreset(),
-      UniverDocsThreadCommentPreset()
+      UniverDocsThreadCommentPreset(threadCommentPresetConfig)
     ],
     plugins: [
-      UniverDocsQuickInsertUIPlugin
-      // [_UniverWatermarkPlugin, {
-      //   textWatermarkSettings: {
-      //     content: '測試浮水印',
-      //     fontSize: 20,
-      //   },
-      // }],
-
-      // uniscript 好像是 experimental ，並且 CDN 需要額外想辦法處理 monaco-editor ，暫先註解掉
-      // UniverUniscriptPlugin
+      typeof quickInsertUIConfig === 'object' && quickInsertUIConfig !== null
+        ? [UniverDocsQuickInsertUIPlugin, quickInsertUIConfig]
+        : UniverDocsQuickInsertUIPlugin
     ]
   };
 
@@ -316,6 +342,42 @@ export async function createDocInstance({
     CustomPluginEnUS
   ];
 
+  if (watermark === true) {
+    const { UniverWatermarkPlugin } = UniverWatermark;
+
+    if (typeof watermarkConfig === 'object' && watermarkConfig !== null) {
+      univerConfig.plugins.push([
+        UniverWatermarkPlugin,
+        // {
+        //   textWatermarkSettings: {
+        //     content: '測試浮水印',
+        //     fontSize: 20,
+        //   },
+        // }
+        watermarkConfig
+      ]);
+    } else {
+      univerConfig.plugins.push(UniverWatermarkPlugin);
+    }
+  }
+
+  if (uniscript === true) {
+    const { UniverUniscriptPlugin } = UniverUniscript;
+
+    // uniscript 好像是 experimental ，並且 CDN 需要額外想辦法處理 monaco-editor
+    if (typeof uniscriptConfig === 'object' && uniscriptConfig !== null) {
+      univerConfig.plugins.push([UniverUniscriptPlugin, uniscriptConfig]);
+    } else {
+      univerConfig.plugins.push(UniverUniscriptPlugin);
+    }
+
+    localeZhTW.push(UniverUniscriptZhTW);
+    localeEnUS.push(UniverUniscriptEnUS);
+  }
+
+  const safeUniverserEndpoint =
+    (universerEndpoint ?? import.meta.env.VITE_UNIVERSER_PROXY_PATH) || '';
+
   if (sheetsAdvanced === true) {
     const {
       UniverPresetDocsAdvanced,
@@ -329,10 +391,10 @@ export async function createDocInstance({
     localeEnUS.push(UniverPresetDocsAdvancedEnUS);
 
     const advancedPreset = UniverDocsAdvancedPreset({
-      license: safeLicense,
       useWorker: true,
-      // universerEndpoint: UNIVER_SERVER_ENDPOINT
-      universerEndpoint: UNIVERSER_DOCKER_HOST
+      universerEndpoint: safeUniverserEndpoint,
+      ...advancedPresetConfig,
+      license: safeLicense
     });
 
     // 過濾掉官方的匯出按鈕 UI Plugin，這樣在非共編狀態下就不會顯示官方按鈕
@@ -360,18 +422,21 @@ export async function createDocInstance({
     univerConfig.collaboration = true;
 
     univerConfig.presets.push(
-      UniverDocsDrawingPreset({
-        collaboration: true
-      }),
+      UniverDocsDrawingPreset(
+        typeof drawingPresetConfig === 'object' && drawingPresetConfig !== null
+          ? { ...drawingPresetConfig, collaboration: true }
+          : { collaboration: true }
+      ),
       UniverDocsCollaborationPreset({
         // universerEndpoint: UNIVER_SERVER_ENDPOINT
-        universerEndpoint: UNIVERSER_DOCKER_HOST
+        universerEndpoint: safeUniverserEndpoint,
+        ...collaborationConfig
       })
     );
   } else {
     univerConfig.collaboration = undefined;
 
-    univerConfig.presets.push(UniverDocsDrawingPreset());
+    univerConfig.presets.push(UniverDocsDrawingPreset(drawingPresetConfig));
   }
 
   univerConfig.locales = {
@@ -385,7 +450,7 @@ export async function createDocInstance({
     [ServerExportButtonPlugin],
     [LocalImportButtonPlugin],
     [UniverExchangeLifecyclePlugin],
-    [DocLockPlugin, { noStyle: false }]
+    [DocLockPlugin, { noStyle: false, ...docLockConfig }]
   ]);
 
   // window.univerInstance = univerInstance;

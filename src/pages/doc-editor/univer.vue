@@ -25,6 +25,7 @@ watch(
 );
 
 function joinRoom() {
+  if (isCollaboration.value === false || inputUnitId.value === '') return;
   unitId.value = inputUnitId.value;
 }
 
@@ -120,7 +121,7 @@ async function createRoom() {
             />
             <button
               class="univer_doc_page-tools-online-unit-join_btn"
-              :disabled="isCollaboration === false"
+              :disabled="isCollaboration === false || inputUnitId === ''"
               @click="joinRoom"
             >
               加入
