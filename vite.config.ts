@@ -152,7 +152,12 @@ export default defineConfig(({ command, mode }) => {
       {
         name: 'generate-federation-dts',
         closeBundle() {
-          const dtsPath = fileURLToPath(new URL('./dist/types/parker-vue-lab-federation.d.ts', import.meta.url));
+          const dtsPath = fileURLToPath(
+            new URL(
+              './dist/types/parker-vue-lab-federation.d.ts',
+              import.meta.url
+            )
+          );
           const lines = [];
           for (const [key, val] of Object.entries(federationExposes)) {
             const moduleName = `parker-vue-lab-federation/${key.replace(/^\.\//, '')}`;
@@ -160,13 +165,32 @@ export default defineConfig(({ command, mode }) => {
             lines.push(`declare module '${moduleName}' {`);
             lines.push(`  export * from '${dtsRelPath}';`);
             if (dtsRelPath.endsWith('.vue')) {
-              lines.push(`  import { default as _default } from '${dtsRelPath}';`);
+              lines.push(
+                `  import { default as _default } from '${dtsRelPath}';`
+              );
               lines.push(`  export default _default;`);
             }
             lines.push(`}`);
           }
-          fs.mkdirSync(fileURLToPath(new URL('./dist/types', import.meta.url)), { recursive: true });
+          fs.mkdirSync(
+            fileURLToPath(new URL('./dist/types', import.meta.url)),
+            { recursive: true }
+          );
           fs.writeFileSync(dtsPath, lines.join('\n'));
+        }
+      },
+      {
+        name: 'federation-fix',
+        closeBundle() {
+          const federationFilePath = fileURLToPath(
+            new URL('./dist/assets/parker-vue-lab-federation.js', import.meta.url)
+          );
+          if (fs.existsSync(federationFilePath)) {
+            let content = fs.readFileSync(federationFilePath, 'utf-8');
+            // 將 e.forEach 替換為相容寫法，以解決 Vite 8 / Rolldown 產生的 string 無法 foreach 的問題
+            content = content.replace(/e\.forEach/g, '(Array.isArray(e) ? e : [e]).forEach');
+            fs.writeFileSync(federationFilePath, content);
+          }
         }
       }
     ],
