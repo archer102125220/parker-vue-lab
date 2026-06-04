@@ -287,7 +287,7 @@ export async function createDocInstance({
   }
   const safeLicense: IUniverDocsAdvancedPresetConfig['license'] =
     (license ?? import.meta.env.VITE_UNIVER_LICENSE) || '';
-  const sheetsAdvanced = typeof safeLicense === 'string' && safeLicense !== '';
+  const docsAdvanced = typeof safeLicense === 'string' && safeLicense !== '';
 
   const {
     UniverPresets,
@@ -404,7 +404,7 @@ export async function createDocInstance({
   const safeUniverserEndpoint =
     (universerEndpoint ?? import.meta.env.VITE_UNIVERSER_PROXY_PATH) || '';
 
-  if (sheetsAdvanced === true) {
+  if (docsAdvanced === true) {
     const {
       UniverPresetDocsAdvanced,
       UniverPresetDocsAdvancedZhTW,
@@ -434,7 +434,7 @@ export async function createDocInstance({
     univerConfig.presets.push(advancedPreset);
   }
 
-  if (sheetsAdvanced === true && collaboration === true) {
+  if (docsAdvanced === true && collaboration === true) {
     const {
       UniverPresetDocsCollaboration,
       UniverPresetDocsCollaborationZhTW,
