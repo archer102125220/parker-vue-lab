@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, watch } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router';
 import { useUniverStore } from '@src/store/univer';
@@ -15,6 +15,8 @@ const isLiveShare = ref(false);
 
 const unitId = ref('');
 const inputUnitId = ref('');
+
+const license = computed(() => import.meta.env.VITE_UNIVER_LICENSE);
 
 watch(
   () => [route.query.unitId, route.query.unit],
@@ -154,7 +156,7 @@ async function createRoom() {
         v-else
         :key="unitId"
         class="univer_sheet_page-editor"
-        :license="import.meta.env.VITE_UNIVER_LICENSE"
+        :license="license"
         :locale="locale"
         :unit-id="unitId"
         :collaboration="isCollaboration"

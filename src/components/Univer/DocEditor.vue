@@ -132,7 +132,20 @@ const emits = defineEmits([
   'univerStarting',
   'univerReady',
   'univerRendered',
-  'univerSteady'
+  'univerSteady',
+
+  'univerBeforeCreated',
+  'univerCreated',
+  'univerInitError',
+  'localImportStarted',
+  'localImportEnded',
+  'localImportSnapshot',
+  'localExportStarted',
+  'localExportEnded',
+  'serverExportStarted',
+  'serverExportEnded',
+  'exchangeStarted',
+  'exchangeEnded'
 ]);
 
 const container = ref<HTMLDivElement | null>(null);
@@ -150,6 +163,7 @@ async function handleUniverDoc(overrideSnapshot?: Partial<IDocumentData>) {
   loading.value = true;
   try {
     if (container.value instanceof HTMLElement === false) return;
+    emits('univerBeforeCreated');
 
     // 清除舊的 univer 實例 (如果有的話)
     // if (univerInstance.univer) {
@@ -166,6 +180,8 @@ async function handleUniverDoc(overrideSnapshot?: Partial<IDocumentData>) {
       locale: props.locale,
       collaboration: props.collaboration
     });
+
+    emits('univerCreated', { univer, univerAPI });
 
     // 只有出現在 univerAPI.Event 中的事件能被觸發
     // 官網上（https://docs.univer.ai/guides/docs/features/core/general-api#%E4%BA%8B%E4%BB%B6%E9%A1%9E%E5%88%A5）
@@ -242,6 +258,8 @@ async function handleUniverDoc(overrideSnapshot?: Partial<IDocumentData>) {
     univerInstance.LocaleType = LocaleType;
   } catch (error) {
     console.error(error);
+    univerInitError.value = true;
+    emits('univerInitError', error);
   }
 
   loading.value = false;
@@ -283,8 +301,16 @@ watch(
 
 const isRebuilding = ref(false);
 
-const handleLocalImportEvent = async (e: Event) => {
+function handleLocalImportStarted(e: Event) {
   const customEvent = e as CustomEvent;
+  emits('localImportStarted', customEvent);
+  loading.value = true;
+}
+
+async function handleLocalImportEvent(e: Event) {
+  const customEvent = e as CustomEvent;
+  emits('localImportSnapshot', customEvent);
+
   const detail = customEvent.detail;
   if (detail && detail.snapshot && detail.type === 'doc') {
     const currentUnitId = univerInstance.univerAPI
@@ -308,13 +334,52 @@ const handleLocalImportEvent = async (e: Event) => {
       loading.value = false;
     }
   }
-};
+}
 
-const handleLocalImportEnded = () => {
+function handleLocalImportEnded(e: Event) {
+  const customEvent = e as CustomEvent;
+  emits('localImportEnded', customEvent);
+
   if (!isRebuilding.value) {
     loading.value = false;
   }
-};
+}
+
+function handleLocalExportStarted(e: Event) {
+  const customEvent = e as CustomEvent;
+  emits('localExportStarted', customEvent);
+  loading.value = true;
+}
+
+function handleLocalExportEnded(e: Event) {
+  const customEvent = e as CustomEvent;
+  emits('localExportEnded', customEvent);
+  loading.value = false;
+}
+
+function handleServerExportStarted(e: Event) {
+  const customEvent = e as CustomEvent;
+  emits('serverExportStarted', customEvent);
+  loading.value = true;
+}
+
+function handleServerExportEnded(e: Event) {
+  const customEvent = e as CustomEvent;
+  emits('serverExportEnded', customEvent);
+  loading.value = false;
+}
+
+function handleExchangeStarted(e: Event) {
+  const customEvent = e as CustomEvent;
+  emits('exchangeStarted', customEvent);
+  loading.value = true;
+}
+
+function handleExchangeEnded(e: Event) {
+  const customEvent = e as CustomEvent;
+  emits('exchangeEnded', customEvent);
+  loading.value = false;
+}
 
 function handleReload() {
   window.location.reload();
@@ -367,15 +432,15 @@ onBeforeUnmount(() => {
       ref="container"
       class="univer_doc-editor"
       @keydown="handleKeyDown"
-      @univer-local-import-started="loading = true"
+      @univer-local-import-started="handleLocalImportStarted"
       @univer-local-import-ended="handleLocalImportEnded"
       @univer-local-import-snapshot="handleLocalImportEvent"
-      @univer-local-export-started="loading = true"
-      @univer-local-export-ended="loading = false"
-      @univer-server-export-started="loading = true"
-      @univer-server-export-ended="loading = false"
-      @univer-exchange-started="loading = true"
-      @univer-exchange-ended="loading = false"
+      @univer-local-export-started="handleLocalExportStarted"
+      @univer-local-export-ended="handleLocalExportEnded"
+      @univer-server-export-started="handleServerExportStarted"
+      @univer-server-export-ended="handleServerExportEnded"
+      @univer-exchange-started="handleExchangeStarted"
+      @univer-exchange-ended="handleExchangeEnded"
     />
 
     <LockPermissionDialog />

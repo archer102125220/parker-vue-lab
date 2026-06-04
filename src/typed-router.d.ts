@@ -37,6 +37,13 @@ declare module 'vue-router/auto-routes' {
       { path: ParamValue<false> },
       | never
     >,
+    '/about': RouteRecordInfo<
+      '/about',
+      '/about',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
     '/doc-editor/': RouteRecordInfo<
       '/doc-editor/',
       '/doc-editor',
@@ -108,6 +115,12 @@ declare module 'vue-router/auto-routes' {
     'src/pages/[...path].vue': {
       routes:
         | '/[...path]'
+      views:
+        | never
+    }
+    'src/pages/about.vue': {
+      routes:
+        | '/about'
       views:
         | never
     }
