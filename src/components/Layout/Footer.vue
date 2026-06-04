@@ -24,6 +24,9 @@ onMounted(() => {
     >
       GitHub
     </a>
+    <RouterLink class="layout_footer-about_link" to="/about">
+      關於本站
+    </RouterLink>
   </footer>
 </template>
 
@@ -73,12 +76,19 @@ onMounted(() => {
     font-weight: 400;
   }
 
-  &-git_hub_link {
+  &-git_hub_link,
+  &-about_link {
     // Typography
     font-size: 14px;
     text-align: center;
     color: #6c757d;
     font-weight: 400;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+      color: #4a5568;
+    }
   }
 }
 </style>
