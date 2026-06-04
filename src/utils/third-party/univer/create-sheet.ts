@@ -44,9 +44,53 @@ export type {
 // const UNIVER_SERVER_ENDPOINT =
 //   import.meta.env.VITE_UNIVER_SERVER_ENDPOINT ||
 //   'http://localhost:3000/api/univer';
-const UNIVERSER_DOCKER_HOST = import.meta.env.VITE_UNIVERSER_PROXY_PATH ?? '';
 
-export async function importSheet(): Promise<any> {
+export type ImportSheetResult = {
+  UniverPresets: typeof import('@univerjs/presets');
+  UniverPresetSheetsCore: typeof import('@univerjs/preset-sheets-core');
+  UniverPresetSheetsCoreZhTW: (typeof import('@univerjs/preset-sheets-core/locales/zh-TW'))['default'];
+  UniverPresetSheetsCoreEnUS: (typeof import('@univerjs/preset-sheets-core/locales/en-US'))['default'];
+  UniverPresetSheetsFilter: typeof import('@univerjs/preset-sheets-filter');
+  UniverPresetSheetsFilterZhTW: (typeof import('@univerjs/preset-sheets-filter/locales/zh-TW'))['default'];
+  UniverPresetSheetsFilterEnUS: (typeof import('@univerjs/preset-sheets-filter/locales/en-US'))['default'];
+  UniverPresetSheetsSort: typeof import('@univerjs/preset-sheets-sort');
+  UniverPresetSheetsSortZhTW: (typeof import('@univerjs/preset-sheets-sort/locales/zh-TW'))['default'];
+  UniverPresetSheetsSortEnUS: (typeof import('@univerjs/preset-sheets-sort/locales/en-US'))['default'];
+  UniverPresetSheetsDataValidation: typeof import('@univerjs/preset-sheets-data-validation');
+  UniverPresetSheetsDataValidationZhTW: (typeof import('@univerjs/preset-sheets-data-validation/locales/zh-TW'))['default'];
+  UniverPresetSheetsDataValidationEnUS: (typeof import('@univerjs/preset-sheets-data-validation/locales/en-US'))['default'];
+  UniverPresetSheetsConditionalFormatting: typeof import('@univerjs/preset-sheets-conditional-formatting');
+  UniverPresetSheetsConditionalFormattingZhTW: (typeof import('@univerjs/preset-sheets-conditional-formatting/locales/zh-TW'))['default'];
+  UniverPresetSheetsConditionalFormattingEnUS: (typeof import('@univerjs/preset-sheets-conditional-formatting/locales/en-US'))['default'];
+  UniverPresetSheetsHyperLink: typeof import('@univerjs/preset-sheets-hyper-link');
+  UniverPresetSheetsHyperLinkZhTW: (typeof import('@univerjs/preset-sheets-hyper-link/locales/zh-TW'))['default'];
+  UniverPresetSheetsHyperLinkEnUS: (typeof import('@univerjs/preset-sheets-hyper-link/locales/en-US'))['default'];
+  UniverPresetSheetsFindReplace: typeof import('@univerjs/preset-sheets-find-replace');
+  UniverPresetSheetsFindReplaceZhTW: (typeof import('@univerjs/preset-sheets-find-replace/locales/zh-TW'))['default'];
+  UniverPresetSheetsFindReplaceEnUS: (typeof import('@univerjs/preset-sheets-find-replace/locales/en-US'))['default'];
+  UniverUniscript: typeof import('@univerjs/uniscript');
+  UniverUniscriptZhTW: (typeof import('@univerjs/uniscript/locale/zh-TW'))['default'];
+  UniverUniscriptEnUS: (typeof import('@univerjs/uniscript/locale/en-US'))['default'];
+  UniverPresetSheetsDrawing: typeof import('@univerjs/preset-sheets-drawing');
+  UniverPresetSheetsDrawingZhTW: (typeof import('@univerjs/preset-sheets-drawing/locales/zh-TW'))['default'];
+  UniverPresetSheetsDrawingEnUS: (typeof import('@univerjs/preset-sheets-drawing/locales/en-US'))['default'];
+  UniverPresetSheetsThreadComment: typeof import('@univerjs/preset-sheets-thread-comment');
+  UniverPresetSheetsThreadCommentZhTW: (typeof import('@univerjs/preset-sheets-thread-comment/locales/zh-TW'))['default'];
+  UniverPresetSheetsThreadCommentEnUS: (typeof import('@univerjs/preset-sheets-thread-comment/locales/en-US'))['default'];
+  UniverPresetSheetsNote: typeof import('@univerjs/preset-sheets-note');
+  UniverPresetSheetsNoteZhTW: (typeof import('@univerjs/preset-sheets-note/locales/zh-TW'))['default'];
+  UniverPresetSheetsNoteEnUS: (typeof import('@univerjs/preset-sheets-note/locales/en-US'))['default'];
+  UniverPresetSheetsTable: typeof import('@univerjs/preset-sheets-table');
+  UniverPresetSheetsTableZhTW: (typeof import('@univerjs/preset-sheets-table/locales/zh-TW'))['default'];
+  UniverPresetSheetsTableEnUS: (typeof import('@univerjs/preset-sheets-table/locales/en-US'))['default'];
+  UniverWatermark: typeof import('@univerjs/watermark');
+  UniverSheetsCrosshairHighlight: typeof import('@univerjs/sheets-crosshair-highlight');
+  UniverSheetsZenEditor: typeof import('@univerjs/sheets-zen-editor');
+  UniverSheetsZenEditorZhTW: (typeof import('@univerjs/sheets-zen-editor/locale/zh-TW'))['default'];
+  UniverSheetsZenEditorEnUS: (typeof import('@univerjs/sheets-zen-editor/locale/en-US'))['default'];
+};
+
+export async function importSheet(): Promise<ImportSheetResult> {
   const [
     UniverPresets,
     UniverPresetSheetsCore,
@@ -208,7 +252,20 @@ export async function importSheet(): Promise<any> {
   };
 }
 
-export async function importCustomSheetPlugin(): Promise<any> {
+export type ImportCustomSheetPluginResult = {
+  ImportCSVButtonPlugin: (typeof import('@src/utils/third-party/univer/plugin/csv-import'))['ImportCSVButtonPlugin'];
+  ExportCSVButtonPlugin: (typeof import('@src/utils/third-party/univer/plugin/csv-export'))['ExportCSVButtonPlugin'];
+  LocalExportButtonPlugin: (typeof import('@src/utils/third-party/univer/plugin/local-export'))['LocalExportButtonPlugin'];
+  ServerExportButtonPlugin: (typeof import('@src/utils/third-party/univer/plugin/server-export'))['ServerExportButtonPlugin'];
+  LocalImportButtonPlugin: (typeof import('@src/utils/third-party/univer/plugin/local-import'))['LocalImportButtonPlugin'];
+  UniverExchangeLifecyclePlugin: (typeof import('@src/utils/third-party/univer/plugin/exchange-lifecycle'))['UniverExchangeLifecyclePlugin'];
+  SheetLockPlugin: (typeof import('@src/utils/third-party/univer/plugin/sheet-lock'))['SheetLockPlugin'];
+  importRegisterVue: (typeof import('@src/utils/third-party/univer/plugin/register-vue'))['importRegisterVue'];
+  CustomPluginEnUS: (typeof import('@src/utils/third-party/univer/i18n/en-US'))['default'];
+  CustomPluginZhTW: (typeof import('@src/utils/third-party/univer/i18n/zh-TW'))['default'];
+};
+
+export async function importCustomSheetPlugin(): Promise<ImportCustomSheetPluginResult> {
   const [
     { ImportCSVButtonPlugin },
     { ExportCSVButtonPlugin },
@@ -247,7 +304,13 @@ export async function importCustomSheetPlugin(): Promise<any> {
   };
 }
 
-export async function importSheetAdvanced(): Promise<any> {
+export type ImportSheetAdvancedResult = {
+  UniverPresetSheetsAdvanced: typeof import('@univerjs/preset-sheets-advanced');
+  UniverPresetSheetsAdvancedZhTW: (typeof import('@univerjs/preset-sheets-advanced/locales/zh-TW'))['default'];
+  UniverPresetSheetsAdvancedEnUS: (typeof import('@univerjs/preset-sheets-advanced/locales/en-US'))['default'];
+};
+
+export async function importSheetAdvanced(): Promise<ImportSheetAdvancedResult> {
   const [
     UniverPresetSheetsAdvanced,
     { default: UniverPresetSheetsAdvancedZhTW },
@@ -267,7 +330,13 @@ export async function importSheetAdvanced(): Promise<any> {
   };
 }
 
-export async function importSheetCollaboration(): Promise<any> {
+export type ImportSheetCollaborationResult = {
+  UniverPresetSheetsCollaboration: typeof import('@univerjs/preset-sheets-collaboration');
+  UniverPresetSheetsCollaborationZhTW: (typeof import('@univerjs/preset-sheets-collaboration/locales/zh-TW'))['default'];
+  UniverPresetSheetsCollaborationEnUs: (typeof import('@univerjs/preset-sheets-collaboration/locales/en-US'))['default'];
+};
+
+export async function importSheetCollaboration(): Promise<ImportSheetCollaborationResult> {
   const [
     UniverPresetSheetsCollaboration,
     { default: UniverPresetSheetsCollaborationZhTW },
@@ -287,7 +356,11 @@ export async function importSheetCollaboration(): Promise<any> {
   };
 }
 
-export async function importSheetLiveShare(): Promise<any> {
+export type ImportSheetLiveShareResult = {
+  UniverProLiveShare: typeof import('@univerjs-pro/live-share');
+};
+
+export async function importSheetLiveShare(): Promise<ImportSheetLiveShareResult> {
   const [UniverProLiveShare] = await Promise.all([
     import('@univerjs-pro/live-share'),
     import('@univerjs-pro/live-share/facade'),

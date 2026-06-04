@@ -30,9 +30,31 @@ export type {
 // const UNIVER_SERVER_ENDPOINT =
 //   import.meta.env.VITE_UNIVER_SERVER_ENDPOINT ||
 //   'http://localhost:3000/api/univer';
-// const UNIVERSER_DOCKER_HOST = import.meta.env.VITE_UNIVERSER_PROXY_PATH ?? '';
 
-export async function importDoc(): Promise<any> {
+export type ImportDocResult = {
+  UniverPresets: typeof import('@univerjs/presets');
+  UniverPresetDocsCore: typeof import('@univerjs/preset-docs-core');
+  UniverPresetDocsCoreZhTW: (typeof import('@univerjs/preset-docs-core/locales/zh-TW'))['default'];
+  UniverPresetDocsCoreEnUS: (typeof import('@univerjs/preset-docs-core/locales/en-US'))['default'];
+  UniverPresetDocsHyperLink: typeof import('@univerjs/preset-docs-hyper-link');
+  UniverPresetDocsHyperLinkZhTW: (typeof import('@univerjs/preset-docs-hyper-link/locales/zh-TW'))['default'];
+  UniverPresetDocsHyperLinkEnUS: (typeof import('@univerjs/preset-docs-hyper-link/locales/en-US'))['default'];
+  UniverPresetDocsDrawing: typeof import('@univerjs/preset-docs-drawing');
+  UniverPresetDocsDrawingZhTW: (typeof import('@univerjs/preset-docs-drawing/locales/zh-TW'))['default'];
+  UniverPresetDocsDrawingEnUS: (typeof import('@univerjs/preset-docs-drawing/locales/en-US'))['default'];
+  UniverDocsQuickInsertUi: typeof import('@univerjs/docs-quick-insert-ui');
+  UniverDocsQuickInsertUIZhTW: (typeof import('@univerjs/docs-quick-insert-ui/locale/zh-TW'))['default'];
+  UniverDocsQuickInsertUIEnUS: (typeof import('@univerjs/docs-quick-insert-ui/locale/en-US'))['default'];
+  UniverPresetDocsThreadComment: typeof import('@univerjs/preset-docs-thread-comment');
+  UniverPresetDocsThreadCommentZhTW: (typeof import('@univerjs/preset-docs-thread-comment/locales/zh-TW'))['default'];
+  UniverPresetDocsThreadCommentEnUS: (typeof import('@univerjs/preset-docs-thread-comment/locales/en-US'))['default'];
+  UniverWatermark: typeof import('@univerjs/watermark');
+  UniverUniscript: typeof import('@univerjs/uniscript');
+  UniverUniscriptZhTW: (typeof import('@univerjs/uniscript/locale/zh-TW'))['default'];
+  UniverUniscriptEnUS: (typeof import('@univerjs/uniscript/locale/en-US'))['default'];
+};
+
+export async function importDoc(): Promise<ImportDocResult> {
   const [
     UniverPresets,
     UniverPresetDocsCore,
@@ -116,7 +138,18 @@ export async function importDoc(): Promise<any> {
   };
 }
 
-export async function importCustomDocPlugin(): Promise<any> {
+export type ImportCustomDocPluginResult = {
+  LocalExportButtonPlugin: (typeof import('@src/utils/third-party/univer/plugin/local-export'))['LocalExportButtonPlugin'];
+  ServerExportButtonPlugin: (typeof import('@src/utils/third-party/univer/plugin/server-export'))['ServerExportButtonPlugin'];
+  LocalImportButtonPlugin: (typeof import('@src/utils/third-party/univer/plugin/local-import'))['LocalImportButtonPlugin'];
+  UniverExchangeLifecyclePlugin: (typeof import('@src/utils/third-party/univer/plugin/exchange-lifecycle'))['UniverExchangeLifecyclePlugin'];
+  importRegisterVue: (typeof import('@src/utils/third-party/univer/plugin/register-vue'))['importRegisterVue'];
+  DocLockPlugin: (typeof import('@src/utils/third-party/univer/plugin/doc-lock'))['DocLockPlugin'];
+  CustomPluginEnUS: (typeof import('@src/utils/third-party/univer/i18n/en-US'))['default'];
+  CustomPluginZhTW: (typeof import('@src/utils/third-party/univer/i18n/zh-TW'))['default'];
+};
+
+export async function importCustomDocPlugin(): Promise<ImportCustomDocPluginResult> {
   const [
     { LocalExportButtonPlugin },
     { ServerExportButtonPlugin },
@@ -149,7 +182,13 @@ export async function importCustomDocPlugin(): Promise<any> {
   };
 }
 
-export async function importDocAdvanced(): Promise<any> {
+export type ImportDocAdvancedResult = {
+  UniverPresetDocsAdvanced: typeof import('@univerjs/preset-docs-advanced');
+  UniverPresetDocsAdvancedZhTW: (typeof import('@univerjs/preset-docs-advanced/locales/zh-TW'))['default'];
+  UniverPresetDocsAdvancedEnUS: (typeof import('@univerjs/preset-docs-advanced/locales/en-US'))['default'];
+};
+
+export async function importDocAdvanced(): Promise<ImportDocAdvancedResult> {
   const [
     UniverPresetDocsAdvanced,
     { default: UniverPresetDocsAdvancedZhTW },
@@ -169,7 +208,13 @@ export async function importDocAdvanced(): Promise<any> {
   };
 }
 
-export async function importDocCollaboration(): Promise<any> {
+export type ImportDocCollaborationResult = {
+  UniverPresetDocsCollaboration: typeof import('@univerjs/preset-docs-collaboration');
+  UniverPresetDocsCollaborationZhTW: (typeof import('@univerjs/preset-docs-collaboration/locales/zh-TW'))['default'];
+  UniverPresetDocsCollaborationEnUS: (typeof import('@univerjs/preset-docs-collaboration/locales/en-US'))['default'];
+};
+
+export async function importDocCollaboration(): Promise<ImportDocCollaborationResult> {
   const [
     UniverPresetDocsCollaboration,
     { default: UniverPresetDocsCollaborationZhTW },
