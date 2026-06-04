@@ -150,6 +150,7 @@ const emits = defineEmits([
 const currentWorkbook = ref({});
 
 const container = ref<HTMLDivElement | null>(null);
+const univerInitError = ref(false);
 const loading = ref(true);
 
 const univerInstance = reactive<univerInstanceRef>({
@@ -298,6 +299,10 @@ const handleLocalImportEvent = (e: Event) => {
   }
 };
 
+function handleReload() {
+  window.location.reload();
+}
+
 onMounted(() => {
   handleUniverSheet();
 });
@@ -333,6 +338,14 @@ onBeforeUnmount(() => {
         />
       </slot>
     </div>
+
+    <div v-if="univerInitError" class="univer_sheet-error">
+      <slot name="error">
+        <p class="univer_sheet-error-msg">Univer 初始化失敗</p>
+        <v-btn color="error" @click="handleReload">重試</v-btn>
+      </slot>
+    </div>
+
     <div
       ref="container"
       class="univer_sheet-editor"
@@ -374,6 +387,19 @@ body {
     &-skeleton {
       width: 100%;
       height: 100%;
+    }
+  }
+
+  &-error {
+    @extend .univer_sheet-skeleton_wrap;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    &-msg {
+      font-size: 20px;
+      color: #e55e55;
     }
   }
 

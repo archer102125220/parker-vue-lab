@@ -137,6 +137,7 @@ const emits = defineEmits([
 
 const container = ref<HTMLDivElement | null>(null);
 const currentDoc = ref({});
+const univerInitError = ref(false);
 const loading = ref(true);
 
 const univerInstance = reactive<univerInstanceRef>({
@@ -315,6 +316,10 @@ const handleLocalImportEnded = () => {
   }
 };
 
+function handleReload() {
+  window.location.reload();
+}
+
 onMounted(() => {
   handleUniverDoc();
 });
@@ -350,6 +355,14 @@ onBeforeUnmount(() => {
         />
       </slot>
     </div>
+
+    <div v-if="univerInitError" class="univer_doc-error">
+      <slot name="error">
+        <p class="univer_doc-error-msg">Univer 初始化失敗</p>
+        <v-btn color="error" @click="handleReload">重試</v-btn>
+      </slot>
+    </div>
+
     <div
       ref="container"
       class="univer_doc-editor"
@@ -393,6 +406,19 @@ body {
     &-skeleton {
       width: 100%;
       height: 100%;
+    }
+  }
+
+  &-error {
+    @extend .univer_doc-skeleton_wrap;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    &-msg {
+      font-size: 20px;
+      color: #e55e55;
     }
   }
 
