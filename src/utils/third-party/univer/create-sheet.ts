@@ -1,4 +1,67 @@
+import type {
+  DependencyOverride,
+  IUniverConfig,
+  Plugin,
+  PluginCtor
+} from '@univerjs/core';
+import type { IUniverSheetsCorePresetConfig } from '@univerjs/preset-sheets-core';
+import type { IUniverSheetsFilterPresetConfig } from '@univerjs/preset-sheets-filter';
+import type { IUniverSheetsDataValidationPresetConfig } from '@univerjs/preset-sheets-data-validation';
+import type { IUniverSheetsHyperLinkPresetConfig } from '@univerjs/preset-sheets-hyper-link';
+import type { IUniverSheetsFindReplacePresetConfig } from '@univerjs/preset-sheets-find-replace';
+import type { IUniverSheetsThreadCommentPresetConfig } from '@univerjs/preset-sheets-thread-comment';
+import type { IUniverWatermarkConfig } from '@univerjs/watermark';
+import type { IUniverUniscriptConfig } from '@univerjs/uniscript';
+import type { IUniverSheetsDrawingPresetConfig } from '@univerjs/preset-sheets-drawing';
+import type { IUniverSheetsAdvancedPresetConfig } from '@univerjs/preset-sheets-advanced';
+import type { IUniverSheetsCrosshairHighlightConfig } from '@univerjs/sheets-crosshair-highlight';
+import type { IUniverSheetsZenEditorConfig } from '@univerjs/sheets-zen-editor';
+import type { IUniverSheetsCollaborationPresetConfig } from '@univerjs/preset-sheets-collaboration';
+import type { IUniverLiveShareConfig } from '@univerjs-pro/live-share';
+
 import type { univerInstance } from '@src/utils/third-party/univer/index';
+import type { ISheetLockPluginConfig } from '@src/utils/third-party/univer/plugin/sheet-lock';
+
+// @univerjs/presets/lib/types/umd.d.ts 沒倒出的 createUniver 接收參數的型別
+export interface IPreset {
+  plugins: Array<
+    | PluginCtor<Plugin>
+    | [PluginCtor<Plugin>, ConstructorParameters<PluginCtor<Plugin>>[0]]
+  >;
+}
+export interface IPresetOptions {
+  lazy?: boolean;
+}
+export type CreateUniverOptions = Partial<IUniverConfig> & {
+  presets: Array<IPreset | [IPreset, IPresetOptions]>;
+  plugins?: Array<
+    | PluginCtor<Plugin>
+    | [PluginCtor<Plugin>, ConstructorParameters<PluginCtor<Plugin>>[0]]
+  >;
+  override?: DependencyOverride;
+  collaboration?: true;
+};
+export type {
+  DependencyOverride,
+  IUniverConfig,
+  Plugin,
+  PluginCtor,
+  IUniverSheetsCorePresetConfig,
+  IUniverSheetsFilterPresetConfig,
+  IUniverSheetsDataValidationPresetConfig,
+  IUniverSheetsHyperLinkPresetConfig,
+  IUniverSheetsFindReplacePresetConfig,
+  IUniverSheetsThreadCommentPresetConfig,
+  IUniverWatermarkConfig,
+  IUniverUniscriptConfig,
+  IUniverSheetsDrawingPresetConfig,
+  IUniverSheetsAdvancedPresetConfig,
+  IUniverSheetsCrosshairHighlightConfig,
+  IUniverSheetsZenEditorConfig,
+  IUniverSheetsCollaborationPresetConfig,
+  IUniverLiveShareConfig,
+  ISheetLockPluginConfig
+};
 
 // const UNIVER_SERVER_ENDPOINT =
 //   import.meta.env.VITE_UNIVER_SERVER_ENDPOINT ||
@@ -30,10 +93,9 @@ export async function importSheet() {
     { default: UniverPresetSheetsFindReplaceZhTW },
     { default: UniverPresetSheetsFindReplaceEnUS },
 
-    // uniscript 好像是 experimental ，並且 CDN 需要額外想辦法處理 monaco-editor ，暫先註解掉
-    // UniverUniscript,
-    // { default: UniverUniscriptZhTW },
-    // { default: UniverUniscriptEnUS },
+    UniverUniscript,
+    { default: UniverUniscriptZhTW },
+    { default: UniverUniscriptEnUS },
 
     UniverPresetSheetsDrawing,
     { default: UniverPresetSheetsDrawingZhTW },
@@ -76,10 +138,9 @@ export async function importSheet() {
     import('@univerjs/preset-sheets-find-replace/locales/zh-TW'),
     import('@univerjs/preset-sheets-find-replace/locales/en-US'),
 
-    // uniscript 好像是 experimental ，並且 CDN 需要額外想辦法處理 monaco-editor ，暫先註解掉
-    // import('@univerjs/uniscript'),
-    // import('@univerjs/uniscript/locale/zh-TW'),
-    // import('@univerjs/uniscript/locale/en-US'),
+    import('@univerjs/uniscript'),
+    import('@univerjs/uniscript/locale/zh-TW'),
+    import('@univerjs/uniscript/locale/en-US'),
 
     import('@univerjs/preset-sheets-drawing'),
     import('@univerjs/preset-sheets-drawing/locales/zh-TW'),
@@ -116,10 +177,9 @@ export async function importSheet() {
     import('@univerjs/sheets-crosshair-highlight/lib/index.css'),
     import('@univerjs/sheets-zen-editor/lib/index.css'),
 
-    import('@univerjs/ui/facade')
+    import('@univerjs/ui/facade'),
 
-    // uniscript 好像是 experimental ，並且 CDN 需要額外想辦法處理 monaco-editor ，暫先註解掉
-    // import('@univerjs/uniscript/lib/index.css'),
+    import('@univerjs/uniscript/lib/index.css')
   ]);
 
   return {
@@ -146,10 +206,9 @@ export async function importSheet() {
     UniverPresetSheetsFindReplaceZhTW,
     UniverPresetSheetsFindReplaceEnUS,
 
-    // uniscript 好像是 experimental ，並且 CDN 需要額外想辦法處理 monaco-editor ，暫先註解掉
-    // UniverUniscript,
-    // UniverUniscriptZhTW,
-    // UniverUniscriptEnUS,
+    UniverUniscript,
+    UniverUniscriptZhTW,
+    UniverUniscriptEnUS,
 
     UniverPresetSheetsDrawing,
     UniverPresetSheetsDrawingZhTW,
@@ -262,17 +321,61 @@ export async function importSheetLiveShare() {
   };
 }
 
+type createUniverOptions = CreateUniverOptions & {
+  plugins: Array<
+    | PluginCtor<Plugin>
+    | [PluginCtor<Plugin>, ConstructorParameters<PluginCtor<Plugin>>[0]]
+  >;
+};
 export type CreateSheetSetting = {
   container?: HTMLElement;
   locale?: string;
   collaboration?: boolean;
   liveShare?: boolean;
+  watermark?: boolean;
+  uniscript?: boolean;
+  coreConfig?: IUniverSheetsCorePresetConfig;
+  filterConfig?: IUniverSheetsFilterPresetConfig;
+  dataValidationConfig?: IUniverSheetsDataValidationPresetConfig;
+  hyperlinkConfig?: IUniverSheetsHyperLinkPresetConfig;
+  findReplaceConfig?: IUniverSheetsFindReplacePresetConfig;
+  threadCommentConfig?: IUniverSheetsThreadCommentPresetConfig;
+  watermarkConfig?: IUniverWatermarkConfig;
+  uniscriptConfig?: IUniverUniscriptConfig;
+  drawingPresetConfig?: IUniverSheetsDrawingPresetConfig;
+  license?: IUniverSheetsAdvancedPresetConfig['license'];
+  universerEndpoint?: IUniverSheetsAdvancedPresetConfig['universerEndpoint'];
+  advancedPresetConfig?: IUniverSheetsAdvancedPresetConfig;
+  crosshairHighlightConfig?: IUniverSheetsCrosshairHighlightConfig;
+  zenEditorConfig?: IUniverSheetsZenEditorConfig;
+  collaborationPresetConfig?: IUniverSheetsCollaborationPresetConfig;
+  liveShareConfig?: IUniverLiveShareConfig;
+  lockPluginConfig?: ISheetLockPluginConfig;
 };
 export async function createSheetInstance({
   container,
   locale = '',
   collaboration = false,
-  liveShare = false
+  liveShare = false,
+  watermark = false,
+  uniscript = false,
+  coreConfig,
+  filterConfig,
+  dataValidationConfig,
+  hyperlinkConfig,
+  findReplaceConfig,
+  threadCommentConfig,
+  watermarkConfig,
+  uniscriptConfig,
+  drawingPresetConfig = {},
+  license,
+  universerEndpoint,
+  advancedPresetConfig = {},
+  crosshairHighlightConfig,
+  zenEditorConfig,
+  collaborationPresetConfig = {},
+  liveShareConfig,
+  lockPluginConfig = {}
 }: CreateSheetSetting = {}): Promise<univerInstance> {
   if (typeof window === 'undefined') {
     throw new Error(
@@ -283,6 +386,9 @@ export async function createSheetInstance({
   if (container instanceof HTMLElement === false) {
     throw new Error('container must be an HTMLElement');
   }
+  const safeLicense: IUniverSheetsAdvancedPresetConfig['license'] =
+    (license ?? import.meta.env.VITE_UNIVER_LICENSE) || '';
+  const sheetsAdvanced = typeof safeLicense === 'string' && safeLicense !== '';
 
   const {
     UniverPresets,
@@ -308,10 +414,9 @@ export async function createSheetInstance({
     UniverPresetSheetsFindReplaceZhTW,
     UniverPresetSheetsFindReplaceEnUS,
 
-    // uniscript 好像是 experimental ，並且 CDN 需要額外想辦法處理 monaco-editor ，暫先註解掉
-    // UniverUniscript,
-    // UniverUniscriptZhTW,
-    // UniverUniscriptEnUS,
+    UniverUniscript,
+    UniverUniscriptZhTW,
+    UniverUniscriptEnUS,
 
     UniverPresetSheetsDrawing,
     UniverPresetSheetsDrawingZhTW,
@@ -325,7 +430,7 @@ export async function createSheetInstance({
     UniverPresetSheetsTable,
     UniverPresetSheetsTableZhTW,
     UniverPresetSheetsTableEnUS,
-    // UniverWatermark,
+    UniverWatermark,
     UniverSheetsCrosshairHighlight,
     UniverSheetsZenEditor,
     UniverSheetsZenEditorZhTW,
@@ -346,13 +451,12 @@ export async function createSheetInstance({
   const { UniverSheetsNotePreset } = UniverPresetSheetsNote;
   const { UniverSheetsTablePreset } = UniverPresetSheetsTable;
 
-  // const { UniverWatermarkPlugin: _UniverWatermarkPlugin } = UniverWatermark;
+  const { UniverWatermarkPlugin } = UniverWatermark;
   const { UniverSheetsCrosshairHighlightPlugin } =
     UniverSheetsCrosshairHighlight;
   const { UniverSheetsZenEditorPlugin } = UniverSheetsZenEditor;
 
-  // uniscript 好像是 experimental ，並且 CDN 需要額外想辦法處理 monaco-editor ，暫先註解掉
-  // const { UniverUniscriptPlugin } = UniverUniscript;
+  const { UniverUniscriptPlugin } = UniverUniscript;
 
   const {
     ImportCSVButtonPlugin,
@@ -367,64 +471,139 @@ export async function createSheetInstance({
     CustomPluginZhTW
   } = await importCustomSheetPlugin();
 
-  const {
-    UniverPresetSheetsAdvanced,
-    UniverPresetSheetsAdvancedZhTW,
-    UniverPresetSheetsAdvancedEnUS
-  } = await importSheetAdvanced();
-  const { UniverSheetsAdvancedPreset, UniverSheetsExchangeClientPlugin } =
-    UniverPresetSheetsAdvanced;
-
-  const advancedPreset = UniverSheetsAdvancedPreset({
-    license: import.meta.env.VITE_UNIVER_LICENSE,
-    useWorker: true,
-    universerEndpoint: import.meta.env.VITE_UNIVERSER_PROXY_PATH ?? ''
-  });
-
-  if (collaboration === false) {
-    // 過濾掉官方的匯出按鈕 UI Plugin，這樣在非共編狀態下就不會顯示官方按鈕
-    advancedPreset.plugins = advancedPreset.plugins.filter(
-      (p: unknown[] | unknown) => {
-        const pluginClass = Array.isArray(p) ? p[0] : p;
-        return pluginClass !== UniverSheetsExchangeClientPlugin;
-      }
-    );
-  }
-
-  const univerConfig = {
+  const univerConfig: createUniverOptions = {
     locale: locale.includes('zh') ? LocaleType.ZH_TW : LocaleType.EN_US,
     locales: {},
     // 迴避 TS 型別錯誤問題
     collaboration: collaboration || undefined,
     presets: [
-      UniverSheetsCorePreset({ container }),
-      UniverSheetsFilterPreset(),
+      UniverSheetsCorePreset(
+        coreConfig ? { ...coreConfig, container } : { container }
+      ),
+      UniverSheetsFilterPreset(filterConfig),
       UniverSheetsSortPreset(),
-      UniverSheetsDataValidationPreset(),
+      UniverSheetsDataValidationPreset(dataValidationConfig),
       UniverSheetsConditionalFormattingPreset(),
-      UniverSheetsHyperLinkPreset(),
-      UniverSheetsFindReplacePreset(),
-      UniverSheetsThreadCommentPreset(),
+      UniverSheetsHyperLinkPreset(hyperlinkConfig),
+      UniverSheetsFindReplacePreset(findReplaceConfig),
+      UniverSheetsThreadCommentPreset(threadCommentConfig),
       UniverSheetsNotePreset(),
-      UniverSheetsTablePreset(),
-      advancedPreset
+      UniverSheetsTablePreset()
     ],
     plugins: [
-      // [_UniverWatermarkPlugin, {
-      //   textWatermarkSettings: {
-      //     content: '測試浮水印',
-      //     fontSize: 20,
-      //   },
-      // }],
-      UniverSheetsCrosshairHighlightPlugin,
-      UniverSheetsZenEditorPlugin
+      typeof crosshairHighlightConfig === 'object' &&
+      crosshairHighlightConfig !== null
+        ? [UniverSheetsCrosshairHighlightPlugin, crosshairHighlightConfig]
+        : UniverSheetsCrosshairHighlightPlugin,
 
-      // uniscript 好像是 experimental ，並且 CDN 需要額外想辦法處理 monaco-editor ，暫先註解掉
-      // UniverUniscriptPlugin
+      typeof zenEditorConfig === 'object' && zenEditorConfig !== null
+        ? [UniverSheetsZenEditorPlugin, zenEditorConfig]
+        : UniverSheetsZenEditorPlugin
     ]
   };
 
-  if (collaboration === true) {
+  const localeZhTW = [
+    UniverPresetSheetsCoreZhTW,
+    UniverPresetSheetsFilterZhTW,
+    UniverPresetSheetsSortZhTW,
+    UniverPresetSheetsDataValidationZhTW,
+    UniverPresetSheetsConditionalFormattingZhTW,
+    UniverPresetSheetsHyperLinkZhTW,
+    UniverPresetSheetsFindReplaceZhTW,
+
+    UniverPresetSheetsDrawingZhTW,
+    UniverPresetSheetsThreadCommentZhTW,
+    UniverPresetSheetsNoteZhTW,
+    UniverPresetSheetsTableZhTW,
+    UniverSheetsZenEditorZhTW,
+
+    CustomPluginZhTW
+  ];
+
+  const localeEnUS = [
+    UniverPresetSheetsCoreEnUS,
+    UniverPresetSheetsFilterEnUS,
+    UniverPresetSheetsSortEnUS,
+    UniverPresetSheetsDataValidationEnUS,
+    UniverPresetSheetsConditionalFormattingEnUS,
+    UniverPresetSheetsHyperLinkEnUS,
+    UniverPresetSheetsFindReplaceEnUS,
+
+    UniverPresetSheetsDrawingEnUS,
+    UniverPresetSheetsThreadCommentEnUS,
+    UniverPresetSheetsNoteEnUS,
+    UniverPresetSheetsTableEnUS,
+    UniverSheetsZenEditorEnUS,
+
+    CustomPluginEnUS
+  ];
+
+  if (watermark === true) {
+    if (typeof watermarkConfig === 'object' && watermarkConfig !== null) {
+      univerConfig.plugins.push([
+        UniverWatermarkPlugin,
+        // {
+        //   textWatermarkSettings: {
+        //     content: '測試浮水印',
+        //     fontSize: 20
+        //   }
+        // }
+        watermarkConfig
+      ]);
+    } else {
+      univerConfig.plugins.push(UniverWatermarkPlugin);
+    }
+  }
+
+  if (uniscript === true) {
+    // uniscript 好像是 experimental ，並且 CDN 需要額外想辦法處理 monaco-editor
+    if (typeof uniscriptConfig === 'object' && uniscriptConfig !== null) {
+      univerConfig.plugins.push([UniverUniscriptPlugin, uniscriptConfig]);
+    } else {
+      univerConfig.plugins.push(UniverUniscriptPlugin);
+    }
+
+    localeZhTW.push(UniverUniscriptZhTW);
+    localeEnUS.push(UniverUniscriptEnUS);
+  }
+
+  const safeUniverserEndpoint =
+    (universerEndpoint ?? import.meta.env.VITE_UNIVERSER_PROXY_PATH) || '';
+
+  if (sheetsAdvanced === true) {
+    const {
+      UniverPresetSheetsAdvanced,
+      UniverPresetSheetsAdvancedZhTW,
+      UniverPresetSheetsAdvancedEnUS
+    } = await importSheetAdvanced();
+    const { UniverSheetsAdvancedPreset, UniverSheetsExchangeClientPlugin } =
+      UniverPresetSheetsAdvanced;
+    const advancedPreset = UniverSheetsAdvancedPreset({
+      useWorker: true,
+      universerEndpoint: safeUniverserEndpoint,
+      ...advancedPresetConfig,
+      license: safeLicense
+    });
+
+    localeZhTW.push(UniverPresetSheetsAdvancedZhTW);
+    localeEnUS.push(UniverPresetSheetsAdvancedEnUS);
+
+    if (collaboration === false) {
+      // 過濾掉官方的匯出按鈕 UI Plugin，這樣在非共編狀態下就不會顯示官方按鈕
+      advancedPreset.plugins = advancedPreset.plugins.filter(
+        (advancedPresetPlugin: unknown[] | unknown) => {
+          const pluginClass = Array.isArray(advancedPresetPlugin)
+            ? advancedPresetPlugin[0]
+            : advancedPresetPlugin;
+          return pluginClass !== UniverSheetsExchangeClientPlugin;
+        }
+      );
+    }
+
+    univerConfig.presets.push(advancedPreset);
+  }
+
+  if (sheetsAdvanced === true && collaboration === true) {
     const {
       UniverPresetSheetsCollaboration,
       UniverPresetSheetsCollaborationZhTW,
@@ -433,118 +612,35 @@ export async function createSheetInstance({
 
     const { UniverSheetsCollaborationPreset } = UniverPresetSheetsCollaboration;
 
-    univerConfig.locales = {
-      [LocaleType.ZH_TW]: mergeLocales(
-        UniverPresetSheetsCoreZhTW,
-        UniverPresetSheetsFilterZhTW,
-        UniverPresetSheetsSortZhTW,
-        UniverPresetSheetsDataValidationZhTW,
-        UniverPresetSheetsConditionalFormattingZhTW,
-        UniverPresetSheetsHyperLinkZhTW,
-        UniverPresetSheetsFindReplaceZhTW,
-
-        // uniscript 好像是 experimental ，並且 CDN 需要額外想辦法處理 monaco-editor ，暫先註解掉
-        // UniverUniscriptZhTW,
-
-        UniverPresetSheetsDrawingZhTW,
-        UniverPresetSheetsThreadCommentZhTW,
-        UniverPresetSheetsNoteZhTW,
-        UniverPresetSheetsTableZhTW,
-        UniverSheetsZenEditorZhTW,
-
-        UniverPresetSheetsAdvancedZhTW,
-        UniverPresetSheetsCollaborationZhTW,
-
-        CustomPluginZhTW
-      ),
-      [LocaleType.EN_US]: mergeLocales(
-        UniverPresetSheetsCoreEnUS,
-        UniverPresetSheetsFilterEnUS,
-        UniverPresetSheetsSortEnUS,
-        UniverPresetSheetsDataValidationEnUS,
-        UniverPresetSheetsConditionalFormattingEnUS,
-        UniverPresetSheetsHyperLinkEnUS,
-        UniverPresetSheetsFindReplaceEnUS,
-
-        // uniscript 好像是 experimental ，並且 CDN 需要額外想辦法處理 monaco-editor ，暫先註解掉
-        // UniverUniscriptEnUS,
-
-        UniverPresetSheetsDrawingEnUS,
-        UniverPresetSheetsThreadCommentEnUS,
-        UniverPresetSheetsNoteEnUS,
-        UniverPresetSheetsTableEnUS,
-        UniverSheetsZenEditorEnUS,
-
-        UniverPresetSheetsAdvancedEnUS,
-        UniverPresetSheetsCollaborationEnUs,
-
-        CustomPluginEnUS
-      )
-    };
+    localeZhTW.push(UniverPresetSheetsCollaborationZhTW);
+    localeEnUS.push(UniverPresetSheetsCollaborationEnUs);
 
     univerConfig.collaboration = true;
 
     univerConfig.presets.push(
-      UniverSheetsDrawingPreset({ collaboration: true }),
-      // TODO: 官方文件範例就是這樣寫，但 TS 報錯，有空再研究
-      // @ts-ignore
+      UniverSheetsDrawingPreset({
+        ...drawingPresetConfig,
+        collaboration: true
+      }),
       UniverSheetsCollaborationPreset({
+        ...collaborationPresetConfig,
         // universerEndpoint: UNIVER_SERVER_ENDPOINT
-        universerEndpoint: UNIVERSER_DOCKER_HOST
+        universerEndpoint: safeUniverserEndpoint
       })
     );
   } else {
-    univerConfig.locales = {
-      [LocaleType.ZH_TW]: mergeLocales(
-        UniverPresetSheetsCoreZhTW,
-        UniverPresetSheetsFilterZhTW,
-        UniverPresetSheetsSortZhTW,
-        UniverPresetSheetsDataValidationZhTW,
-        UniverPresetSheetsConditionalFormattingZhTW,
-        UniverPresetSheetsHyperLinkZhTW,
-        UniverPresetSheetsFindReplaceZhTW,
-
-        // uniscript 好像是 experimental ，並且 CDN 需要額外想辦法處理 monaco-editor ，暫先註解掉
-        // UniverUniscriptZhTW,
-
-        UniverPresetSheetsDrawingZhTW,
-        UniverPresetSheetsThreadCommentZhTW,
-        UniverPresetSheetsNoteZhTW,
-        UniverPresetSheetsTableZhTW,
-        UniverSheetsZenEditorZhTW,
-
-        UniverPresetSheetsAdvancedZhTW,
-
-        CustomPluginZhTW
-      ),
-      [LocaleType.EN_US]: mergeLocales(
-        UniverPresetSheetsCoreEnUS,
-        UniverPresetSheetsFilterEnUS,
-        UniverPresetSheetsSortEnUS,
-        UniverPresetSheetsDataValidationEnUS,
-        UniverPresetSheetsConditionalFormattingEnUS,
-        UniverPresetSheetsHyperLinkEnUS,
-        UniverPresetSheetsFindReplaceEnUS,
-
-        // uniscript 好像是 experimental ，並且 CDN 需要額外想辦法處理 monaco-editor ，暫先註解掉
-        // UniverUniscriptEnUS,
-
-        UniverPresetSheetsDrawingEnUS,
-        UniverPresetSheetsThreadCommentEnUS,
-        UniverPresetSheetsNoteEnUS,
-        UniverPresetSheetsTableEnUS,
-        UniverSheetsZenEditorEnUS,
-
-        UniverPresetSheetsAdvancedEnUS,
-
-        CustomPluginEnUS
-      )
-    };
-
-    univerConfig.presets.push(UniverSheetsDrawingPreset());
-
+    univerConfig.presets.push(
+      UniverSheetsDrawingPreset({
+        ...drawingPresetConfig
+      })
+    );
     univerConfig.collaboration = undefined;
   }
+
+  univerConfig.locales = {
+    [LocaleType.ZH_TW]: mergeLocales(...localeZhTW),
+    [LocaleType.EN_US]: mergeLocales(...localeEnUS)
+  };
 
   const univerInstance = importRegisterVue(createUniver(univerConfig));
   univerInstance.univer.registerPlugins([
@@ -554,14 +650,17 @@ export async function createSheetInstance({
     [ServerExportButtonPlugin],
     [LocalImportButtonPlugin],
     [UniverExchangeLifecyclePlugin],
-    [SheetLockPlugin, { noStyle: false }]
+    [SheetLockPlugin, { noStyle: false, ...lockPluginConfig }]
   ]);
 
   if (collaboration === true && liveShare === true) {
     const { UniverProLiveShare } = await importSheetLiveShare();
     const { UniverLiveSharePlugin } = UniverProLiveShare;
 
-    univerInstance.univer.registerPlugin(UniverLiveSharePlugin);
+    univerInstance.univer.registerPlugin(
+      UniverLiveSharePlugin,
+      liveShareConfig
+    );
   }
 
   // window.univerInstance = univerInstance;
