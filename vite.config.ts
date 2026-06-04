@@ -1,4 +1,5 @@
 import { fileURLToPath, URL } from 'node:url';
+import fs from 'node:fs';
 
 import { defineConfig } from 'vite';
 import VueRouter from 'unplugin-vue-router/vite';
@@ -145,9 +146,29 @@ export default defineConfig(({ command, mode }) => {
           '@univerjs/sheets-zen-editor',
           '@univerjs/ui-adapter-vue3',
           '@univerjs/uniscript',
-          '@univerjs/watermark'
+          '@univerjs/core'
         ]
-      })
+      }),
+      {
+        name: 'generate-federation-dts',
+        closeBundle() {
+          const dtsPath = fileURLToPath(new URL('./dist/types/parker-vue-lab-federation.d.ts', import.meta.url));
+          const lines = [];
+          for (const [key, val] of Object.entries(federationExposes)) {
+            const moduleName = `parker-vue-lab-federation/${key.replace(/^\.\//, '')}`;
+            const dtsRelPath = val.replace(/^@src\//, './src/');
+            lines.push(`declare module '${moduleName}' {`);
+            lines.push(`  export * from '${dtsRelPath}';`);
+            if (dtsRelPath.endsWith('.vue')) {
+              lines.push(`  import { default as _default } from '${dtsRelPath}';`);
+              lines.push(`  export default _default;`);
+            }
+            lines.push(`}`);
+          }
+          fs.mkdirSync(fileURLToPath(new URL('./dist/types', import.meta.url)), { recursive: true });
+          fs.writeFileSync(dtsPath, lines.join('\n'));
+        }
+      }
     ],
     resolve: {
       alias: {
