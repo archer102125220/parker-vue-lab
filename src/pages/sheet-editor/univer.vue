@@ -154,6 +154,7 @@ async function createRoom() {
         v-else
         :key="unitId"
         class="univer_sheet_page-editor"
+        :license="import.meta.env.VITE_UNIVER_LICENSE"
         :locale="locale"
         :unit-id="unitId"
         :collaboration="isCollaboration"

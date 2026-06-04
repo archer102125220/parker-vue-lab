@@ -26,6 +26,10 @@ const props = defineProps({
       return 'zhTW';
     }
   },
+  license: {
+    type: String,
+    default: ''
+  },
   value: {
     type: Object,
     default: () => ({
@@ -157,6 +161,7 @@ async function handleUniverDoc(overrideSnapshot?: Partial<IDocumentData>) {
 
     const { univer, univerAPI, LocaleType } = await createDocInstance({
       container: container.value,
+      license: props.license,
       locale: props.locale,
       collaboration: props.collaboration
     });

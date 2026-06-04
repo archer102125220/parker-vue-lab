@@ -26,6 +26,10 @@ const props = defineProps({
       return 'zhTW';
     }
   },
+  license: {
+    type: String,
+    defalut: ''
+  },
   value: {
     type: Object,
     default: () => ({
@@ -169,6 +173,7 @@ async function handleUniverSheet(overrideSnapshot?: Partial<IWorkbookData>) {
 
     const { univer, univerAPI, LocaleType } = await createSheetInstance({
       container: container.value,
+      license: props.license,
       locale: props.locale,
       collaboration: props.collaboration,
       liveShare: props.liveShare
