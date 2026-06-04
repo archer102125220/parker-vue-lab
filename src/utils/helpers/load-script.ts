@@ -27,11 +27,12 @@ export function loadScript(
     }
 
     Object.keys(attributes).forEach((key) => {
+      if (['load', 'error', 'onload', 'onerror'].includes(key)) return;
       script.setAttribute(key, attributes[key] as string);
     });
 
-    const loadEvent = attributes.load;
-    const errorEvent = attributes.error;
+    const loadEvent = attributes.load || attributes.onload;
+    const errorEvent = attributes.error || attributes.onerror;
 
     script.onload = (...args) => {
       if (typeof loadEvent === 'function') {
