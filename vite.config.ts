@@ -13,6 +13,7 @@ import postcssPxtorem from 'postcss-pxtorem';
 import vuetify, { transformAssetUrls } from 'vite-plugin-vuetify';
 import federation from '@originjs/vite-plugin-federation';
 import dts from 'vite-plugin-dts';
+import cssInjectedByJsPlugin from 'vite-plugin-css-injected-by-js';
 
 const isHttps = process.env['HTTPS'] === 'true';
 
@@ -100,6 +101,17 @@ export default defineConfig(({ command, mode }) => {
         dts: 'src/typed-router.d.ts'
       }),
       vuetify({ autoImport: true }),
+      cssInjectedByJsPlugin({
+        jsAssetsFilterFunction: function customJsAssetsfilterFunction(outputChunk: any) {
+          // 只有當這個 JS chunk 包含 Univer 相關套件，或是 Federation 出口時，才將 CSS 塞入 JS 內
+          const hasUniver = outputChunk.moduleIds.some((id: string) => 
+            id.includes('@univerjs') || 
+            id.includes('src/components/Univer') ||
+            id.includes('src/utils/third-party/univer')
+          );
+          return Boolean(hasUniver || (outputChunk.name && outputChunk.name.includes('federation')));
+        }
+      }),
       dts({
         tsconfigPath: './tsconfig.app.json',
         include: [

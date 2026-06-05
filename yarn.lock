@@ -7075,6 +7075,7 @@ __metadata:
     typescript-eslint: "npm:^8.60.0"
     unplugin-vue-router: "npm:^0.19.2"
     vite: "npm:^8.0.8"
+    vite-plugin-css-injected-by-js: "npm:^5.0.1"
     vite-plugin-dts: "npm:^5.0.2"
     vite-plugin-glsl: "npm:^1.6.0"
     vite-plugin-mkcert: "npm:^2.0.0"
@@ -8301,6 +8302,15 @@ __metadata:
   peerDependencies:
     vite: ^2.6.0 || ^3.0.0 || ^4.0.0 || ^5.0.0-0 || ^6.0.0-0 || ^7.0.0-0 || ^8.0.0
   checksum: 10c0/e6f7bccd20ec130ec8eab9c2a1fdf62fa8d8e8b8236b4786bfe8111590cf9c7e3aaed9b70eff2e8a8d15b5436f1b5ac2a94db281d0ed27901694cca2dde6e269
+  languageName: node
+  linkType: hard
+
+"vite-plugin-css-injected-by-js@npm:^5.0.1":
+  version: 5.0.1
+  resolution: "vite-plugin-css-injected-by-js@npm:5.0.1"
+  peerDependencies:
+    vite: ">8.0.0-0"
+  checksum: 10c0/603ad9624cf707f4c48ad70527293a2f8f4cae7ace906752a0c5a3413b5e81b370e125dc407e08b7806112dd1051ba682a4699e5a78f94e9a9c3d57ce5f02aa5
   languageName: node
   linkType: hard
 
