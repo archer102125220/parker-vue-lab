@@ -115,12 +115,7 @@ export default defineConfig(({ command, mode }) => {
       federation({
         filename: 'parker-vue-lab-federation.js',
         exposes: federationExposes,
-        shared: [
-          'vue',
-          'vuetify',
-          'vue-i18n',
-          'pinia'
-        ]
+        shared: ['vue', 'vuetify']
       }),
       {
         name: 'generate-federation-dts',
@@ -156,12 +151,18 @@ export default defineConfig(({ command, mode }) => {
         name: 'federation-fix',
         closeBundle() {
           const federationFilePath = fileURLToPath(
-            new URL('./dist/assets/parker-vue-lab-federation.js', import.meta.url)
+            new URL(
+              './dist/assets/parker-vue-lab-federation.js',
+              import.meta.url
+            )
           );
           if (fs.existsSync(federationFilePath)) {
             let content = fs.readFileSync(federationFilePath, 'utf-8');
             // 將 e.forEach 替換為相容寫法，以解決 Vite 8 / Rolldown 產生的 string 無法 foreach 的問題
-            content = content.replace(/e\.forEach/g, '(Array.isArray(e) ? e : [e]).forEach');
+            content = content.replace(
+              /e\.forEach/g,
+              '(Array.isArray(e) ? e : [e]).forEach'
+            );
             fs.writeFileSync(federationFilePath, content);
           }
         }
