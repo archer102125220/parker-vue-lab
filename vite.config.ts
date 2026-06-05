@@ -101,6 +101,8 @@ export default defineConfig(({ command, mode }) => {
         dts: 'src/typed-router.d.ts'
       }),
       vuetify({ autoImport: true }),
+      // 改善如 Nuxt 等無法完美支援 @originjs/vite-plugin-federation ，導致 CSS 樣式遺失問題
+      // 因此採用將 CSS 打包進需要導出的模組內，來支援 Nuxt 等環境
       cssInjectedByJsPlugin({
         jsAssetsFilterFunction: function customJsAssetsfilterFunction(outputChunk: any) {
           // 只有當這個 JS chunk 包含 Univer 相關套件，或是 Federation 出口時，才將 CSS 塞入 JS 內
