@@ -115,7 +115,12 @@ export default defineConfig(({ command, mode }) => {
       federation({
         filename: 'parker-vue-lab-federation.js',
         exposes: federationExposes,
-        shared: ['vue', 'vuetify']
+        shared: [
+          'vue',
+          'vuetify',
+          'vue-i18n',
+          'pinia'
+        ]
       }),
       {
         name: 'generate-federation-dts',
