@@ -71,9 +71,11 @@ export class ServerExportButtonPlugin extends Plugin {
   }
 
   override onStarting(): void {
-    this.componentManager.register('Vue3DownloadIcon', Vue3DownloadIcon, {
-      framework: 'vue3'
-    });
+    if (this.componentManager.get('Vue3DownloadIcon') === undefined) {
+      this.componentManager.register('Vue3DownloadIcon', Vue3DownloadIcon, {
+        framework: 'vue3'
+      });
+    }
 
     const buttonId = 'server-export-button';
 

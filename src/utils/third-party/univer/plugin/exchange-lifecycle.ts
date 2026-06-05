@@ -1,4 +1,4 @@
-import { Inject, Injector } from '@wendellhu/redi';
+import { Inject, Injector, Optional } from '@wendellhu/redi';
 import { Plugin } from '@univerjs/core';
 import { ILayoutService } from '@univerjs/ui';
 import { IExchangeService } from '@univerjs-pro/exchange-client';
@@ -18,7 +18,7 @@ export class UniverExchangeLifecyclePlugin extends Plugin {
   constructor(
     _config: unknown, // Univer 會在第一個參數動態傳入 config 物件
     @Inject(Injector) protected override _injector: Injector,
-    @Inject(IExchangeService)
+    @Optional() @Inject(IExchangeService)
     private readonly exchangeService: IExchangeService,
     @Inject(ILayoutService) private readonly layoutService: ILayoutService
   ) {
