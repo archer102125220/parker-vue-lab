@@ -1,5 +1,13 @@
 <script lang="ts" setup>
-import { ref, watch, reactive, onMounted, onBeforeUnmount } from 'vue';
+import {
+  ref,
+  watch,
+  reactive,
+  onBeforeMount,
+  onMounted,
+  onBeforeUnmount,
+  onUnmounted
+} from 'vue';
 
 import SkeletonLoader from '@src/components/SkeletonLoader.vue';
 import LockPermissionDialog from '@src/components/Univer/LockPermissionDialog.vue';
@@ -138,6 +146,12 @@ const emits = defineEmits([
   'update:value',
   'update:workbook',
   'update:worksheet',
+
+  'vue:beforeMount',
+  'vue:mounted',
+  'vue:beforeUnmount',
+  'vue:unmounted',
+
   'univerStarting',
   'univerReady',
   'univerRendered',
@@ -370,11 +384,17 @@ function handleReload() {
   window.location.reload();
 }
 
+onBeforeMount(() => {
+  emits('vue:beforeMount');
+});
+
 onMounted(() => {
+  emits('vue:mounted');
   handleUniverSheet();
 });
 
 onBeforeUnmount(() => {
+  emits('vue:beforeUnmount');
   disposableList.forEach((item) => {
     try {
       item.dispose?.();
@@ -392,6 +412,10 @@ onBeforeUnmount(() => {
   // }
   univerInstance.univer = null;
   univerInstance.univerAPI = null;
+});
+
+onUnmounted(() => {
+  emits('vue:unmounted');
 });
 </script>
 
