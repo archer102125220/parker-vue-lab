@@ -2,7 +2,7 @@
 import {
   ref,
   watch,
-  reactive,
+  shallowReactive,
   onBeforeMount,
   onMounted,
   onBeforeUnmount,
@@ -180,7 +180,7 @@ const container = ref<HTMLDivElement | null>(null);
 const univerInitError = ref(false);
 const loading = ref(true);
 
-const univerInstance = reactive<univerInstanceRef>({
+const univerInstance = shallowReactive<univerInstanceRef>({
   univer: null,
   univerAPI: null,
   LocaleType: null

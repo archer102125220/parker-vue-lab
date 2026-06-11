@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import {
   ref,
-  reactive,
+  shallowReactive,
   onBeforeMount,
   onMounted,
   onBeforeUnmount,
@@ -167,7 +167,7 @@ const currentDoc = ref({});
 const univerInitError = ref(false);
 const loading = ref(true);
 
-const univerInstance = reactive<univerInstanceRef>({
+const univerInstance = shallowReactive<univerInstanceRef>({
   univer: null,
   univerAPI: null,
   LocaleType: null
