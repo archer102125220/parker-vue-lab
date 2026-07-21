@@ -39,3 +39,38 @@ __screenshots__/
 *.timestamp-*-*.mjs
 
 .env
+
+# AI Assistants / IDEs (Allowing custom rules)
+.cursor/*
+!.cursor/rules/
+!.cursor/*.md
+!.cursor/*.json
+.cursor/*.local.json
+
+.claude/*
+!.claude/rules/
+!.claude/*.md
+!.claude/*.json
+.claude/*.local.json
+
+.agent/*
+!.agent/rules/
+!.agent/*.md
+!.agent/*.json
+.agent/*.local.json
+
+# Local AI settings
+CLAUDE.local.md
+*.local.md
+
+# Local scratch files
+scratch*
+
+# Yarn 2+
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+.pnp.*
